@@ -12,10 +12,10 @@ npx skills add onmax/skills
 
 | Skill | What it does |
 | --- | --- |
-| `ecosystem-research` | Checks how comparable systems solve a design problem. |
-| `fast-forward` | Skips obvious branches during grilling sessions. |
-| `grill-with-docs` | Stress-tests a plan and captures project language. |
-| `validate-direction` | Challenges a direction before it becomes a plan or doc. |
+| [`ecosystem-research`](skills/ecosystem-research/SKILL.md) | Checks how comparable systems solve a design problem. |
+| [`fast-forward`](skills/fast-forward/SKILL.md) | Skips obvious branches during grilling sessions. |
+| [`grill-with-docs`](skills/grill-with-docs/SKILL.md) | Stress-tests a plan and captures project language. |
+| [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
 
 ## References
 
