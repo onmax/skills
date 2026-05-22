@@ -1,0 +1,18 @@
+# Ignore everything by default.
+*
+
+# Keep repository metadata files.
+!.gitignore
+!README.md
+
+# Keep the tracked skills tree.
+!skills/
+skills/*
+!skills/ecosystem-research/
+!skills/ecosystem-research/**
+!skills/fast-forward/
+!skills/fast-forward/**
+!skills/grill-with-docs/
+!skills/grill-with-docs/**
+!skills/validate-direction/
+!skills/validate-direction/**
