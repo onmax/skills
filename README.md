@@ -1,6 +1,6 @@
 ![Onmax Skills](https://raw.githubusercontent.com/onmax/skills/main/.github/onmax-skills-hero.png)
 
-A growing collection of agent skills from my work on Nuxt, auth, validation, Nimiq, and AI coding tools.
+A growing collection of agent skills from my work on ViteHub, Nuxt, auth, validation, Nimiq, and AI coding tools.
 
 ```sh
 npx skills add onmax/skills
