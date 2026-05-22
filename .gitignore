@@ -23,5 +23,7 @@ skills/*
 !skills/handoff/**
 !skills/simplify/
 !skills/simplify/**
+!skills/setup-onmax-skills/
+!skills/setup-onmax-skills/**
 !skills/validate-direction/
 !skills/validate-direction/**
