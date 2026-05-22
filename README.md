@@ -14,6 +14,7 @@ npx skills add onmax/skills
 | [`fast-forward`](skills/fast-forward/SKILL.md) | Skips obvious branches during grilling sessions. |
 | [`grill-with-docs`](skills/grill-with-docs/SKILL.md) | Stress-tests a plan and captures project language. |
 | [`handoff`](skills/handoff/SKILL.md) | Captures continuation notes for another agent or session. |
+| [`simplify`](skills/simplify/SKILL.md) | Finds the smallest useful simplification for a PR or scope. |
 | [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
 
 ## References
