@@ -28,8 +28,9 @@ If there is no clear scope, ask one question.
    - `remove`
    - `merge`
    - `narrow`
-7. For code scopes, tie every recommendation to concrete file paths and explicit code changes.
-8. Return recommendations in priority order.
+7. Explain why each recommendation reduces accidental complexity.
+8. For code scopes, tie every recommendation to concrete file paths and explicit code changes.
+9. Return recommendations in priority order.
 
 `leave as-is` is a valid final answer. Do not invent simplifications when the complexity is earning its keep.
 
@@ -43,9 +44,9 @@ Keep:
 - ...
 
 Simplify:
-1. `narrow` - `<path>`: <specific code change>
-2. `merge` - `<path>`: <specific code change>
-3. `rename` - `<path>`: <specific code change>
+1. `narrow` - <why this helps>. `<path>`: <specific code change>
+2. `merge` - <why this helps>. `<path>`: <specific code change>
+3. `rename` - <why this helps>. `<path>`: <specific code change>
 
 Do not change:
 - ...
@@ -67,7 +68,7 @@ Apply only if asked:
 - If related local changes are present, say they are included in the simplification scope.
 - If excluding local changes, explain why they are unrelated or noisy.
 - For code recommendations, include exact paths and name the function, component, option, type, or block to change.
-- Avoid vague suggestions like "simplify the helper" unless the path and concrete change are named.
+- Do not give path-only instructions. Pair the code change with the reason it makes the work smaller or clearer.
 - If `.agents` docs would matter but are missing, say confidence is lower.
 - If the user asks to apply a simplification, make the smallest reviewable edit first.
 
@@ -87,8 +88,8 @@ Keep:
 - The public behavior and existing domain terms.
 
 Simplify:
-1. `narrow` - `src/options.ts`: keep the new option private to `createPreviewServer` instead of adding it to the public config type.
-2. `merge` - `src/parser.ts`: fold `parsePreviewInput` into the existing `parseInput` path and delete the duplicate branch.
+1. `narrow` - Keeps the public API from growing for one caller. `src/options.ts`: keep the new option private to `createPreviewServer` instead of adding it to the public config type.
+2. `merge` - Removes a second parsing path with the same responsibility. `src/parser.ts`: fold `parsePreviewInput` into the existing `parseInput` path and delete the duplicate branch.
 
 Do not change:
 - The user-facing response shape.
