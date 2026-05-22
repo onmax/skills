@@ -41,7 +41,7 @@ Keep the assumptions short. The goal is to remove boring detail, not create a ne
 - Follow the active grilling skill's behavior.
 - In `grill-me`, this only changes conversation flow.
 - In `grill-with-docs`, documentation still follows `grill-with-docs` rules.
-- If fast-forwarded assumptions would be written to `CONTEXT.md` or an ADR, ask for explicit confirmation before writing.
+- If fast-forwarded assumptions would be written to `.agents/CONTEXT.md` or an ADR under `.agents/adr/`, ask for explicit confirmation before writing.
 - For conversation-only fast-forwarding, implicit confirmation is enough: state assumptions and continue.
 
 ## What To Skip
