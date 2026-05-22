@@ -1,5 +1,7 @@
 # Skills
 
+![Abstract illustration of agent skills](https://raw.githubusercontent.com/onmax/skills/main/.github/skills-spirit.png)
+
 Personal agent skills you can install with the Skills CLI.
 
 ## Install

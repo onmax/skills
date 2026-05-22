@@ -5,6 +5,10 @@
 !.gitignore
 !README.md
 
+# Keep README assets.
+!.github/
+!.github/skills-spirit.png
+
 # Keep the tracked skills tree.
 !skills/
 skills/*
