@@ -70,6 +70,14 @@ When domain relationships are being discussed, stress-test them with specific sc
 
 When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible — which is right?"
 
+### Implementation gate
+
+Use this skill to reach shared understanding, not to implement.
+
+During grilling, only write `.agents/` context or ADR files. Do not edit source, tests, config, package files, or other project docs.
+
+If the user says "grill with docs and fix this", treat the fix as the post-grilling goal. Finish the grilling loop, then ask before implementing.
+
 ### Update CONTEXT.md inline
 
 When a term is resolved, update the relevant `.agents/CONTEXT.md` right there. Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
