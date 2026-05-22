@@ -1,27 +1,31 @@
 ---
 name: validate-direction
-description: Validates an emerging direction through evidence, precedent, synthesis, and communication lenses before it is written down or acted on. Use near the end of grilling, planning, ADR, PRD, issue, or implementation-design work when the user wants the conclusion challenged before crystallizing it.
+description: Challenge an emerging direction before it is written down or acted on. Use near the end of grilling, planning, ADR, PRD, issue, or implementation-design work to test evidence, precedent, coherence, and wording before the conclusion crystallizes.
 ---
 
 # Validate Direction
 
 ## Quick Start
 
-Use this near the end of a design or grilling session, before the parent skill writes an ADR, PRD, issue plan, implementation plan, or final recommendation.
+Use this near the end of a design or grilling session, before writing an ADR, PRD, issue plan, implementation plan, or final recommendation.
 
-This skill does not write project docs directly. It produces a validation trail and hands findings back to the active parent skill.
+The goal is not to make the plan sound better. The goal is to find the strongest reason it might be wrong, vague, or premature while it is still cheap to change.
+
+Keep it practical. Do not add philosophical commentary. Do not re-run the whole planning session. Validate the current direction, name the exact weakness, then return the smallest useful correction.
 
 ## Workflow
 
-1. Identify the project, topic, absolute project root, emerging direction, intended artifact, and open doubts.
-2. Create `<os-temp-dir>/validate-direction/<project>/<topic>/brief.md`, where `<os-temp-dir>` is the temporary directory of the user's OS.
-3. Choose intensity and state it.
-4. Spawn subagents when available.
-5. Have lens agents write reports under `reports/`.
+1. State the direction being validated in one plain sentence.
+2. Identify the project, topic, absolute project root, intended artifact, user constraints, known evidence, and open doubts.
+3. Create `<os-temp-dir>/validate-direction/<project>/<topic>/brief.md`, where `<os-temp-dir>` is the temporary directory of the user's OS.
+4. Choose intensity and state it.
+5. Run the four lenses: Evidence, Precedent, Synthesis, and Communication.
 6. Write `verdict.md`.
-7. Return the verdict to the active parent skill and continue with the next action or question.
+7. Return the verdict and either continue with the parent skill's next action or ask one blocking question.
 
-If subagents are unavailable, state that and run the lenses locally.
+Subagents are optional. Use them when available and useful, but do not block on them. If they are unavailable, state that and run the lenses locally.
+
+This skill does not write project docs directly. It hands wording and required changes back to the active skill or session.
 
 ## Artifact Layout
 
@@ -61,7 +65,16 @@ Load the reference file for each active lens:
 - Synthesis: [references/synthesis.md](references/synthesis.md)
 - Communication: [references/communication.md](references/communication.md)
 
-Use plain lens names in user-facing output. Philosopher-derived names may be treated as inspiration only.
+Use plain lens names in user-facing output.
+
+Apply the lenses like this:
+
+- **Evidence**: separate facts, constraints, assumptions, and missing observations. This borrows the useful part of an assumption audit: do not let an inference pretend to be a fact.
+- **Precedent**: check the direction against local project language, existing patterns, and comparable external systems. Do not reward consistency blindly; name intentional breaks.
+- **Synthesis**: ask whether the direction makes the system more coherent. Look for responsibility drift, wrong abstraction, dependency confusion, or a smaller coherent direction.
+- **Communication**: check whether the future reader will know what to do, what not to do, and why. Rewrite the decision sentence if the current wording invites a wrong move.
+
+Keep the roles distinct. Evidence answers "what do we know?" Precedent answers "what are we extending or breaking?" Synthesis answers "does this make the system simpler in the right place?" Communication answers "will the next reader act correctly?"
 
 ## Verdict
 
@@ -79,6 +92,18 @@ Include:
 - risks
 - wording to carry into the artifact
 - one final question, if needed
+
+## Review Rules
+
+- Start from the actual direction, not a better direction you wish existed.
+- Preserve the user's intent unless evidence shows it is unsafe, incoherent, or underspecified.
+- Prefer `revise` over `pause` when a concrete wording, scope, or boundary change would fix the issue.
+- Prefer `pause` only when one unanswered question could reverse the decision.
+- Do not block on harmless uncertainty. Name it and proceed.
+- Do not produce a long essay. The output should make the next move obvious.
+- If the active skill is `grill-with-docs`, return the decision sentence and any ADR-worthy trade-off.
+- If the active skill is `ecosystem-research`, carry forward only findings that change the decision pressure.
+- If the active work is implementation planning, include the tests or checks that would protect the decision.
 
 ## Output Shape
 
