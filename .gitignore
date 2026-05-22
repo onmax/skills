@@ -21,6 +21,8 @@ skills/*
 !skills/grill-with-docs/**
 !skills/handoff/
 !skills/handoff/**
+!skills/library-craft/
+!skills/library-craft/**
 !skills/pr-refiner/
 !skills/pr-refiner/**
 !skills/simplify/
