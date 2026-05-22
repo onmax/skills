@@ -1,12 +1,8 @@
-# Skills
+# Onmax Skills
 
 ![Abstract illustration of agent skills](https://raw.githubusercontent.com/onmax/skills/main/.github/skills-spirit.png)
 
 Personal agent skills you can install with the Skills CLI.
-
-## Install
-
-Run the installer and pick what you want:
 
 ```sh
 npx skills add onmax/skills
