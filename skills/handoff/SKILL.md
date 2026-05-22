@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Write a compact handoff document so another agent or future session can continue the work without replaying the whole conversation. Use when the user asks to hand off, compact context, continue later, summarize current state for another agent, or preserve the next steps before ending a session.
+description: Writes a compact handoff document so another agent or future session can continue the work without replaying the whole conversation. Use when the user asks to hand off, compact context, continue later, summarize current state for another agent, or preserve next steps before ending a session.
 argument-hint: "What should the next session focus on?"
 ---
 
@@ -12,7 +12,7 @@ Use this when the useful context is in the conversation, terminal output, change
 
 Write a handoff document to the temporary directory of the user's OS, not the current workspace. Resolve the temp directory with the platform temp-dir API or environment, such as `$TMPDIR` on macOS/Linux or `%TEMP%` on Windows.
 
-Use the same artifact path shape as the other tracked skills:
+Write the handoff under a project and topic folder:
 
 ```text
 <os-temp-dir>/handoff/<project>/<topic>/handoff.md
