@@ -12,22 +12,31 @@ Use this when the useful context is in the conversation, terminal output, change
 
 Write a handoff document to the temporary directory of the user's OS, not the current workspace. Resolve the temp directory with the platform temp-dir API or environment, such as `$TMPDIR` on macOS/Linux or `%TEMP%` on Windows.
 
-Use a readable topic slug in the filename:
+Use the same artifact path shape as the other tracked skills:
 
 ```text
-<os-temp-dir>/handoff-<topic>.md
+<os-temp-dir>/handoff/<project>/<topic>/handoff.md
 ```
 
-If the topic is unclear, infer a short slug from the current task, such as `vitehub-auth-debug`, `skills-readme-polish`, or `nuxt-runtime-config`.
+If the project or topic is unclear, infer short slugs from the current task, such as `vitehub/auth-debug`, `skills/readme-polish`, or `nuxt/runtime-config`.
 
 ## Workflow
 
 1. Identify the handoff topic, absolute project root, current branch or repo state, and why the handoff is needed.
-2. Pick a short `<topic>` slug using lowercase words joined by hyphens.
-3. Create `<os-temp-dir>/handoff-<topic>.md`.
+2. Pick short `<project>` and `<topic>` slugs using lowercase words joined by hyphens.
+3. Create `<os-temp-dir>/handoff/<project>/<topic>/handoff.md`.
 4. Read the file before writing if it already exists.
 5. Write only the context a fresh agent needs to continue.
 6. Return the handoff path and the next recommended action.
+
+## Artifact Layout
+
+```text
+<os-temp-dir>/handoff/<project>/<topic>/
++-- handoff.md
+```
+
+`handoff.md` must include `project_root` as an absolute path. Any project file reference in the handoff must be absolute, such as `/Users/maxi/vitehub/vitehub/packages/client/src/index.ts`. Never use repo-relative paths like `packages/client/src/index.ts` inside temporary artifacts unless they are paired with the absolute `project_root`.
 
 ## What To Include
 
