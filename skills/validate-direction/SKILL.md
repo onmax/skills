@@ -14,7 +14,7 @@ This skill does not write project docs directly. It produces a validation trail 
 ## Workflow
 
 1. Identify the project, topic, absolute project root, emerging direction, intended artifact, and open doubts.
-2. Create `/tmp/validate-direction/<project>/<topic>/brief.md`.
+2. Create `<os-temp-dir>/validate-direction/<project>/<topic>/brief.md`, where `<os-temp-dir>` is the temporary directory of the user's OS.
 3. Choose intensity and state it.
 4. Spawn subagents when available.
 5. Have lens agents write reports under `reports/`.
@@ -26,7 +26,7 @@ If subagents are unavailable, state that and run the lenses locally.
 ## Artifact Layout
 
 ```text
-/tmp/validate-direction/<project>/<topic>/
+<os-temp-dir>/validate-direction/<project>/<topic>/
 +-- brief.md
 +-- reports/
 |   +-- evidence.md
@@ -38,7 +38,9 @@ If subagents are unavailable, state that and run the lenses locally.
 
 `brief.md` should include the relevant conversation history, user concerns, resolved decisions, unresolved doubts, intended artifact, and the direction being validated.
 
-Because validation artifacts live under `/tmp`, `brief.md` must also include `project_root` as an absolute path. Any project file reference in the brief, reports, verdict, or subagent prompt must be absolute, such as `/Users/maxi/vitehub/vitehub/.agents/adr/0013-hosted-vitehub-devtools-client.md`. Never use repo-relative paths like `.agents/...` inside `/tmp` artifacts unless they are paired with the absolute `project_root`.
+Because validation artifacts live outside the project workspace, `brief.md` must also include `project_root` as an absolute path. Any project file reference in the brief, reports, verdict, or subagent prompt must be absolute, such as `/Users/maxi/vitehub/vitehub/.agents/adr/0013-hosted-vitehub-devtools-client.md`. Never use repo-relative paths like `.agents/...` inside temporary artifacts unless they are paired with the absolute `project_root`.
+
+Resolve `<os-temp-dir>` with the platform temp-dir API or environment, such as `$TMPDIR` on macOS/Linux or `%TEMP%` on Windows.
 
 ## Intensity
 
@@ -82,8 +84,8 @@ Include:
 
 ```md
 Validation artifacts:
-- Brief: /tmp/validate-direction/<project>/<topic>/brief.md
-- Verdict: /tmp/validate-direction/<project>/<topic>/verdict.md
+- Brief: <os-temp-dir>/validate-direction/<project>/<topic>/brief.md
+- Verdict: <os-temp-dir>/validate-direction/<project>/<topic>/verdict.md
 
 Verdict: proceed | revise | pause
 

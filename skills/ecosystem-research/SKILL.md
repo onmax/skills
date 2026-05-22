@@ -21,14 +21,14 @@ Use this as a companion skill for design and grilling sessions when the next dec
 6. Synthesize the reports into a concise `synthesis.md` when findings are substantive.
 7. Return decision-oriented findings to the active session and continue with one question.
 
-Do not mutate the project repo. Research artifacts belong under `/tmp`. If subagents are unavailable, state that and do a compact local fallback.
+Do not mutate the project repo. Research artifacts belong under the temporary directory of the user's OS, not the current workspace. Resolve it with the platform temp-dir API or environment, such as `$TMPDIR` on macOS/Linux or `%TEMP%` on Windows. If subagents are unavailable, state that and do a compact local fallback.
 
 ## Artifact Layout
 
 Use this layout:
 
 ```text
-/tmp/ecosystem-research/<project>/<topic>/
+<os-temp-dir>/ecosystem-research/<project>/<topic>/
 +-- brief.md
 +-- sources/
 +-- reports/
@@ -37,7 +37,7 @@ Use this layout:
 
 `brief.md` should include the project/context name, absolute `project_root`, active design question, relevant conversation history, user concerns, resolved decisions, unresolved branches, research questions, and source priorities.
 
-Because research artifacts live under `/tmp`, any project file reference in the brief, reports, synthesis, or subagent prompt must be absolute, such as `/Users/maxi/vitehub/vitehub/.agents/contexts/devtools/CONTEXT.md`. Never use repo-relative paths like `.agents/...` inside `/tmp` artifacts unless they are paired with the absolute `project_root`.
+Because research artifacts live outside the project workspace, any project file reference in the brief, reports, synthesis, or subagent prompt must be absolute, such as `/Users/maxi/vitehub/vitehub/.agents/contexts/devtools/CONTEXT.md`. Never use repo-relative paths like `.agents/...` inside temporary artifacts unless they are paired with the absolute `project_root`.
 
 Subagents should read `brief.md`.
 
@@ -76,8 +76,8 @@ Return a compact answer:
 
 ```md
 Research artifacts:
-- Brief: /tmp/ecosystem-research/<project>/<topic>/brief.md
-- Synthesis: /tmp/ecosystem-research/<project>/<topic>/synthesis.md
+- Brief: <os-temp-dir>/ecosystem-research/<project>/<topic>/brief.md
+- Synthesis: <os-temp-dir>/ecosystem-research/<project>/<topic>/synthesis.md
 
 Findings:
 - ...
