@@ -9,7 +9,9 @@ description: Reviews and refines GitHub pull requests until they are ready for r
 
 Use this skill when the user wants a PR moved from "has feedback" to "ready for the next reviewer action."
 
-Default posture: inspect first. Do not edit files, comment on GitHub, resolve threads, approve, request changes, label, close, or merge until the user explicitly asks for that write action.
+Default posture: autonomous refinement. An explicit `pr-refiner` invocation for a PR is consent to inspect, implement scoped fixes, run relevant checks, push the PR branch, and resolve review threads that are verified addressed.
+
+It is not consent to post PR comments, approve, request changes, label, close, merge, force-push, or resolve ambiguous/unverified threads.
 
 ## Workflow
 
@@ -19,9 +21,12 @@ Default posture: inspect first. Do not edit files, comment on GitHub, resolve th
    - review decision, unresolved review threads, top-level comments, and requested changes
    - CI/check status, conflicts, mergeability, and branch freshness
 3. Classify blockers before changing anything.
-4. Route to the smallest useful next step.
-5. If comments are already addressed, ask before resolving threads.
-6. End with a concise PR status summary.
+4. Route each blocker to the smallest useful fix.
+5. Implement fixes that are part of the PR scope, including related local changes.
+6. Run the narrow checks that prove the fixes.
+7. Commit and push the PR branch when changes are ready.
+8. Resolve review threads only after the pushed code demonstrably addresses them.
+9. End with a concise PR status summary.
 
 ## Onmax Skill Routing
 
@@ -35,7 +40,7 @@ Default posture: inspect first. Do not edit files, comment on GitHub, resolve th
 ## Blocker Routing
 
 - Review comments: inspect thread-aware review state before editing.
-- Codex or AI review comments: verify the code now addresses the thread, then ask before resolving it.
+- Codex or AI review comments: verify the code addresses the thread, implement if needed, push, then resolve the thread silently when verified addressed.
 - Failing checks: inspect logs and identify the root cause before proposing a fix.
 - Conflicts or stale branch: explain the narrow update path before changing files.
 - Unclear product/domain feedback: ask one question or route through `grill-with-docs`.
@@ -47,10 +52,11 @@ Use GitHub GraphQL when resolving inline review threads, especially Codex thread
 
 ## Guardrails
 
-- Never write to GitHub without explicit user consent.
-- Prefer resolving addressed Codex threads silently instead of replying when no explanation is needed and the user approved resolution.
+- Treat explicit `pr-refiner` invocation as consent to push scoped PR fixes and resolve verified addressed review threads.
+- Never post PR comments without explicit user consent.
+- Prefer resolving addressed Codex threads silently instead of replying when no explanation is needed.
 - Do not treat top-level comments as complete thread state.
-- Do not churn code while a pending AI review may still change the requested direction.
+- Do not churn code while a pending AI review may still change the requested direction unless the existing blocker is already clear.
 - Keep each local edit traceable to one blocker.
 
 ## Output

@@ -37,7 +37,7 @@ query($owner: String!, $repo: String!, $number: Int!) {
 
 ## Resolve a thread
 
-Run this only after explicit user approval:
+Run this after `pr-refiner` has implemented, checked, pushed, and verified that the thread is addressed, or after explicit user approval:
 
 ```sh
 gh api graphql \
