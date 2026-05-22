@@ -11,7 +11,7 @@ Use this skill to make the current work smaller without losing the point of the 
 
 Default posture: analyze first. Do not edit files in the first pass. Apply changes only after the user explicitly asks to make the edits.
 
-Default scope is the current PR diff or current branch diff. If the user gives an explicit scope, use that instead: a PR URL, pasted diff, file, package, API, component, plan, or current conversation direction.
+Default scope is the current PR diff or current branch diff, including related uncommitted local changes. If the user gives an explicit scope, use that instead: a PR URL, pasted diff, file, package, API, component, plan, or current conversation direction.
 
 If there is no clear scope, ask one question.
 
@@ -19,15 +19,16 @@ If there is no clear scope, ask one question.
 
 1. Identify the simplification scope.
 2. Inspect the explicit scope, PR diff, current branch diff, or current direction.
-3. Read `.agents/CONTEXT.md`, `.agents/CONTEXT-MAP.md`, or `.agents/adr/` only when naming, domain language, boundaries, or ADR-backed decisions matter to the simplification.
-4. Separate essential complexity from accidental complexity.
-5. Choose from the smallest action set:
+3. Include uncommitted local files when they are likely related to the PR, branch, or explicit scope. Exclude only files that are clearly unrelated, generated noise, or explicitly scoped out by the user.
+4. Read `.agents/CONTEXT.md`, `.agents/CONTEXT-MAP.md`, or `.agents/adr/` only when naming, domain language, boundaries, or ADR-backed decisions matter to the simplification.
+5. Separate essential complexity from accidental complexity.
+6. Choose from the smallest action set:
    - `leave as-is`
    - `rename`
    - `remove`
    - `merge`
    - `narrow`
-6. Return recommendations in priority order.
+7. Return recommendations in priority order.
 
 `leave as-is` is a valid final answer. Do not invent simplifications when the complexity is earning its keep.
 
@@ -64,6 +65,8 @@ Apply only if asked:
 - Do not do ecosystem research from this skill.
 - Do not write ADRs, project docs, commits, or PR comments from the analysis pass.
 - Do not broaden into architecture review or issue breakdown.
+- If related local changes are present, say they are included in the simplification scope.
+- If excluding local changes, explain why they are unrelated or noisy.
 - If `.agents` docs would matter but are missing, say confidence is lower.
 - If the user asks to apply a simplification, make the smallest reviewable edit first.
 
