@@ -1,6 +1,6 @@
 ![Onmax Skills](https://raw.githubusercontent.com/onmax/skills/main/.github/onmax-skills-hero.png)
 
-Personal agent skills you can install with the Skills CLI.
+Agent workflow skills for research, planning, decision validation, and sharper project conversations.
 
 ```sh
 npx skills add onmax/skills
