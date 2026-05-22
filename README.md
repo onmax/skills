@@ -19,6 +19,7 @@ npx skills add onmax/skills
 | [`pr-refiner`](skills/pr-refiner/SKILL.md) | Reviews PR blockers and routes the next refinement step. |
 | [`simplify`](skills/simplify/SKILL.md) | Finds the smallest useful simplification for a PR or scope. |
 | [`setup-onmax-skills`](skills/setup-onmax-skills/SKILL.md) | Sets up lightweight repo-local guidance for Onmax skills. |
+| [`strict-code-review`](skills/strict-code-review/SKILL.md) | Runs a strict maintainability review for structural quality and code-judo simplifications. |
 | [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
 
 ## References

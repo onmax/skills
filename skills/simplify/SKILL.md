@@ -28,6 +28,7 @@ If there is no clear scope, ask one question.
    - `remove`
    - `merge`
    - `narrow`
+   - `reframe`
 7. Explain why each recommendation reduces accidental complexity.
 8. For code scopes, tie every recommendation to concrete file paths and explicit code changes.
 9. Return recommendations in priority order.
@@ -62,6 +63,7 @@ Apply only if asked:
 
 - Preserve behavior, domain meaning, and user intent.
 - Prefer fewer concepts over fewer lines.
+- Use `strict-code-review` when the simplification question turns into a strict maintainability review, structural quality audit, or ambitious rewrite critique.
 - Do not do ecosystem research from this skill.
 - Do not write ADRs, project docs, commits, or PR comments from the analysis pass.
 - Do not broaden into architecture review or issue breakdown.
