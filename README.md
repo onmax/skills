@@ -4,36 +4,20 @@ Personal agent skills you can install with the Skills CLI.
 
 ## Install
 
-See what is available:
+Run the installer and pick what you want:
 
 ```sh
-npx skills add onmax/skills --list
-```
-
-Install all skills:
-
-```sh
-npx skills add onmax/skills --skill '*' --global --yes
-```
-
-Install one skill:
-
-```sh
-npx skills add onmax/skills --skill grill-with-docs --global --yes
-```
-
-Install for a specific agent:
-
-```sh
-npx skills add onmax/skills --skill grill-with-docs --agent codex --global --yes
+npx skills add onmax/skills
 ```
 
 ## Included skills
 
-- `ecosystem-research`
-- `fast-forward`
-- `grill-with-docs`
-- `validate-direction`
+| Skill | What it does |
+| --- | --- |
+| `ecosystem-research` | Checks how comparable systems solve a design problem. |
+| `fast-forward` | Skips obvious branches during grilling sessions. |
+| `grill-with-docs` | Stress-tests a plan and captures project language. |
+| `validate-direction` | Challenges a direction before it becomes a plan or doc. |
 
 ## References
 
