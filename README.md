@@ -34,3 +34,10 @@ npx skills add onmax/skills --skill grill-with-docs --agent codex --global --yes
 - `fast-forward`
 - `grill-with-docs`
 - `validate-direction`
+
+## References
+
+These skills build on patterns and ideas from:
+
+- [fpgarciamtnz/World-of-Sofia](https://github.com/fpgarciamtnz/World-of-Sofia)
+- [mattpocock/skills](https://github.com/mattpocock/skills)
