@@ -19,5 +19,7 @@ skills/*
 !skills/fast-forward/**
 !skills/grill-with-docs/
 !skills/grill-with-docs/**
+!skills/handoff/
+!skills/handoff/**
 !skills/validate-direction/
 !skills/validate-direction/**
