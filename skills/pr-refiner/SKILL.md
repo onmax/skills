@@ -9,6 +9,8 @@ description: Reviews and refines GitHub pull requests until they are ready for r
 
 Use this skill when the user wants a PR moved from "has feedback" to "ready for the next reviewer action."
 
+Example trigger: `pr-refiner https://github.com/owner/repo/pull/123`
+
 Default posture: autonomous refinement. An explicit `pr-refiner` invocation for a PR is consent to inspect, implement scoped fixes, run relevant checks, push the PR branch, and resolve review threads that are verified addressed.
 
 It is not consent to post PR comments, approve, request changes, label, close, merge, force-push, or resolve ambiguous/unverified threads.
