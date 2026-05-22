@@ -12,7 +12,7 @@ Use this when the useful context is in the conversation, terminal output, change
 
 Write a handoff document to the temporary directory of the user's OS, not the current workspace. Resolve the temp directory with the platform temp-dir API or environment, such as `$TMPDIR` on macOS/Linux or `%TEMP%` on Windows.
 
-Do not use opaque placeholder names like `handoff-XXXXXX.md`. Use a readable topic slug:
+Use a readable topic slug in the filename:
 
 ```text
 <os-temp-dir>/handoff-<topic>.md
