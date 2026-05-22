@@ -15,14 +15,13 @@ It only sets up project memory and skill usage guidance.
 
 1. Inspect the repo for existing agent guidance:
    - `AGENTS.md`
-   - `CLAUDE.md`
    - `.agents/CONTEXT.md`
    - `.agents/CONTEXT-MAP.md`
    - `.agents/adr/`
    - legacy `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/`
 2. Summarize what exists and what is missing.
-3. If neither `AGENTS.md` nor `CLAUDE.md` exists, ask which one to create.
-4. Add or update one `## Agent skills` block in the chosen file.
+3. Create `AGENTS.md` if it does not exist.
+4. Add or update one `## Agent skills` block in `AGENTS.md`.
 5. Create `.agents/` lazily only for useful project memory.
 
 ## Agent Skills Block
