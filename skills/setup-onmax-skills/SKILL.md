@@ -40,7 +40,7 @@ This repo uses Onmax skills for project language, simplification, research, vali
 - Use `ecosystem-research` when external precedent would change the decision.
 - Use `handoff` to preserve continuation context for another agent or session.
 - Use `fast-forward` inside grilling sessions to skip low-value branches.
-- Use `skill-retrospective` to analyze recent Codex sessions and GitHub activity for skill improvements.
+- Use `codex-skill-retrospective` to analyze recent Codex sessions and GitHub activity for skill improvements.
 
 Project memory lives under `.agents/`:
 

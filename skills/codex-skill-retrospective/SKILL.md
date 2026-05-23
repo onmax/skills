@@ -1,9 +1,9 @@
 ---
-name: skill-retrospective
+name: codex-skill-retrospective
 description: Analyzes recent Codex sessions and GitHub activity to find repeated agent failures, weak skill instructions, missing workflows, and opportunities for new or improved skills. Use when the user asks to review recent Codex work, audit skill usage, analyze agent patterns, improve skills from session history, or run a daily/weekly skill retrospective.
 ---
 
-# Skill Retrospective
+# Codex Skill Retrospective
 
 Analyze recent Codex work to improve the skill ecosystem.
 
@@ -40,7 +40,7 @@ Primary evidence is Codex session history. GitHub is supporting evidence when Co
    - missing context
    - successful patterns worth preserving
 5. For non-trivial runs, write temporary artifacts outside the repo:
-   - place them under `$TMPDIR/skill-retrospective/<date-or-topic>/`
+   - place them under `$TMPDIR/codex-skill-retrospective/<date-or-topic>/`
    - `scope.md`
    - `evidence-ledger.md`
    - `github-evidence.md`

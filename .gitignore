@@ -31,8 +31,8 @@ skills/*
 !skills/simplify/**
 !skills/setup-onmax-skills/
 !skills/setup-onmax-skills/**
-!skills/skill-retrospective/
-!skills/skill-retrospective/**
+!skills/codex-skill-retrospective/
+!skills/codex-skill-retrospective/**
 !skills/strict-code-review/
 !skills/strict-code-review/**
 !skills/validate-direction/
