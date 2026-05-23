@@ -39,6 +39,7 @@ Expected output: recommend a provider, prompt file, branch strategy, completion 
 - Prefer manual trigger for v1. Webhooks can come later after the workflow is trusted.
 - Use `vps-connection` when the run happens on the VPS or through remote Codex helpers.
 - Use `pr-body` when opening PRs from Sandcastle output.
+- Never read or print Sandcastle `.env`, `codex-home/`, auth files, Codex config, or provider tokens.
 
 ## Reference
 

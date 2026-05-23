@@ -32,14 +32,19 @@ Use this shape:
 ```md
 ## Agent skills
 
-This repo uses Onmax skills for project language, simplification, research, validation, and handoff.
+This repo uses Onmax skills for project language, agent work shaping, autonomous execution, PR refinement, validation, and handoff.
 
 - Use `grill-with-docs` to clarify project language and record decisions.
+- Use `design-to-agent-work` to move from fuzzy direction to durable memory and agent-ready issue shaping.
+- Use `shape-agent-work` to turn resolved direction into GitHub issues labeled `ready-for-agent`.
+- Use `sandcastle-workflow` to run `ready-for-agent` issues through autonomous implementation, PR refinement, and merge-readiness validation.
 - Use `simplify` to review PR diffs or explicit scopes for accidental complexity.
 - Use `strict-code-review` for strict maintainability reviews and ambitious structural cleanup.
 - Use `validate-direction` before turning a direction into a plan, ADR, or implementation.
 - Use `evidence-research` when internal or external evidence would change the decision.
 - Use `handoff` to preserve continuation context for another agent or session.
+- Use `pr-body` when opening or editing pull request bodies.
+- Use `pre-merge-validation` before merging consumer-facing package, runtime, provider, generated-output, or docs-as-contract changes.
 - Use `fast-forward` inside grilling sessions to skip low-value branches.
 - Use `codex-skill-retrospective` to analyze recent Codex sessions and GitHub activity for skill improvements.
 
@@ -48,6 +53,14 @@ Project memory lives under `.agents/`:
 - `.agents/CONTEXT.md` for project vocabulary in a single-context repo.
 - `.agents/CONTEXT-MAP.md` plus `.agents/contexts/<name>/CONTEXT.md` for multi-context repos.
 - `.agents/adr/` for decisions worth preserving.
+
+Agent work lifecycle:
+
+```text
+clarify/design -> ready-for-agent -> in-agent-run -> PR ready for manual merge decision
+```
+
+GitHub Issues are the default work contract. Autonomous stages may implement, refine the PR, and run merge-readiness validation, but final merge remains manual.
 ```
 
 If an `## Agent skills` block already exists, update it in place. Do not duplicate the section.
