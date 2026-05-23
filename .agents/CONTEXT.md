@@ -40,9 +40,17 @@ _Avoid_: confirmed product bug, CI failure
 A remote record of validation runs keyed by pull request and head commit.
 _Avoid_: PR comment log, CI status replacement
 
+**Post-Merge Consumer Defect**:
+A bug discovered only after merging because the package fails in a real consumer scenario despite passing repository-local checks.
+_Avoid_: ordinary CI failure, internal unit failure
+
 **Validation Artifact**:
 The installable package source used by a consumer validation run.
 _Avoid_: source checkout, branch state
+
+**Validation Verdict**:
+The outcome returned by pre-merge validation for a pull request head commit.
+_Avoid_: test result, CI status
 
 ## Relationships
 
@@ -53,9 +61,13 @@ _Avoid_: source checkout, branch state
 - A **Validation Scaffold Root** keeps reusable scaffold definitions persistent while each **Merge Readiness Validation** run executes in a fresh per-run workspace.
 - **Consumer-Install Validation** uses a **Dynamic Consumer Repro** unless a project has deliberately promoted a stable fixture.
 - A **Dynamic Consumer Repro** may be discarded, kept as evidence, promoted to a **Scaffold Seed**, or recommended as a repo fixture.
+- A **Dynamic Consumer Repro** is seeded from existing repros, examples, docs, playgrounds, or prior scaffold seeds before inventing a new scenario.
+- A **Pre-Merge Gate** usually validates one primary **Dynamic Consumer Repro** unless independent consumer surfaces justify additional probes.
 - A **Validation Repro Failure** can be debugged by the validation skill until it is classified; confirmed pull request defects are handed to `pr-refiner`.
 - A **Validation Ledger** lets `pr-stack-coordinator` decide whether the **Pre-Merge Gate** is current for a pull request head commit.
+- **Pre-Merge Gate** validation exists to reduce **Post-Merge Consumer Defects**.
 - A **Validation Artifact** is preferred in this order: `pkg.pr.new`, `pnpm pack`, local workspace path install, then git dependency install.
+- A **Validation Verdict** is one of `pass`, `fail-pr`, `fail-repro`, `stale`, `skip`, or `blocked`.
 
 ## Example dialogue
 

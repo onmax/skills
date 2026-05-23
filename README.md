@@ -19,6 +19,7 @@ npx skills add onmax/skills
 | [`library-craft`](skills/library-craft/SKILL.md) | Reviews reusable package shape and public API craft. |
 | [`pr-refiner`](skills/pr-refiner/SKILL.md) | Reviews PR blockers and routes the next refinement step. |
 | [`pr-stack-coordinator`](skills/pr-stack-coordinator/SKILL.md) | Coordinates stacked PRs, worktrees, ADR indexes, and merges. |
+| [`pre-merge-validation`](skills/pre-merge-validation/SKILL.md) | Runs consumer-install validation before merging PRs. |
 | [`simplify`](skills/simplify/SKILL.md) | Finds the smallest useful simplification for a PR or scope. |
 | [`setup-onmax-skills`](skills/setup-onmax-skills/SKILL.md) | Sets up lightweight repo-local guidance for Onmax skills. |
 | [`codex-skill-retrospective`](skills/codex-skill-retrospective/SKILL.md) | Reviews Codex sessions and GitHub activity to improve skills. |

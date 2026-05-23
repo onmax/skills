@@ -22,9 +22,10 @@ After the read-only pass, mutate only the exact actions the user explicitly appr
 5. Classify each relationship as `blocked`, `coordination`, `independent`, or `unknown`.
 6. Scan likely ADR directories when a PR changes ADR-like files. Detect duplicate numeric indexes across open PR branches, local worktrees, and the target base. Recommend the next available index on top of the target base branch. Update ADR filenames or references only after explicit approval.
 7. Identify PRs unsafe to mutate because their branch belongs to an active or uncertain worktree.
-8. Run `validate-direction` before recommending merge, rebase, dependency marker, ADR index, or PR body coordination actions when the stack implies a new project direction, API, ADR, implementation plan, or cross-PR ownership boundary.
-9. Produce an ordered readiness report and proposed actions.
-10. For code-level fixes inside one PR, hand off to `pr-refiner`.
+8. Before recommending or executing a merge, use `pre-merge-validation` when a PR has consumer-facing package, runtime, provider, generated-output, docs-as-contract, or recent post-merge defect risk.
+9. Run `validate-direction` before recommending merge, rebase, dependency marker, ADR index, or PR body coordination actions when the stack implies a new project direction, API, ADR, implementation plan, or cross-PR ownership boundary.
+10. Produce an ordered readiness report and proposed actions.
+11. For code-level fixes inside one PR, hand off to `pr-refiner`.
 
 ## PR Body Guidance
 
@@ -55,6 +56,14 @@ Before any merge, verify the PR is open and not draft, hard dependencies are res
 For batch merges, present an ordered plan but request confirmation per PR before executing each merge.
 
 Confirmation must include the exact final commit title and body.
+
+## Pre-Merge Validation
+
+Use `pre-merge-validation` as an adaptive final gate for PRs that could pass repository-local checks but fail when installed by a real consumer.
+
+Require it when changed files, PR text, or recent defects indicate public package behavior, exports, docs/examples as usage contracts, runtime or provider wiring, generated output, or package artifact risk. Skip it with a concrete reason for docs-only, ADR-only, lint-only, dead-code-only, or purely internal changes already proven by existing checks.
+
+Before final merge confirmation, report whether the gate is `pass`, `skip`, `stale`, `fail-pr`, `fail-repro`, or `blocked`. Proceed only on `pass` or justified `skip`; otherwise route code defects to `pr-refiner` or ask for the needed validation action.
 
 ## CLI Guidance
 
@@ -89,6 +98,7 @@ Needs approval:
 - Never merge, close, approve, comment, force-push, edit PR bodies, edit files, or push without explicit approval.
 - Never mutate an active or uncertain Codex worktree.
 - Distinguish hard dependencies from merge coordination.
+- Treat consumer-facing pre-merge validation as a merge gate, not as merge consent.
 - Use `validate-direction` as a late-stage check before acting on stack-level recommendations that could crystallize a weak or premature direction.
 - Keep PR body prose natural and template-compatible.
 - Keep `pr-refiner` focused on individual PR code fixes.
