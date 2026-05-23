@@ -17,6 +17,8 @@ skills/*
 !skills/ecosystem-research/**
 !skills/fast-forward/
 !skills/fast-forward/**
+!skills/grill-me/
+!skills/grill-me/**
 !skills/grill-with-docs/
 !skills/grill-with-docs/**
 !skills/handoff/
