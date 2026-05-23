@@ -24,6 +24,7 @@ npx skills add onmax/skills
 | [`codex-skill-retrospective`](skills/codex-skill-retrospective/SKILL.md) | Reviews Codex sessions and GitHub activity to improve skills. |
 | [`strict-code-review`](skills/strict-code-review/SKILL.md) | Runs a strict maintainability review for structural quality and code-judo simplifications. |
 | [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
+| [`write-a-skill`](skills/write-a-skill/SKILL.md) | Creates agent skills with proper structure and review checks. |
 | [`vps-connection`](skills/vps-connection/SKILL.md) | Discovers and verifies VPS/SSH access and remote Codex helpers. |
 
 ## References
