@@ -12,4 +12,28 @@
 
 # Keep the tracked skills tree.
 !skills/
-!skills/**
+skills/*
+!skills/ecosystem-research/
+!skills/ecosystem-research/**
+!skills/fast-forward/
+!skills/fast-forward/**
+!skills/grill-with-docs/
+!skills/grill-with-docs/**
+!skills/handoff/
+!skills/handoff/**
+!skills/library-craft/
+!skills/library-craft/**
+!skills/pr-refiner/
+!skills/pr-refiner/**
+!skills/pr-stack-coordinator/
+!skills/pr-stack-coordinator/**
+!skills/simplify/
+!skills/simplify/**
+!skills/setup-onmax-skills/
+!skills/setup-onmax-skills/**
+!skills/skill-retrospective/
+!skills/skill-retrospective/**
+!skills/strict-code-review/
+!skills/strict-code-review/**
+!skills/validate-direction/
+!skills/validate-direction/**

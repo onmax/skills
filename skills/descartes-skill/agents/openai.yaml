@@ -1,4 +1,0 @@
-interface:
-  display_name: "Descartes Ledger"
-  short_description: "Planning foundation ledger"
-  default_prompt: "Use $descartes-skill to build a planning foundation ledger before drafting a final plan."
