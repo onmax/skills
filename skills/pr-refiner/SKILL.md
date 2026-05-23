@@ -37,7 +37,7 @@ For multiple PRs, stacked PRs, merge ordering, active worktree coordination, ADR
 - Use `simplify` when the PR feels too broad, has accidental complexity, or needs concrete path-based simplification suggestions.
 - Use `grill-with-docs` when review feedback changes project language, domain meaning, or ownership boundaries.
 - Use `validate-direction` when a requested change would harden a new direction, API, ADR, or implementation plan.
-- Use `ecosystem-research` only when external precedent would change the PR decision.
+- Use `evidence-research` only when internal or external evidence would change the PR decision.
 - Use `handoff` when the PR cannot be finished in the current session.
 - Use `fast-forward` only inside a grilling flow to skip obvious branches.
 - Use `pr-stack-coordinator` when the request involves multiple PRs, dependent PRs, ADR index collisions, active worktree safety, PR body dependency markers, or merge execution.

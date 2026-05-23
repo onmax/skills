@@ -16,7 +16,7 @@ This repo uses Onmax skills for project language, simplification, research, vali
 - Use `simplify` to review PR diffs or explicit scopes for accidental complexity.
 - Use `strict-code-review` for strict maintainability reviews and ambitious structural cleanup.
 - Use `validate-direction` before turning a direction into a plan, ADR, or implementation.
-- Use `ecosystem-research` when external precedent would change the decision.
+- Use `evidence-research` when internal or external evidence would change the decision.
 - Use `handoff` to preserve continuation context for another agent or session.
 - Use `fast-forward` inside grilling sessions to skip low-value branches.
 - Use `codex-skill-retrospective` to analyze recent Codex sessions and GitHub activity for skill improvements.

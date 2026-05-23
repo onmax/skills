@@ -19,11 +19,11 @@ Near the end, before writing or updating a final recommendation, ADR, PRD, issue
 
 ## Research routing
 
-During grilling, recommend `ecosystem-research` when the next decision depends on how comparable systems solve the same problem, especially for public APIs, architecture boundaries, developer experience, framework conventions, security-sensitive workflows, or vendor/platform trade-offs.
+During grilling, recommend `evidence-research` when the next decision depends on internal or external evidence, especially for public APIs, architecture boundaries, developer experience, framework conventions, security-sensitive workflows, vendor/platform trade-offs, retrospectives, or project-history patterns.
 
-Do not silently run ecosystem research for every design question. First name the decision that external evidence would clarify, recommend the research depth, and ask whether to pause grilling for that research unless the user already asked to research the ecosystem.
+Do not silently run evidence research for every design question. First name the decision that evidence would clarify, recommend the source mode and research depth, and ask whether to pause grilling for that research unless the user already asked to research.
 
-When the user asks for ecosystem research, pause the grilling loop and use the research result as input to the next question. If research artifacts or subagent reports are returned, synthesize their decision-changing evidence before continuing.
+When the user asks for research, pause the grilling loop and use the research result as input to the next question. If research artifacts or subagent reports are returned, synthesize their decision-changing evidence before continuing.
 
 ## Domain awareness
 

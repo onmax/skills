@@ -24,6 +24,22 @@ _Avoid_: local-only validation, CI replacement
 A persistent remote directory that stores reusable consumer-project templates and isolated per-run workspaces.
 _Avoid_: shared mutable test app, one-off temp directory only
 
+**Dynamic Consumer Repro**:
+A generated minimal consumer project shaped by the pull request's changed behavior and the target repository's usage examples.
+_Avoid_: fixed scaffold catalog, generic smoke app
+
+**Scaffold Seed**:
+A preserved consumer repro that can initialize future validation runs for similar package or behavior changes.
+_Avoid_: mandatory fixture, permanent test suite
+
+**Validation Repro Failure**:
+A failed validation run whose cause is still being separated between an invalid repro and a real pull request defect.
+_Avoid_: confirmed product bug, CI failure
+
+**Validation Ledger**:
+A remote record of validation runs keyed by pull request and head commit.
+_Avoid_: PR comment log, CI status replacement
+
 **Validation Artifact**:
 The installable package source used by a consumer validation run.
 _Avoid_: source checkout, branch state
@@ -35,6 +51,10 @@ _Avoid_: source checkout, branch state
 - A **Pre-Merge Gate** can require **Merge Readiness Validation** before an approved merge command proceeds.
 - A **Remote Validation Runner** executes **Consumer-Install Validation** when the local coordinator needs isolated pre-merge evidence.
 - A **Validation Scaffold Root** keeps reusable scaffold definitions persistent while each **Merge Readiness Validation** run executes in a fresh per-run workspace.
+- **Consumer-Install Validation** uses a **Dynamic Consumer Repro** unless a project has deliberately promoted a stable fixture.
+- A **Dynamic Consumer Repro** may be discarded, kept as evidence, promoted to a **Scaffold Seed**, or recommended as a repo fixture.
+- A **Validation Repro Failure** can be debugged by the validation skill until it is classified; confirmed pull request defects are handed to `pr-refiner`.
+- A **Validation Ledger** lets `pr-stack-coordinator` decide whether the **Pre-Merge Gate** is current for a pull request head commit.
 - A **Validation Artifact** is preferred in this order: `pkg.pr.new`, `pnpm pack`, local workspace path install, then git dependency install.
 
 ## Example dialogue

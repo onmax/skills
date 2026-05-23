@@ -17,7 +17,7 @@ For broad platform or library design questions, consider splitting into official
 
 Each subagent prompt should include the `brief.md` path, assigned source area, report path, chosen depth, source minimum for that area, whether source cloning into `sources/` is useful, a no-repo-mutation requirement, and a request for source links, trade-offs, patterns, disagreements, recommendations, and evidence-versus-inference separation.
 
-Use at least one subagent. Use multiple subagents when source areas are meaningfully independent, such as framework ecosystems, product ecosystems, company technical writing, benchmarks, and security literature.
+Use at least one subagent. Use multiple subagents when source areas are meaningfully independent, such as framework ecosystems, product ecosystems, company technical writing, benchmarks, security literature, Codex session clusters, PR stacks, and repository history.
 
 Subagents must write the requested report file. A progress message without a report is incomplete.
 
@@ -55,7 +55,7 @@ What would change in our design:
 Verdict rules:
 
 - `SUPPORTED`: multiple authoritative sources point in the same direction, and applicability to the project is clear.
-- `CONTESTED`: credible sources disagree, or the pattern changes by ecosystem, scale, or product constraints.
+- `CONTESTED`: credible sources disagree, or the pattern changes by ecosystem, repository, scale, or product constraints.
 - `WEAK`: evidence is adjacent, anecdotal, old, vendor-specific, or not enough to drive a decision alone.
 - `INCONCLUSIVE`: sources do not answer the question, or the research method was not strong enough to resolve it.
 

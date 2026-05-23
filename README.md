@@ -11,7 +11,7 @@ npx skills add onmax/skills
 | Skill | What it does |
 | --- | --- |
 | [`codex-session-finder`](skills/codex-session-finder/SKILL.md) | Finds local Codex sessions for review. |
-| [`ecosystem-research`](skills/ecosystem-research/SKILL.md) | Checks how comparable systems solve a design problem. |
+| [`evidence-research`](skills/evidence-research/SKILL.md) | Researches internal or external evidence for a decision. |
 | [`fast-forward`](skills/fast-forward/SKILL.md) | Skips obvious branches during grilling sessions. |
 | [`grill-me`](skills/grill-me/SKILL.md) | Interrogates a plan one decision at a time. |
 | [`grill-with-docs`](skills/grill-with-docs/SKILL.md) | Stress-tests a plan and captures project language. |

@@ -66,7 +66,7 @@ Apply only if asked:
 - Prefer fewer concepts over fewer lines.
 - Use `strict-code-review` when the simplification question turns into a strict maintainability review, structural quality audit, or ambitious rewrite critique.
 - Use `validate-direction` before implementation when a simplification would crystallize a public API choice, remove tests as a policy decision, narrow or split PR scope, change domain terms, or contradict an ADR-backed direction.
-- Do not do ecosystem research from this skill.
+- Do not do evidence research from this skill.
 - Do not write ADRs, project docs, commits, or PR comments from the analysis pass.
 - Do not broaden into architecture review or issue breakdown.
 - If related local changes are present, say they are included in the simplification scope.

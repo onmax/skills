@@ -1,24 +1,33 @@
 ---
-name: ecosystem-research
-description: Researches how comparable external systems solve a design problem and returns decision-oriented patterns with sources. Use during design, grilling, or architecture work when the user asks how others solve this, asks to research the ecosystem, compare libraries/products, investigate technical writing, or gather external evidence for a decision.
+name: evidence-research
+description: Researches internal or external evidence for a design decision and returns decision-oriented patterns with sources. Use during design, grilling, retrospectives, architecture work, or implementation planning when the user asks to research a topic, compare external systems, inspect prior sessions, analyze patterns, or gather evidence before deciding.
 ---
 
-# Ecosystem Research
+# Evidence Research
 
 ## Quick Start
 
-Use this when a design or grilling decision depends on how comparable external systems solve the same class of problem.
+Use this when a design or grilling decision depends on evidence that should be gathered and synthesized before acting.
+
+## Source Modes
+
+- `ecosystem`: external systems, libraries, products, docs, public precedent, and technical writing.
+- `internal`: repository history, Codex sessions, PRs, issues, ADRs, local docs, and project-specific evidence.
+- `mixed`: internal evidence plus external precedent.
+
+Default to `ecosystem` when the user asks how others solve a problem, compares products/libraries, or mentions ecosystem precedent. Default to `internal` for retrospectives, session analysis, project history, or repo-local pattern analysis. Use `mixed` when both would change the decision.
 
 ## Workflow
 
 1. Form a concrete research question from the active design branch.
-2. Choose a research depth: `targeted`, `standard`, or `ambitious`.
-3. Identify the absolute project root and create a persisted research brief.
-4. Spawn subagents according to the depth and source-area split.
-5. Have subagents write reports under the research folder.
-6. Verify every expected report exists and meets the evidence bar before synthesis.
-7. Synthesize the reports into a concise `synthesis.md` when findings are substantive.
-8. Return decision-oriented findings to the active session and continue with one question.
+2. Choose a source mode: `ecosystem`, `internal`, or `mixed`.
+3. Choose a research depth: `targeted`, `standard`, or `ambitious`.
+4. Identify the absolute project root and create a persisted research brief.
+5. Spawn subagents according to the depth and source-area split.
+6. Have subagents write reports under the research folder.
+7. Verify every expected report exists and meets the evidence bar before synthesis.
+8. Synthesize the reports into a concise `synthesis.md` when findings are substantive.
+9. Return decision-oriented findings to the active session and continue with one question.
 
 Do not mutate the project repo. Research artifacts belong under the temporary directory of the user's OS, not the current workspace. Resolve it with the platform temp-dir API or environment, such as `$TMPDIR` on macOS/Linux or `%TEMP%` on Windows. If subagents are unavailable, state that and do a compact local fallback.
 
@@ -37,14 +46,14 @@ If the user says the first pass was too shallow, immediately upgrade to `ambitio
 Use this layout:
 
 ```text
-<os-temp-dir>/ecosystem-research/<project>/<topic>/
+<os-temp-dir>/evidence-research/<project>/<topic>/
 +-- brief.md
 +-- sources/
 +-- reports/
 +-- synthesis.md
 ```
 
-`brief.md` should include the project/context name, absolute `project_root`, active design question, relevant conversation history, user concerns, resolved decisions, unresolved branches, research questions, chosen depth, source-area matrix, minimum source bar, report paths, and source priorities.
+`brief.md` should include the project/context name, absolute `project_root`, active design question, relevant conversation history, user concerns, resolved decisions, unresolved branches, research questions, source mode, chosen depth, source-area matrix, minimum source bar, report paths, and source priorities.
 
 Because research artifacts live outside the project workspace, any project file reference in the brief, reports, synthesis, or subagent prompt must be absolute, such as `/Users/maxi/vitehub/vitehub/.agents/contexts/devtools/CONTEXT.md`. Never use repo-relative paths like `.agents/...` inside temporary artifacts unless they are paired with the absolute `project_root`.
 
@@ -56,7 +65,7 @@ For source-area matrices, report requirements, source-quality rules, and complet
 
 Each subagent prompt should include the `brief.md` path, assigned source area, report path, chosen depth, source minimum for that area, whether source cloning into `sources/` is useful, a no-repo-mutation requirement, and a request for source links, trade-offs, patterns, disagreements, recommendations, and evidence-versus-inference separation.
 
-Use at least one subagent. Use multiple subagents when source areas are meaningfully independent, such as framework ecosystems, product ecosystems, company technical writing, benchmarks, and security literature.
+Use at least one subagent. Use multiple subagents when source areas are meaningfully independent, such as framework ecosystems, product ecosystems, company technical writing, benchmarks, security literature, Codex session clusters, PR stacks, or repository history.
 
 Subagents must write the requested report file. A progress message without a report is incomplete.
 
@@ -83,8 +92,8 @@ Return a compact answer:
 
 ```md
 Research artifacts:
-- Brief: <os-temp-dir>/ecosystem-research/<project>/<topic>/brief.md
-- Synthesis: <os-temp-dir>/ecosystem-research/<project>/<topic>/synthesis.md
+- Brief: <os-temp-dir>/evidence-research/<project>/<topic>/brief.md
+- Synthesis: <os-temp-dir>/evidence-research/<project>/<topic>/synthesis.md
 
 Findings:
 - ...

@@ -46,7 +46,7 @@ Research comparable library craft for <target package>.
 Target project root: <absolute path>
 Target question: <public surface / naming / adapter / compatibility / tests / release issue>
 Comparable source area: <ecosystem or libraries>
-Report path: <os-temp-dir>/ecosystem-research/<project>/<topic>/reports/<slice>.md
+Report path: <os-temp-dir>/evidence-research/<project>/<topic>/reports/<slice>.md
 
 Do not mutate the project repo.
 Compare patterns, trade-offs, and migration posture.
