@@ -15,8 +15,37 @@ Prefer keeping remote repository paths parallel to local paths:
 For Onmax skills, the expected remote setup is:
 - Clone `gh:onmax/skills` or `https://github.com/onmax/skills.git` to `~/onmax/skills`.
 - If `gh:` shorthand is missing, add `git config --global url.https://github.com/.insteadOf gh:` before using it.
-- Link each `~/onmax/skills/skills/<skill-name>` directory into `~/.agents/skills/<skill-name>`.
-- Preserve existing non-Onmax skill directories in `~/.agents/skills`.
+- Link every `~/onmax/skills/skills/<skill-name>` directory into `~/.agents/skills/<skill-name>` so `$skill` autocomplete sees the repo skills.
+- Treat the Onmax repo skill as authoritative when a same-name `~/.agents/skills/<skill-name>` entry exists: back up the existing entry, then replace it with a symlink.
+- Preserve unrelated non-Onmax skill directories in `~/.agents/skills`.
+
+## Remote Onmax Skill Sync
+Use this when remote Codex cannot autocomplete or trigger a repo skill such as `design-to-agent-work`, `sandcastle-workflow`, or `pre-merge-validation`.
+
+First verify the remote repo and current skill links:
+
+```sh
+ssh hetzner 'test -d ~/onmax/skills && cd ~/onmax/skills && git status --short --branch && find skills -maxdepth 2 -name SKILL.md | sort'
+ssh hetzner 'mkdir -p ~/.agents/skills && find ~/.agents/skills -maxdepth 1 -mindepth 1 -print | sort | while read p; do printf "%s -> " "$(basename "$p")"; if [ -L "$p" ]; then readlink "$p"; else echo not-symlink; fi; done'
+```
+
+If `~/onmax/skills` is missing, clone it before linking:
+
+```sh
+ssh hetzner 'mkdir -p ~/onmax && cd ~/onmax && git clone gh:onmax/skills || git clone https://github.com/onmax/skills.git'
+```
+
+To update the repo and link every Onmax skill into `~/.agents/skills`, preserving unrelated skills and backing up same-name conflicts:
+
+```sh
+ssh hetzner 'cd ~/onmax/skills && git pull --ff-only && mkdir -p ~/.agents/skills && ts=$(date +%Y%m%d%H%M%S); for d in ~/onmax/skills/skills/*; do name=$(basename "$d"); [ -f "$d/SKILL.md" ] || continue; target=~/.agents/skills/$name; if [ -L "$target" ]; then current=$(readlink "$target"); if [ "$current" = "$d" ]; then echo "ok $name"; continue; fi; rm "$target"; elif [ -e "$target" ]; then mv "$target" ~/.agents/skills/${name}.backup.${ts}; echo "backed up $name"; fi; ln -s "$d" "$target"; echo "linked $name"; done'
+```
+
+Verify all Onmax repo skills are linked:
+
+```sh
+ssh hetzner 'for d in ~/onmax/skills/skills/*; do name=$(basename "$d"); [ -f "$d/SKILL.md" ] || continue; target=~/.agents/skills/$name; if [ -L "$target" ] && [ "$(readlink "$target")" = "$d" ]; then printf "linked %s\n" "$name"; else printf "bad %s\n" "$name"; fi; done | sort'
+```
 
 ## First Pass
 1. Inspect local SSH aliases and shell helpers before connecting:
