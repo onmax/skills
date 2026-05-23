@@ -18,8 +18,8 @@ These skills are meant to compose into a lightweight delivery loop:
 | Capture durable memory | `.agents/CONTEXT.md` terms and atomic ADRs | `grill-with-docs`, `validate-direction` |
 | Shape agent work | GitHub issues as executable work contracts | `shape-agent-work` |
 | Run agents | Branches and PRs from autonomous work | `sandcastle`, `sandcastle-workflow`, `vps-connection`, `pr-body` |
-| Refine PRs | Review-ready PRs | `pr-refiner`, `pr-body` |
-| Check merge readiness | Consumer-facing proof before merge | `pre-merge-validation`, `pr-stack-coordinator` |
+| Refine PRs | Autonomous PR cleanup and checks | `sandcastle-workflow`, `pr-refiner`, `pr-body` |
+| Check merge readiness | Autonomous consumer-facing proof before merge | `sandcastle-workflow`, `pre-merge-validation`, `pr-stack-coordinator` |
 
 `validate-direction` is not a phase. Use it whenever a direction is about to harden into docs, issues, code, PR strategy, or merge action.
 
@@ -34,7 +34,7 @@ The first workflow iteration keeps GitHub labels intentionally small:
 | `in-agent-run` | Sandcastle or remote Codex is actively working on it. |
 | `blocked` | Execution cannot continue without a human decision, access, dependency, or repo-state fix. |
 
-When an autonomous run succeeds, it opens a PR with automatic issue linking such as `Closes #123`, removes `in-agent-run`, and intentionally leaves the open issue without a workflow label. The issue stays open until the PR merges.
+When an autonomous run succeeds, it opens a PR with automatic issue linking such as `Closes #123`, refines the PR, runs needed merge-readiness validation, removes `in-agent-run`, and intentionally leaves the open issue without a workflow label. The issue stays open until the PR merges.
 
 ## Included skills
 

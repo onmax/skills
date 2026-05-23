@@ -31,7 +31,7 @@ Default output target is GitHub Issues. Other targets may be supported later, bu
    - PRDs are optional broader product/work intent artifacts.
 4. Use `validate-direction` whenever a direction is about to harden into durable memory, issue breakdown, workflow rule, or execution contract.
 5. Invite or run `shape-agent-work` once the direction is clear enough to create agent-ready issues.
-6. End by listing created/updated artifacts and the recommended next action, usually running `sandcastle-workflow` manually on the created issues.
+6. End by listing created/updated artifacts and the recommended next action, usually starting `sandcastle-workflow` manually on the created issues.
 
 ## Example
 
@@ -50,10 +50,10 @@ Expected flow: clarify terms with `grill-with-docs`, validate the direction befo
 ## Lifecycle
 
 ```text
-clarify/design -> ready-for-agent -> in-agent-run -> PR opened
+clarify/design -> ready-for-agent -> in-agent-run -> PR ready for manual merge decision
                                       |
                                       v
                                 blocked / needs-info
 ```
 
-After PR creation, remove `in-agent-run` and leave the issue open without a workflow label until the linked PR merges.
+After autonomous implementation, refinement, and merge-readiness validation complete, remove `in-agent-run` and leave the issue open without a workflow label until the linked PR merges.

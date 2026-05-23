@@ -1,19 +1,19 @@
 ---
 name: sandcastle-workflow
-description: Executes confirmed ready-for-agent issues through Sandcastle or remote Codex and opens linked pull requests. Use when the user explicitly asks to run an issue through Sandcastle/VPS automation or process ready-for-agent issues.
+description: Executes confirmed ready-for-agent issues through Sandcastle or remote Codex until linked PRs are ready for a manual merge decision. Use when the user explicitly asks to run an issue through Sandcastle/VPS automation or process ready-for-agent issues.
 ---
 
 # Sandcastle Workflow
 
 ## Quick Start
 
-Use this for lifecycle stages 4-5:
+Use this for lifecycle stages 4-6:
 
 ```text
-GitHub Issue -> Sandcastle/VPS autonomous implementation -> PR opened
+GitHub Issue -> autonomous implementation -> PR refinement -> pre-merge validation -> manual merge decision
 ```
 
-Final merge remains manual.
+Implementation, PR refinement, and merge-readiness validation are autonomous. Final merge remains manual.
 
 ## Workflow
 
@@ -25,16 +25,18 @@ Final merge remains manual.
 6. Use `vps-connection` when executing remotely or when remote Codex helpers are involved. Follow its first-pass orientation and state what remote state will change before remote branch creation, file writes, or agent execution.
 7. Run one isolated autonomous agent task for the issue.
 8. Run the issue's expected proof plus the smallest repo checks needed for confidence.
-9. If successful, open a PR using `pr-body`; include `Closes #<issue>` for automatic linking and leave the issue open until merge.
-10. Remove `in-agent-run` after the PR is opened. The open linked issue intentionally has no workflow label until merge.
-11. Recommend `pr-refiner` for review-readiness, CI failures, conflicts, or scoped fixes.
-12. If blocked, apply `blocked` or `needs-info` with a concise reason in the final response. Do not post comments unless the user explicitly asks.
+9. If implementation succeeds, open a PR using `pr-body`; include `Closes #<issue>` for automatic linking and leave the issue open until merge.
+10. Run or route through `pr-refiner` autonomously for review-readiness, CI failures, conflicts, and scoped fixes.
+11. Run or route through `pre-merge-validation` when the PR has consumer-facing package, runtime, provider, generated-output, docs-as-contract, or recent post-merge defect risk.
+12. Remove `in-agent-run` only after implementation, PR refinement, and required merge-readiness validation are complete. The open linked issue intentionally has no workflow label until merge.
+13. Stop before merge and return a concise readiness report for the human merge decision.
+14. If blocked, apply `blocked` or `needs-info` with a concise reason in the final response. Do not post comments unless the user explicitly asks.
 
 ## Example
 
 User: "Run issue #123 with Sandcastle and open a PR."
 
-Expected flow: verify `ready-for-agent`, move to `in-agent-run`, run one isolated branch-based agent task, run the expected proof, open a PR with `Closes #123`, remove `in-agent-run`, and stop before merge.
+Expected flow: verify `ready-for-agent`, move to `in-agent-run`, run one isolated branch-based agent task, run the expected proof, open a PR with `Closes #123`, refine the PR, run required pre-merge validation, remove `in-agent-run`, and stop before merge.
 
 ## Labels
 
