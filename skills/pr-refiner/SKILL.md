@@ -15,6 +15,8 @@ Default posture: autonomous refinement. An explicit `pr-refiner` invocation for 
 
 It is not consent to post PR comments, approve, request changes, label, close, merge, force-push, or resolve ambiguous/unverified threads.
 
+For multiple PRs, stacked PRs, merge ordering, active worktree coordination, ADR index collisions, dependency markers, or rebase/squash/merge execution, use `pr-stack-coordinator` instead.
+
 ## Workflow
 
 1. Resolve the PR scope: explicit PR URL/number first, otherwise current branch PR.
@@ -38,6 +40,7 @@ It is not consent to post PR comments, approve, request changes, label, close, m
 - Use `ecosystem-research` only when external precedent would change the PR decision.
 - Use `handoff` when the PR cannot be finished in the current session.
 - Use `fast-forward` only inside a grilling flow to skip obvious branches.
+- Use `pr-stack-coordinator` when the request involves multiple PRs, dependent PRs, ADR index collisions, active worktree safety, PR body dependency markers, or merge execution.
 
 ## Blocker Routing
 
@@ -60,6 +63,12 @@ Use GitHub GraphQL when resolving inline review threads, especially Codex thread
 - Do not treat top-level comments as complete thread state.
 - Do not churn code while a pending AI review may still change the requested direction unless the existing blocker is already clear.
 - Keep each local edit traceable to one blocker.
+
+## PR Body Edits
+
+Follow the repository PR template if present. Without a template, prefer concise natural prose that explains what changed, why it exists, and reviewer-relevant context.
+
+Do not invent boilerplate headings such as `## Summary`. Do not add `Validation`, `Tests`, or internal check-log sections unless the repository template or user explicitly asks. Include links to issues, docs, ADRs, or related PRs when they reduce reviewer effort.
 
 ## Output
 
