@@ -15,6 +15,14 @@ If a question can be answered by exploring the codebase, explore the codebase in
 
 <supporting-info>
 
+## Research routing
+
+During grilling, recommend `ecosystem-research` when the next decision depends on how comparable systems solve the same problem, especially for public APIs, architecture boundaries, developer experience, framework conventions, security-sensitive workflows, or vendor/platform trade-offs.
+
+Do not silently run ecosystem research for every design question. First name the decision that external evidence would clarify, recommend the research depth, and ask whether to pause grilling for that research unless the user already asked to research the ecosystem.
+
+When the user asks for ecosystem research, pause the grilling loop and use the research result as input to the next question. If research artifacts or subagent reports are returned, synthesize their decision-changing evidence before continuing.
+
 ## Domain awareness
 
 During codebase exploration, also look for existing documentation:
@@ -69,6 +77,10 @@ When domain relationships are being discussed, stress-test them with specific sc
 ### Cross-reference with code
 
 When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible — which is right?"
+
+### Reconcile handoffs and parallel sessions
+
+When the user provides handoff files, active-session summaries, or parallel-session context, read and reconcile those artifacts before asking the next design question. Prefer the newest handoff when it updates or supersedes older framing, and state the specific decision or term that changed.
 
 ### Implementation gate
 

@@ -29,6 +29,36 @@ Accept any of these:
 
 If the input is vague, search metadata first and return likely candidates rather than guessing silently.
 
+## Active Worktree Lookup
+
+Use this mode when another skill needs to avoid active Codex worktrees, coordinate multiple worktrees, or understand which local branches are currently being edited.
+
+Query active, non-archived sessions first:
+
+```sh
+sqlite3 -header -column ~/.codex/state_5.sqlite \
+  "select id, title, cwd, datetime(created_at,'unixepoch') as created_at,
+          datetime(updated_at,'unixepoch') as updated_at,
+          git_branch, git_sha, rollout_path
+   from threads
+   where archived = 0
+   order by updated_at desc;"
+```
+
+For a specific repo or worktree family, filter by `cwd`:
+
+```sh
+sqlite3 -header -column ~/.codex/state_5.sqlite \
+  "select id, title, cwd, datetime(updated_at,'unixepoch') as updated_at,
+          git_branch, git_sha, rollout_path
+   from threads
+   where archived = 0
+     and cwd like '%/vitehub%'
+   order by updated_at desc;"
+```
+
+Report active worktrees as off-limits for mutating follow-up tasks unless the user explicitly says to use that session's worktree.
+
 ## Search Order
 
 1. Query `state_5.sqlite`.
@@ -71,6 +101,23 @@ Evidence slice:
 
 Other candidates:
 - <include only when ambiguity matters>
+```
+
+For active worktree lookups, use:
+
+```md
+Active sessions:
+1. <id> - <title>
+   - cwd:
+   - branch:
+   - updated:
+   - rollout path:
+
+Likely safe/inactive related worktrees:
+- ... <!-- only if discovered from metadata and clearly archived/inactive -->
+
+Use guidance:
+- Treat active session worktrees as read-only/off-limits unless the user explicitly opts in.
 ```
 
 ## Rules
