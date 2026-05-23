@@ -11,6 +11,8 @@ Ask the questions one at a time, waiting for feedback on each question before co
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
 
+Near the end, before writing or updating a final recommendation, ADR, PRD, issue plan, implementation plan, or handoff, run `validate-direction` on the emerging direction. Use its verdict to proceed, revise the direction, or ask one final blocking question.
+
 </what-to-do>
 
 <supporting-info>

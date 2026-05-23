@@ -22,8 +22,9 @@ After the read-only pass, mutate only the exact actions the user explicitly appr
 5. Classify each relationship as `blocked`, `coordination`, `independent`, or `unknown`.
 6. Scan likely ADR directories when a PR changes ADR-like files. Detect duplicate numeric indexes across open PR branches, local worktrees, and the target base. Recommend the next available index on top of the target base branch. Update ADR filenames or references only after explicit approval.
 7. Identify PRs unsafe to mutate because their branch belongs to an active or uncertain worktree.
-8. Produce an ordered readiness report and proposed actions.
-9. For code-level fixes inside one PR, hand off to `pr-refiner`.
+8. Run `validate-direction` before recommending merge, rebase, dependency marker, ADR index, or PR body coordination actions when the stack implies a new project direction, API, ADR, implementation plan, or cross-PR ownership boundary.
+9. Produce an ordered readiness report and proposed actions.
+10. For code-level fixes inside one PR, hand off to `pr-refiner`.
 
 ## PR Body Guidance
 
@@ -49,7 +50,7 @@ Support command-style requests such as `merge PR 152`, `merge ready PRs`, `squas
 
 Treat merge commands as consent to prepare a merge plan, not consent to execute it.
 
-Before any merge, verify the PR is open and not draft, hard dependencies are resolved, ADR indexes are unique when ADRs changed, required checks are passing or explicitly accepted, the branch is not owned by an active or uncertain Codex worktree, the requested rebase or branch update is complete, and the final squash commit follows Conventional Commits with the PR reference.
+Before any merge, verify the PR is open and not draft, hard dependencies are resolved, ADR indexes are unique when ADRs changed, required checks are passing or explicitly accepted, the branch is not owned by an active or uncertain Codex worktree, the requested rebase or branch update is complete, any needed `validate-direction` verdict is `proceed` or its required changes are reflected in the plan, and the final squash commit follows Conventional Commits with the PR reference.
 
 For batch merges, present an ordered plan but request confirmation per PR before executing each merge.
 
@@ -88,5 +89,6 @@ Needs approval:
 - Never merge, close, approve, comment, force-push, edit PR bodies, edit files, or push without explicit approval.
 - Never mutate an active or uncertain Codex worktree.
 - Distinguish hard dependencies from merge coordination.
+- Use `validate-direction` as a late-stage check before acting on stack-level recommendations that could crystallize a weak or premature direction.
 - Keep PR body prose natural and template-compatible.
 - Keep `pr-refiner` focused on individual PR code fixes.

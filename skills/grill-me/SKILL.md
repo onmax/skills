@@ -8,3 +8,5 @@ Interview me relentlessly about every aspect of this plan until we reach a share
 Ask the questions one at a time.
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
+
+Near the end, before writing a final recommendation, ADR, PRD, issue plan, implementation plan, or handoff, run `validate-direction` on the emerging direction. Use its verdict to either proceed, revise the direction, or ask one final blocking question.
