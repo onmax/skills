@@ -1,67 +1,33 @@
 ---
 name: vps-connection
-description: Helps agents discover, verify, and use the user's VPS/SSH connection and remote Codex helpers. Use when the user mentions VPS, SSH, Hetzner, heztner, remote Codex, codexh, codexh-pipoyu, deploy:vps, or asks the agent to connect to a server, explore remote setup, run remote tasks, or debug remote deployment.
+description: Helps agents discover, verify, and use the user's VPS/SSH connection, including Codex app SSH connections. Use when the user mentions VPS, SSH, Hetzner, heztner, remote Codex, Codex app SSH, deploy:vps, or asks the agent to connect to a server, explore remote setup, run remote tasks, or debug remote deployment.
 ---
 
 # VPS Connection
 
-Use this skill to orient safely before doing remote work over SSH. Prefer discovered local configuration over assumptions.
+Use this skill to orient safely before doing remote work over SSH. Its purpose is to tell agents how to use the user's SSH/VPS setup, not to document unrelated remote workflows.
 
-## Remote Path Shape
-Prefer keeping remote repository paths parallel to local paths:
-- Local `~/vitehub/...` should map to remote `~/vitehub/...`.
-- Local `~/onmax/...` should map to remote `~/onmax/...`.
+## Codex App SSH
+Prefer the Codex app's built-in SSH connection when the current thread is already running through one. Continue working in that connected remote environment instead of starting a separate remote Codex process.
 
-For Onmax skills, the expected remote setup is:
-- Clone `gh:onmax/skills` or `https://github.com/onmax/skills.git` to `~/onmax/skills`.
-- If `gh:` shorthand is missing, add `git config --global url.https://github.com/.insteadOf gh:` before using it.
-- Link every `~/onmax/skills/skills/<skill-name>` directory into `~/.agents/skills/<skill-name>` so `$skill` autocomplete sees the repo skills.
-- Treat the Onmax repo skill as authoritative when a same-name `~/.agents/skills/<skill-name>` entry exists: back up the existing entry, then replace it with a symlink.
-- Preserve unrelated non-Onmax skill directories in `~/.agents/skills`.
+Use the pipoyu Codex app SSH account/profile by default for remote Codex work. If the current app SSH connection is not using pipoyu and account identity matters for the task, ask the user to switch the Codex app SSH connection/profile to pipoyu before continuing.
 
-## Remote Onmax Skill Sync
-Use this when remote Codex cannot autocomplete or trigger a repo skill such as `design-to-agent-work`, `sandcastle-workflow`, or `pre-merge-validation`.
+If the Codex app SSH session fails because the active Codex account is rate-limited, quota-limited, or otherwise account-limited, report that the active app SSH account appears limited and ask the user to switch the Codex app SSH connection/profile to pipoyu. After the user switches, continue in the same remote workspace and preserve the current remote path and task context.
 
-First verify the remote repo and current skill links:
-
-```sh
-ssh hetzner 'test -d ~/onmax/skills && cd ~/onmax/skills && git status --short --branch && find skills -maxdepth 2 -name SKILL.md | sort'
-ssh hetzner 'mkdir -p ~/.agents/skills && find ~/.agents/skills -maxdepth 1 -mindepth 1 -print | sort | while read p; do printf "%s -> " "$(basename "$p")"; if [ -L "$p" ]; then readlink "$p"; else echo not-symlink; fi; done'
-```
-
-If `~/onmax/skills` is missing, clone it before linking:
-
-```sh
-ssh hetzner 'mkdir -p ~/onmax && cd ~/onmax && git clone gh:onmax/skills || git clone https://github.com/onmax/skills.git'
-```
-
-To update the repo and link every Onmax skill into `~/.agents/skills`, preserving unrelated skills and backing up same-name conflicts:
-
-```sh
-ssh hetzner 'cd ~/onmax/skills && git pull --ff-only && mkdir -p ~/.agents/skills && ts=$(date +%Y%m%d%H%M%S); for d in ~/onmax/skills/skills/*; do name=$(basename "$d"); [ -f "$d/SKILL.md" ] || continue; target=~/.agents/skills/$name; if [ -L "$target" ]; then current=$(readlink "$target"); if [ "$current" = "$d" ]; then echo "ok $name"; continue; fi; rm "$target"; elif [ -e "$target" ]; then mv "$target" ~/.agents/skills/${name}.backup.${ts}; echo "backed up $name"; fi; ln -s "$d" "$target"; echo "linked $name"; done'
-```
-
-Verify all Onmax repo skills are linked:
-
-```sh
-ssh hetzner 'for d in ~/onmax/skills/skills/*; do name=$(basename "$d"); [ -f "$d/SKILL.md" ] || continue; target=~/.agents/skills/$name; if [ -L "$target" ] && [ "$(readlink "$target")" = "$d" ]; then printf "linked %s\n" "$name"; else printf "bad %s\n" "$name"; fi; done | sort'
-```
-
-## First Pass
-1. Inspect local SSH aliases and shell helpers before connecting:
+## SSH Orientation
+Inspect local SSH aliases before connecting:
 
 ```sh
 awk '/^Host / { print }' ~/.ssh/config
-zsh -ic 'type codexh 2>/dev/null; type codexh-pipoyu 2>/dev/null'
 ```
 
-2. Look for project-specific VPS commands:
+Look for project-specific VPS commands when working inside a repo:
 
 ```sh
-rg -n "deploy:vps|ssh |rsync|docker compose|CODEXH_DIR|codexh|hetzner|heztner" package.json README.md . --glob '!node_modules/**' --glob '!dist/**' --glob '!*.env'
+rg -n "deploy:vps|ssh |rsync|docker compose|hetzner|heztner" package.json README.md . --glob '!node_modules/**' --glob '!dist/**' --glob '!*.env'
 ```
 
-3. Verify the connection with a harmless command:
+Verify the connection with a harmless command:
 
 ```sh
 ssh hetzner 'hostname; whoami; pwd'
@@ -69,54 +35,34 @@ ssh hetzner 'hostname; whoami; pwd'
 
 If `hetzner` fails and local SSH config contains `heztner`, retry with that alias. If neither alias exists, inspect the matching `~/.ssh/config` block locally and ask before creating or changing SSH config. Do not paste host IPs, private key paths, usernames, or full SSH config unless the user explicitly needs them.
 
-## Known Local Helpers
-Expected defaults when present:
-
-- `codexh` uses `CODEX_HOME=/home/maxi/.codex`.
-- `codexh-pipoyu` uses `CODEX_HOME=/home/maxi/.codex-pipoyu`.
-- `CODEXH_DIR` overrides the remote working directory.
-- The common default remote app directory is `/home/maxi/quiver-chat`.
-
-Use `CODEXH_DIR=/remote/path codexh "task"` to override the remote repo. For interactive remote Codex, run `codexh` or `codexh-pipoyu` without arguments.
-
-## Remote Orientation
-After SSH succeeds, gather only non-secret facts:
+## Remote Checks
+After SSH succeeds, gather only non-secret facts needed for the task:
 
 ```sh
 ssh hetzner 'hostname; whoami; pwd'
-ssh hetzner 'command -v codex && CODEX_HOME=/home/maxi/.codex codex --version'
-ssh hetzner 'test -d /home/maxi/quiver-chat && cd /home/maxi/quiver-chat && git status --short'
-ssh hetzner 'cd /home/maxi/quiver-chat && sudo docker compose ps'
+ssh hetzner 'command -v codex && CODEX_HOME=/home/maxi/.codex-pipoyu codex --version'
 ```
 
-Do not print `.env`, private keys, tokens, full Codex configs, full SSH configs, host IPs, usernames, or logs likely to contain secrets. Report that they exist instead.
+For app repositories, inspect only the relevant app directory and commands discovered from the local repo. Do not assume a default remote app path unless project documentation or the user provides one.
+
+## Troubleshooting
+- If the user types `heztner`, check whether SSH config aliases both `hetzner` and `heztner`.
+- If remote Codex prints permission warnings, inspect ownership under the relevant `CODEX_HOME`.
+- If passwordless sudo is needed for a fix, test it first with `ssh hetzner 'sudo -n true 2>/dev/null && echo sudo-ok || echo sudo-needs-password'`.
+- If every SSH command prints shell profile warnings, report the noise separately from command results. Do not edit shell profiles unless the user asks for setup cleanup.
+
+Only change ownership, SSH aliases, Docker state, or remote files when the user has asked for setup/debugging and the evidence points to that exact fix.
 
 ## Privacy Rules
 - Minimize disclosure in final answers. Say `the Hetzner SSH alias works` instead of repeating IP addresses, key paths, usernames, or home paths unless those details are necessary.
 - Redact secrets and private infrastructure details from copied command output.
-- Never run broad commands that dump hidden directories, environment variables, shell history, auth files, or Codex config.
+- Never run broad commands that dump hidden directories, environment variables, shell history, auth files, Codex config, provider tokens, or private keys.
 - When searching repos, exclude `.env*`, keys, logs, `node_modules`, build output, and dependency locks unless the user specifically asks to inspect them.
-
-## Troubleshooting
-- If the user types `heztner`, check whether SSH config aliases both `hetzner` and `heztner`.
-- If remote Codex prints permission warnings, inspect ownership under the relevant `CODEX_HOME`:
-
-```sh
-ssh hetzner 'find /home/maxi/.codex-pipoyu -maxdepth 2 \( ! -user maxi -o ! -group maxi \) -printf "%M %u %g %p\n" 2>/dev/null | sort | sed -n "1,80p"'
-```
-
-- If passwordless sudo is needed for a fix, test it first:
-
-```sh
-ssh hetzner 'sudo -n true 2>/dev/null && echo sudo-ok || echo sudo-needs-password'
-```
-
-Only change ownership, SSH aliases, helper functions, Docker state, or remote files when the user has asked for setup/debugging and the evidence points to that exact fix.
 
 ## Safety Rules
 - Treat SSH config, shell profiles, and remote homes as user-owned state. Read before editing.
-- Never expose secrets from `.env`, private keys, Codex auth/config files, shell history, or provider tokens.
-- Prefer `codexh`/`codexh-pipoyu` for sending remote Codex tasks when the helpers exist.
+- Prefer the Codex app SSH connection for remote Codex work when the thread is already connected through it.
+- Use the pipoyu Codex app SSH account/profile by default for remote Codex work.
 - Use plain `ssh hetzner '<command>'` for factual inspection and deployment checks.
 - Before running destructive or state-changing remote commands, state what will change.
 - Keep remote output compact and relevant; summarize long logs instead of pasting them.
