@@ -10,9 +10,9 @@ Use this skill to orient safely before doing remote work over SSH. Its purpose i
 ## Codex App SSH
 Prefer the Codex app's built-in SSH connection when the current thread is already running through one. Continue working in that connected remote environment instead of starting a separate remote Codex process.
 
-Use the pipoyu Codex app SSH account/profile by default for remote Codex work. If the current app SSH connection is not using pipoyu and account identity matters for the task, ask the user to switch the Codex app SSH connection/profile to pipoyu before continuing.
+Use the pipoyu Codex app SSH account/profile by default for remote Codex work. This skill cannot switch the Codex app account, change the active app SSH profile, or bypass app-level usage limits. The user must select the pipoyu account/profile in the Codex app before starting or resuming limited remote work.
 
-If the Codex app SSH session fails because the active Codex account is rate-limited, quota-limited, or otherwise account-limited, report that the active app SSH account appears limited and ask the user to switch the Codex app SSH connection/profile to pipoyu. After the user switches, continue in the same remote workspace and preserve the current remote path and task context.
+If the Codex app shows a usage-limit error, report that the active app account appears limited and ask the user to switch the Codex app account/profile to pipoyu. SSH being connected does not change which Codex account is billed or limited. After the user switches, continue in the same remote workspace and preserve the current remote path and task context.
 
 ## SSH Orientation
 Inspect local SSH aliases before connecting:
