@@ -37,6 +37,23 @@ ssh hetzner 'hostname; whoami; pwd'
 
 For app repositories, inspect only the relevant app directory and commands discovered from the local repo. Do not assume a default remote app path unless project documentation or the user provides one.
 
+## Shared Workspace
+The expected shared project root is `/home/workspace`. Account-specific SSH users should use shared repositories there instead of cloning duplicate repositories under their own home directories.
+
+When working in a shared repository, verify the SSH user can read Git metadata before doing PR or branch work:
+
+```sh
+ssh heztner-pipoyu 'id; cd /home/workspace/vitehub/vitehub && git status --short --branch'
+```
+
+If `id` does not include `codex-workspace`, or Git files under `/home/workspace/.../.git` are not readable, fix the shared workspace setup before continuing. If Git reports dubious ownership, add the shared repo as a safe directory for each account user that uses it:
+
+```sh
+ssh hetzner 'for u in maxi-main maxi-pipoyu maxi-onmax; do sudo -u "$u" git config --global --add safe.directory /home/workspace/vitehub/vitehub; done'
+```
+
+Do not work around shared workspace permission problems by cloning a second copy of the same repo under `/home/<account-user>/...`; that hides the setup issue and fragments active work.
+
 ## Troubleshooting
 - If the user types `heztner`, check whether SSH config aliases both `hetzner` and `heztner`.
 - If passwordless sudo is needed for a fix, test it first with `ssh hetzner 'sudo -n true 2>/dev/null && echo sudo-ok || echo sudo-needs-password'`.
