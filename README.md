@@ -20,6 +20,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | Run agents | Branches and PRs from autonomous work | `sandcastle`, `sandcastle-workflow`, `vps-connection`, `pr-body` |
 | Refine PRs | Autonomous PR cleanup and checks | `sandcastle-workflow`, `pr-refiner`, `pr-body` |
 | Check merge readiness | Autonomous consumer-facing proof before merge | `sandcastle-workflow`, `pre-merge-validation`, `pr-stack-coordinator` |
+| Merge command | Consent-gated rebase/squash/merge execution | `pr-stack-coordinator` |
 
 `validate-direction` is not a phase. Use it whenever a direction is about to harden into docs, issues, code, PR strategy, or merge action.
 
@@ -50,7 +51,7 @@ When an autonomous run succeeds, it opens a PR with automatic issue linking such
 | [`library-craft`](skills/library-craft/SKILL.md) | Reviews reusable package shape and public API craft. |
 | [`pr-body`](skills/pr-body/SKILL.md) | Writes or reviews PR bodies in the repository's preferred style. |
 | [`pr-refiner`](skills/pr-refiner/SKILL.md) | Reviews PR blockers and routes the next refinement step. |
-| [`pr-stack-coordinator`](skills/pr-stack-coordinator/SKILL.md) | Coordinates stacked PRs, worktrees, ADR indexes, and merges. |
+| [`pr-stack-coordinator`](skills/pr-stack-coordinator/SKILL.md) | Coordinates stacked PRs, worktrees, ADR indexes, merge commands, and per-PR merge confirmation. |
 | [`pre-merge-validation`](skills/pre-merge-validation/SKILL.md) | Runs consumer-install validation before merging PRs. |
 | [`sandcastle`](skills/sandcastle/SKILL.md) | Explains and applies Sandcastle concepts for isolated agent execution. |
 | [`sandcastle-workflow`](skills/sandcastle-workflow/SKILL.md) | Runs ready-for-agent issues through Sandcastle or remote Codex and opens linked PRs. |

@@ -44,6 +44,7 @@ This repo uses Onmax skills for project language, agent work shaping, autonomous
 - Use `evidence-research` when internal or external evidence would change the decision.
 - Use `handoff` to preserve continuation context for another agent or session.
 - Use `pr-body` when opening or editing pull request bodies.
+- Use `pr-stack-coordinator` for stacked PRs, active worktree safety, ADR index collisions, dependency markers, and consent-gated merge commands.
 - Use `pre-merge-validation` before merging consumer-facing package, runtime, provider, generated-output, or docs-as-contract changes.
 - Use `fast-forward` inside grilling sessions to skip low-value branches.
 - Use `codex-skill-retrospective` to analyze recent Codex sessions and GitHub activity for skill improvements.
@@ -61,6 +62,8 @@ clarify/design -> ready-for-agent -> in-agent-run -> PR ready for manual merge d
 ```
 
 GitHub Issues are the default work contract. Autonomous stages may implement, refine the PR, and run merge-readiness validation, but final merge remains manual.
+
+Use `pr-stack-coordinator` for the manual merge decision. Merge commands prepare and verify a plan first; each merge still needs explicit final confirmation.
 ```
 
 If an `## Agent skills` block already exists, update it in place. Do not duplicate the section.

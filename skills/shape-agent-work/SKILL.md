@@ -73,5 +73,7 @@ Expected output: one or more GitHub issues labeled `ready-for-agent`, each with 
 - Describe behavior and contracts more than file-by-file procedure.
 - Include file paths only when they are stable enough to help; avoid line numbers.
 - Mark an issue `ready-for-agent` only when an autonomous agent can begin without asking a design question.
+- Put unresolved implementation uncertainty in `needs-info`, `blocked`, or explicit acceptance criteria. Do not start coding from this skill.
+- Include expected proof for each executable issue, and call out when later `pre-merge-validation` is likely because the issue touches package consumption, runtime wiring, generated output, provider behavior, or docs-as-contract.
 - Do not close parent/source issues.
 - Do not post PR comments or mutate PR state.

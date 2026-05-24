@@ -24,13 +24,15 @@ For multiple PRs, stacked PRs, merge ordering, active worktree coordination, ADR
    - title, body, base/head branches, changed files, and local uncommitted changes
    - review decision, unresolved review threads, top-level comments, and requested changes
    - CI/check status, conflicts, mergeability, and branch freshness
+   - whether the PR is stacked and which diff range represents only this PR's own changes
 3. Classify blockers before changing anything.
-4. Route each blocker to the smallest useful fix.
-5. Implement fixes that are part of the PR scope, including related local changes.
-6. Run the narrow checks that prove the fixes.
-7. Commit and push the PR branch when changes are ready.
-8. Resolve review threads only after the pushed code demonstrably addresses them.
-9. End with a concise PR status summary.
+4. Before mutating anything, classify the next action as one of: local edit, branch push, review-thread resolution, PR body edit, label change, close, merge, force-push, or comment.
+5. Route each blocker to the smallest useful fix.
+6. Implement fixes that are part of the PR scope, including related local changes.
+7. Run the narrow checks that prove the fixes.
+8. Commit and push the PR branch when changes are ready.
+9. Resolve review threads only after the pushed code demonstrably addresses them.
+10. End with a concise PR status summary.
 
 ## Onmax Skill Routing
 
@@ -59,10 +61,21 @@ Use GitHub GraphQL when resolving inline review threads, especially Codex thread
 
 - Treat explicit `pr-refiner` invocation as consent to push scoped PR fixes and resolve verified addressed review threads.
 - Never post PR comments without explicit user consent.
+- Do not treat consent for local edits or branch pushes as consent for PR body edits, labels, closing, merging, force-pushing, comments, approvals, or ambiguous thread resolution.
 - Prefer resolving addressed Codex threads silently instead of replying when no explanation is needed.
 - Do not treat top-level comments as complete thread state.
 - Do not churn code while a pending AI review may still change the requested direction unless the existing blocker is already clear.
 - Keep each local edit traceable to one blocker.
+
+## Coordination Checks
+
+Stay in this skill only when one PR can be refined independently.
+
+Hand off to `pr-stack-coordinator` before editing when the PR appears stacked, depends on another PR, shares conflict-prone files with nearby PRs, changes ADR indexes, needs a merge-order decision, or belongs to an active or uncertain Codex worktree.
+
+If the user explicitly asks to refine only the top item in a stack, do not inspect or fix `main...HEAD` wholesale. Use the PR's actual base branch, explicit commit range, or `HEAD^..HEAD` when that is the user's scoped range, and report that parent-stack findings are out of scope.
+
+When a PR changes ADR-like files, check for numeric index collisions against the base branch and nearby open PRs before pushing. If a collision exists, do not rename files silently; report the collision and route through `pr-stack-coordinator`.
 
 ## PR Body Edits
 

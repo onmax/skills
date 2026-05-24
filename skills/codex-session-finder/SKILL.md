@@ -11,7 +11,7 @@ Find the relevant local Codex session and return enough evidence for a human or 
 
 Codex keeps local session state under the user's Codex home directory.
 
-- `state_5.sqlite` stores thread metadata, including id, title, workspace path, timestamps, archive state, branch, commit, token count, and rollout path.
+- `state_5.sqlite` stores thread metadata, including id, title, workspace path, timestamps, archive state, branch, commit, `tokens_used`, and rollout path.
 - `session_index.jsonl` is a lightweight session index. It is useful for lookup, but SQLite is the stronger source of truth when both exist.
 - `sessions/` contains current rollout files.
 - `archived_sessions/` contains archived rollout files.
@@ -39,7 +39,7 @@ Query active, non-archived sessions first:
 sqlite3 -header -column ~/.codex/state_5.sqlite \
   "select id, title, cwd, datetime(created_at,'unixepoch') as created_at,
           datetime(updated_at,'unixepoch') as updated_at,
-          git_branch, git_sha, rollout_path
+          git_branch, git_sha, tokens_used, rollout_path
    from threads
    where archived = 0
    order by updated_at desc;"
@@ -56,6 +56,14 @@ sqlite3 -header -column ~/.codex/state_5.sqlite \
      and cwd like '%/vitehub%'
    order by updated_at desc;"
 ```
+
+Before selecting optional columns in a newer or older Codex install, inspect the schema:
+
+```sh
+sqlite3 ~/.codex/state_5.sqlite '.schema threads'
+```
+
+Use `tokens_used` for token counts in current schemas; do not select `token_count` unless the schema actually contains it.
 
 Report active worktrees as off-limits for mutating follow-up tasks unless the user explicitly says to use that session's worktree.
 

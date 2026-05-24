@@ -11,6 +11,8 @@ Default posture: review first. Do not edit files, post PR comments, approve, req
 
 Default scope is the current PR diff or current branch diff, including related uncommitted local changes. If the user gives an explicit scope, use that instead: a PR URL, pasted diff, file, package, module, component, plan, or current conversation direction.
 
+For stacked branches, do not default to `main...HEAD` when that would include parent-branch work. Resolve the PR base/head, dependency branch, or explicit commit range first. Prefer the PR's actual changed commits, `HEAD^..HEAD`, or the user-provided range when the task is to review only the top stack item.
+
 ## Core Standard
 
 Rethink how to structure or implement the change to meaningfully improve code quality without changing behavior.
@@ -22,7 +24,7 @@ Do not stop at local cleanup when a clearer framing could delete whole branches,
 ## Workflow
 
 1. Identify the review scope.
-2. Inspect the explicit scope, PR diff, current branch diff, or current direction.
+2. Inspect the explicit scope, PR diff, current branch diff, or current direction. If the branch is stacked, state the base/range used and why it excludes unrelated parent work.
 3. Include related uncommitted local files. Exclude only files that are clearly unrelated, generated noise, or explicitly scoped out.
 4. Read `.agents/CONTEXT.md`, `.agents/CONTEXT-MAP.md`, `.agents/contexts/*/CONTEXT.md`, or `.agents/adr/` when domain language, ownership, module seams, or ADR-backed decisions affect the review.
 5. Classify findings by structural severity, not cosmetic preference.

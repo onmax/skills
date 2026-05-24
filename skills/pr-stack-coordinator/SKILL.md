@@ -22,7 +22,7 @@ After the read-only pass, mutate only the exact actions the user explicitly appr
 5. Classify each relationship as `blocked`, `coordination`, `independent`, or `unknown`.
 6. Scan likely ADR directories when a PR changes ADR-like files. Detect duplicate numeric indexes across open PR branches, local worktrees, and the target base. Recommend the next available index on top of the target base branch. Update ADR filenames or references only after explicit approval.
 7. Identify PRs unsafe to mutate because their branch belongs to an active or uncertain worktree.
-8. Before recommending or executing a merge, use `pre-merge-validation` when a PR has consumer-facing package, runtime, provider, generated-output, docs-as-contract, or recent post-merge defect risk.
+8. Before recommending or executing a merge, classify the Pre-Merge Gate for each candidate PR as `required`, `skip`, `stale`, or `blocked`. Use `pre-merge-validation` when a PR has consumer-facing package, runtime, provider, generated-output, docs-as-contract, or recent post-merge defect risk.
 9. Run `validate-direction` before recommending merge, rebase, dependency marker, ADR index, or PR body coordination actions when the stack implies a new project direction, API, ADR, implementation plan, or cross-PR ownership boundary.
 10. Produce an ordered readiness report and proposed actions.
 11. For code-level fixes inside one PR, hand off to `pr-refiner`.
@@ -51,7 +51,7 @@ Support command-style requests such as `merge PR 152`, `merge ready PRs`, `squas
 
 Treat merge commands as consent to prepare a merge plan, not consent to execute it.
 
-Before any merge, verify the PR is open and not draft, hard dependencies are resolved, ADR indexes are unique when ADRs changed, required checks are passing or explicitly accepted, the branch is not owned by an active or uncertain Codex worktree, the requested rebase or branch update is complete, any needed `validate-direction` verdict is `proceed` or its required changes are reflected in the plan, and the final squash commit follows Conventional Commits with the PR reference.
+Before any merge, verify the PR is open and not draft, hard dependencies are resolved, dependency or coordination notes are reflected in PR bodies when needed, ADR indexes are unique when ADRs changed, required checks are passing or explicitly accepted, the branch is not owned by an active or uncertain Codex worktree, the requested rebase or branch update is complete, any needed `validate-direction` verdict is `proceed` or its required changes are reflected in the plan, the Pre-Merge Gate is `pass` or justified `skip`, and the final squash commit follows Conventional Commits with the PR reference.
 
 For batch merges, present an ordered plan but request confirmation per PR before executing each merge.
 
@@ -84,6 +84,8 @@ Coordination:
 - #... coordinates with #...
 ADR index issues:
 - ...
+Pre-Merge Gates:
+- #... pass | skip | stale | fail-pr | fail-repro | blocked
 Unsafe to mutate:
 - ...
 Proposed actions:

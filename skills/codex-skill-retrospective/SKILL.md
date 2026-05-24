@@ -23,6 +23,8 @@ Primary evidence is Codex session history. GitHub is supporting evidence when Co
    - Use `codex-session-finder` for specific thread ids, titles, repo paths, rollout paths, or topics.
    - For time-window scopes, query Codex session metadata first, then read in-scope rollout files.
    - Include archived sessions when they fall inside the scope.
+   - Include VPS Codex sessions when the user asks for remote/VPS coverage, when an automation prompt requires it, or when local sessions strongly imply remote Codex work. Use `vps-connection` for safe remote discovery.
+   - Do not assume `$CODEX_HOME`, `jq`, or remote `sqlite3` exists. Fall back to `~/.codex`, Python JSON/SQLite extraction, and the VPS Python SQLite recipe when needed.
    - Weight user prompts, corrections, redirects, approvals, and frustration signals more heavily than assistant narration.
 3. Retrieve GitHub evidence:
    - Use `gh` or GitHub plugin capabilities to inspect related PRs, issues, commits, reviews, comments, and checks.

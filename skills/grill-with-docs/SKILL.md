@@ -76,6 +76,8 @@ When the user uses vague or overloaded terms, propose a precise canonical term. 
 
 When domain relationships are being discussed, stress-test them with specific scenarios. Invent scenarios that probe edge cases and force the user to be precise about the boundaries between concepts.
 
+For scheduling, callbacks, background jobs, provider output, deployment configuration, or runtime execution, force the buildtime/runtime split early. Ask which behavior is static configuration, runtime state, bookkeeping, provider output, and actual execution before allowing the direction to harden into issues or ADRs.
+
 ### Cross-reference with code
 
 When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible — which is right?"
