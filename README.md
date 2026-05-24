@@ -60,8 +60,19 @@ When an autonomous run succeeds, it opens a PR with automatic issue linking such
 | [`codex-skill-retrospective`](skills/codex-skill-retrospective/SKILL.md) | Reviews Codex sessions and GitHub activity to improve skills. |
 | [`strict-code-review`](skills/strict-code-review/SKILL.md) | Runs a strict maintainability review for structural quality and code-judo simplifications. |
 | [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
+| [`worktree-cleanup`](skills/worktree-cleanup/SKILL.md) | Safely cleans current-repo worktrees, stale branches, remote workspaces, and disk-heavy artifacts. |
 | [`write-a-skill`](skills/write-a-skill/SKILL.md) | Creates agent skills with proper structure and review checks. |
 | [`vps-connection`](skills/vps-connection/SKILL.md) | Discovers and verifies VPS/SSH access and remote Codex helpers. |
+
+## Manual cleanup
+
+Use `worktree-cleanup` from the repo you want to clean:
+
+```text
+Use worktree-cleanup here. Clean this repo locally, then clean the shared VPS workspace if relevant. Preserve dirty, untracked, or unique local work and report it first.
+```
+
+The skill defaults to the current session repository for manual cleanup. Daily automation can broaden the scope to common local roots and `/home/workspace` on the VPS.
 
 ## References
 
