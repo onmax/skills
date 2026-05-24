@@ -1,18 +1,11 @@
 ---
 name: vps-connection
-description: Helps agents discover, verify, and use the user's VPS/SSH connection, including Codex app SSH connections. Use when the user mentions VPS, SSH, Hetzner, heztner, remote Codex, Codex app SSH, deploy:vps, or asks the agent to connect to a server, explore remote setup, run remote tasks, or debug remote deployment.
+description: Helps agents discover, verify, and use the user's VPS/SSH connection. Use when the user mentions VPS, SSH, Hetzner, heztner, deploy:vps, or asks the agent to connect to a server, explore remote setup, run remote tasks, or debug remote deployment.
 ---
 
 # VPS Connection
 
-Use this skill to orient safely before doing remote work over SSH. Its purpose is to tell agents how to use the user's SSH/VPS setup, not to document unrelated remote workflows.
-
-## Codex App SSH
-Prefer the Codex app's built-in SSH connection when the current thread is already running through one. Continue working in that connected remote environment instead of starting a separate remote Codex process.
-
-Use the pipoyu Codex app SSH account/profile by default for remote Codex work. This skill cannot switch the Codex app account, change the active app SSH profile, or bypass app-level usage limits. The user must select the pipoyu account/profile in the Codex app before starting or resuming limited remote work.
-
-If the Codex app shows a usage-limit error, report that the active app account appears limited and ask the user to switch the Codex app account/profile to pipoyu. SSH being connected does not change which Codex account is billed or limited. After the user switches, continue in the same remote workspace and preserve the current remote path and task context.
+Use this skill to orient safely before doing remote work over SSH. Its purpose is to tell agents how to use the user's SSH/VPS setup, not to document Codex accounts, profiles, billing, or unrelated remote workflows.
 
 ## SSH Orientation
 Inspect local SSH aliases before connecting:
@@ -40,14 +33,12 @@ After SSH succeeds, gather only non-secret facts needed for the task:
 
 ```sh
 ssh hetzner 'hostname; whoami; pwd'
-ssh hetzner 'command -v codex && CODEX_HOME=/home/maxi/.codex-pipoyu codex --version'
 ```
 
 For app repositories, inspect only the relevant app directory and commands discovered from the local repo. Do not assume a default remote app path unless project documentation or the user provides one.
 
 ## Troubleshooting
 - If the user types `heztner`, check whether SSH config aliases both `hetzner` and `heztner`.
-- If remote Codex prints permission warnings, inspect ownership under the relevant `CODEX_HOME`.
 - If passwordless sudo is needed for a fix, test it first with `ssh hetzner 'sudo -n true 2>/dev/null && echo sudo-ok || echo sudo-needs-password'`.
 - If every SSH command prints shell profile warnings, report the noise separately from command results. Do not edit shell profiles unless the user asks for setup cleanup.
 
@@ -56,13 +47,11 @@ Only change ownership, SSH aliases, Docker state, or remote files when the user 
 ## Privacy Rules
 - Minimize disclosure in final answers. Say `the Hetzner SSH alias works` instead of repeating IP addresses, key paths, usernames, or home paths unless those details are necessary.
 - Redact secrets and private infrastructure details from copied command output.
-- Never run broad commands that dump hidden directories, environment variables, shell history, auth files, Codex config, provider tokens, or private keys.
+- Never run broad commands that dump hidden directories, environment variables, shell history, auth files, provider tokens, or private keys.
 - When searching repos, exclude `.env*`, keys, logs, `node_modules`, build output, and dependency locks unless the user specifically asks to inspect them.
 
 ## Safety Rules
 - Treat SSH config, shell profiles, and remote homes as user-owned state. Read before editing.
-- Prefer the Codex app SSH connection for remote Codex work when the thread is already connected through it.
-- Use the pipoyu Codex app SSH account/profile by default for remote Codex work.
 - Use plain `ssh hetzner '<command>'` for factual inspection and deployment checks.
 - Before running destructive or state-changing remote commands, state what will change.
 - Keep remote output compact and relevant; summarize long logs instead of pasting them.
