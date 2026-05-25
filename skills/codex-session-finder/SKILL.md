@@ -1,11 +1,11 @@
 ---
 name: codex-session-finder
-description: Finds local Codex sessions by thread id, title, repo path, rollout path, or session topic and summarizes the metadata needed for review. Use when the user wants to locate a past Codex thread, inspect what happened in a session, or gather evidence to debug and improve agent skills.
+description: Finds local Codex sessions by thread id, title, repo path, rollout path, or session topic and returns thread-level locator metadata. Use when the user wants to locate a past Codex thread or give another agent the session coordinates needed for its own review.
 ---
 
 # Codex Session Finder
 
-Find the relevant local Codex session and return enough evidence for a human or another skill to review what happened.
+Find the relevant local Codex session and return the session coordinates. This skill locates the thread; it does not summarize, judge, or extract the important parts of the conversation unless the user explicitly asks for inspection.
 
 ## How Codex Sessions Work
 
@@ -28,6 +28,21 @@ Accept any of these:
 - natural-language session topic
 
 If the input is vague, search metadata first and return likely candidates rather than guessing silently.
+
+## Optional Turn Export
+
+Use this only when the user asks to inspect, review, debug, or hand off the session content. Do not export turns for a plain lookup.
+
+Write a temporary turn-by-turn export under `/tmp` or the system temp directory, never inside the target repository. Prefer Markdown or JSONL with one entry per conversation turn, preserving role, timestamp when available, and a short content preview or full content depending on the user's request.
+
+Return the temp export path with the session locator:
+
+```md
+Export:
+- turns path: /tmp/<file>
+```
+
+Keep the chat content out of the assistant response unless the user explicitly asks for excerpts. A temp export lets the next agent search, summarize, or review the thread independently without making the locator output noisy.
 
 ## Active Worktree Lookup
 
@@ -79,17 +94,20 @@ Report active worktrees as off-limits for mutating follow-up tasks unless the us
    - Use it to connect ids, thread names, and updated timestamps.
    - Treat it as supporting evidence, not the final source of truth.
 
-3. Search rollout files only when needed.
+3. Search rollout files only when needed to identify the session.
    - Search `sessions/` and `archived_sessions/`.
    - Use distinctive text from the user's request.
    - Prefer narrow searches over broad scans.
+   - Stop after finding the locator metadata unless the user asked to inspect session content.
 
 ## Output
 
-Return a compact report:
+Return a compact metadata report. The result is a locator, not a narrative or review.
+
+For one clear match, especially an exact thread id or rollout path match, use:
 
 ```md
-Best match:
+Found session:
 - id:
 - title:
 - cwd:
@@ -100,16 +118,25 @@ Best match:
 - git sha:
 - tokens used:
 - rollout path:
+```
 
-Why this match:
-- <short evidence>
+Do not include "Why this match", confidence language, or an evidence slice for exact or otherwise unambiguous matches. The metadata is the output.
 
-Evidence slice:
-- <small relevant excerpt or summary>
+Include fields that help another agent route its own follow-up work: id, title, cwd, timestamps, archive state, branch, commit, token count, and rollout path. Do not decide which conversation turns are "important"; a follow-up agent should inspect the rollout file on its own when it needs content.
+
+Include a short "Match basis" only when the input was vague, multiple candidates are plausible, or the lookup used fallback sources:
+
+```md
+Match basis:
+- <short factual reason, such as title/path/token match>
 
 Other candidates:
 - <include only when ambiguity matters>
 ```
+
+Include an "Evidence slice" only when the user asks to inspect what happened in the session or metadata alone cannot identify the right session. Keep excerpts minimal and summarize private content when possible.
+
+If a temp turn export was requested, include only the export path in the main response. Do not duplicate the exported content in the response.
 
 For active worktree lookups, use:
 
@@ -131,9 +158,10 @@ Use guidance:
 ## Rules
 
 - Stay read-only.
-- Do not modify Codex state, rollout files, repositories, or skill files.
+- Do not modify Codex state, rollout files, repositories, or skill files. Temporary exports under `/tmp` are allowed only when requested.
 - Do not expose unnecessary private session content.
 - Do not deeply analyze the session unless the user asks for that separately.
-- If the user wants to improve skills, retrieve the session evidence first and keep the output suitable for a follow-up review.
+- Do not infer or report the important parts of the thread by default; return the locator so the next agent can search the rollout for its own purpose.
+- If the user wants to improve skills, first return the session locator. Retrieve session evidence only when the requested review needs it.
 - Prefer precise local metadata over broad text search.
 - If multiple matches are plausible, show the top candidates.
