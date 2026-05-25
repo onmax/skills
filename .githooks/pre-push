@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+branch="$(git branch --show-current)"
+
+if [ "$branch" != "main" ]; then
+  echo "This repo normally works directly on main. Refusing to push branch: $branch"
+  exit 1
+fi
+
+"$(git rev-parse --show-toplevel)/scripts/sync-local-agent-skills.sh"

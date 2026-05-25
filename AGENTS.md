@@ -8,6 +8,12 @@ Never comment on issues or pull requests without explicit user consent.
 
 Activate the GitHub, Vercel, or Cloudflare plugin when relevant.
 
+## Repository workflow
+
+Work directly on `main` for this repo unless the user explicitly asks otherwise.
+
+Do not create branches or worktrees for normal changes in this repo. This repository is the source used to sync local skills into `~/.agents/skills`, so branch/worktree copies can leave stale skill symlinks behind.
+
 ## Agent skills
 
 This repo uses Onmax skills for project language, simplification, research, validation, and handoff.
