@@ -33,7 +33,7 @@ When `pr-stack-coordinator` hands off a PR, preserve its stack evidence packet. 
 5. Route each blocker to the smallest useful fix.
 6. Implement fixes that are part of the PR scope, including related local changes.
 7. Run the narrow checks that prove the fixes.
-8. Commit and push the PR branch when changes are ready.
+8. Commit and push the PR branch when changes are ready. Batch related review fixes into one push when CI, deploy previews, or reviewer notifications are costly.
 9. Resolve review threads only after the pushed code demonstrably addresses them.
 10. End with a concise PR status summary.
 
@@ -68,6 +68,7 @@ Use GitHub GraphQL when resolving inline review threads, especially Codex thread
 - Prefer resolving addressed Codex threads silently instead of replying when no explanation is needed.
 - Do not treat top-level comments as complete thread state.
 - Do not churn code while a pending AI review may still change the requested direction unless the existing blocker is already clear.
+- Avoid push churn: do not push every micro-fix when a local batch can prove several review fixes together.
 - Keep each local edit traceable to one blocker.
 
 ## Coordination Checks
@@ -75,6 +76,8 @@ Use GitHub GraphQL when resolving inline review threads, especially Codex thread
 Stay in this skill only when one PR can be refined independently.
 
 Hand off to `pr-stack-coordinator` before editing when the PR appears stacked, depends on another PR, shares conflict-prone files with nearby PRs, changes ADR indexes, needs a merge-order decision, or belongs to an active or uncertain Codex worktree.
+
+If the PR only exists as part of a stack, challenge whether it should instead be independent against the default branch, merged after its dependency, or combined with its dependency. Do not preserve a stack just because it already exists.
 
 If the user explicitly asks to refine only the top item in a stack, do not inspect or fix `main...HEAD` wholesale. Use the PR's actual base branch, explicit commit range, or `HEAD^..HEAD` when that is the user's scoped range, and report that parent-stack findings are out of scope.
 

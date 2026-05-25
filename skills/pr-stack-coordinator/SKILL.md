@@ -9,6 +9,8 @@ description: Coordinates stacked or related GitHub PRs across local worktrees, a
 
 Use this skill when PR readiness depends on more than one PR, branch, worktree, or local Codex session.
 
+Default direction: prefer the smallest independently mergeable PR over stacked PRs. Optimize for small review surface without multiplying merge conflicts, deploy previews, GitHub Actions runs, or repeated pushes.
+
 Default posture: read-only first. The first pass may inspect local repositories, active sessions, worktrees, GitHub PR metadata, PR bodies, changed files, commit ancestry, checks, and ADR files. It must not edit files, push branches, update PR bodies, comment, resolve threads, approve, close, merge, or force-push.
 
 After the read-only pass, mutate only the exact actions the user explicitly approves.
@@ -19,10 +21,10 @@ After the read-only pass, mutate only the exact actions the user explicitly appr
 2. Map active Codex sessions before considering mutation. Use `codex-session-finder` when the user mentions active sessions, previous threads, or unclear worktree ownership. Treat active or uncertain worktrees as unsafe for mutation.
 3. Query GitHub open PRs for matching branches with `gh pr list` and `gh pr view`.
 4. Build a stack graph from base branches, head branches, commit ancestry, changed files, branch names, and existing PR body dependency or coordination notes.
-5. Classify each relationship as `blocked`, `coordination`, `independent`, or `unknown`.
+5. Classify each relationship as `blocked`, `coordination`, `independent`, or `unknown`. Also classify whether the PR can compile, test, and be reviewed against the default branch without another unmerged PR.
 6. Scan likely ADR directories when a PR changes ADR-like files. Detect duplicate numeric indexes across open PR branches, local worktrees, and the target base. Recommend the next available index on top of the target base branch. Update ADR filenames or references only after explicit approval.
 7. Identify PRs unsafe to mutate because their branch belongs to an active or uncertain worktree.
-8. Build a stack evidence packet for each candidate PR: base/head branch, parent/child PRs, review-thread state, checks, active worktree risk, ADR index risk, Pre-Merge Gate state, and the current user-approved next action.
+8. Build a stack evidence packet for each candidate PR: base/head branch, parent/child PRs, review-thread state, checks, deploy-preview/CI budget risk, active worktree risk, ADR index risk, Pre-Merge Gate state, and the current user-approved next action.
 9. Before recommending or executing a merge, classify the Pre-Merge Gate for each candidate PR as `required`, `skip`, `stale`, or `blocked`. Use `pre-merge-validation` when a PR has consumer-facing package, runtime, provider, generated-output, docs-as-contract, or recent post-merge defect risk.
 10. Run `validate-direction` before recommending merge, rebase, dependency marker, ADR index, or PR body coordination actions when the stack implies a new project direction, API, ADR, implementation plan, or cross-PR ownership boundary.
 11. Produce an ordered readiness report and proposed actions.
@@ -45,6 +47,18 @@ Add or update PR body dependency markers only after explicit approval.
 Use a hard dependency marker when a PR must not merge until another PR lands or the branch is rebased. Use coordination language when PRs touch the same conflict-prone surface but can merge independently.
 
 Preserve existing repository wording when it is already clear.
+
+## PR Slicing Policy
+
+Do not treat stacking as the default way to get a smaller review surface.
+
+- If PR B can compile, test, and be reviewed against the default branch without PR A, keep B independent and base it on the default branch.
+- If PR B cannot compile, test, or be reviewed without PR A, either merge A first or combine A+B into one coherent PR.
+- If multiple PRs repeatedly touch the same conflict-prone surface, prefer one small coordinator PR or serial merges over a long stack.
+- Use stacked PRs only as a temporary exception when the dependency is expected to merge first and the stack is shorter than the conflict/deploy cost it creates.
+- Do not duplicate PR A's code into PR B just to avoid a stack; that creates review noise and merge conflict risk.
+
+When Vercel deploy previews, GitHub Actions, or similar CI/deploy quotas are in play, treat every branch push and rebase as a real cost. Recommend batching local fixes and reducing live PR count before recommending more stacked branches.
 
 ## Merge Commands
 
@@ -90,7 +104,7 @@ Do not post PR or issue comments without explicit consent.
 PR stack:
 - #...
 Stack evidence:
-- #... base/head, reviews, checks, worktree, ADR, dependency, and pre-merge state
+- #... base/head, independence, reviews, checks, CI/deploy budget, worktree, ADR, dependency, and pre-merge state
 Ready:
 - #...
 Blocked:
@@ -115,6 +129,7 @@ Needs approval:
 - Never merge, close, approve, comment, force-push, edit PR bodies, edit files, or push without explicit approval.
 - Never mutate an active or uncertain Codex worktree.
 - Distinguish hard dependencies from merge coordination.
+- Prefer independently mergeable PRs over stacked PRs; use stacks only when they reduce review risk more than they increase conflict, CI, and deploy cost.
 - Treat consumer-facing pre-merge validation as a merge gate, not as merge consent.
 - Use `validate-direction` as a late-stage check before acting on stack-level recommendations that could crystallize a weak or premature direction.
 - Keep PR body prose natural and template-compatible.
