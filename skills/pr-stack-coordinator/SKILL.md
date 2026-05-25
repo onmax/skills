@@ -22,10 +22,11 @@ After the read-only pass, mutate only the exact actions the user explicitly appr
 5. Classify each relationship as `blocked`, `coordination`, `independent`, or `unknown`.
 6. Scan likely ADR directories when a PR changes ADR-like files. Detect duplicate numeric indexes across open PR branches, local worktrees, and the target base. Recommend the next available index on top of the target base branch. Update ADR filenames or references only after explicit approval.
 7. Identify PRs unsafe to mutate because their branch belongs to an active or uncertain worktree.
-8. Before recommending or executing a merge, classify the Pre-Merge Gate for each candidate PR as `required`, `skip`, `stale`, or `blocked`. Use `pre-merge-validation` when a PR has consumer-facing package, runtime, provider, generated-output, docs-as-contract, or recent post-merge defect risk.
-9. Run `validate-direction` before recommending merge, rebase, dependency marker, ADR index, or PR body coordination actions when the stack implies a new project direction, API, ADR, implementation plan, or cross-PR ownership boundary.
-10. Produce an ordered readiness report and proposed actions.
-11. For code-level fixes inside one PR, hand off to `pr-refiner`.
+8. Build a stack evidence packet for each candidate PR: base/head branch, parent/child PRs, review-thread state, checks, active worktree risk, ADR index risk, Pre-Merge Gate state, and the current user-approved next action.
+9. Before recommending or executing a merge, classify the Pre-Merge Gate for each candidate PR as `required`, `skip`, `stale`, or `blocked`. Use `pre-merge-validation` when a PR has consumer-facing package, runtime, provider, generated-output, docs-as-contract, or recent post-merge defect risk.
+10. Run `validate-direction` before recommending merge, rebase, dependency marker, ADR index, or PR body coordination actions when the stack implies a new project direction, API, ADR, implementation plan, or cross-PR ownership boundary.
+11. Produce an ordered readiness report and proposed actions.
+12. For code-level fixes inside one PR, hand off to `pr-refiner` and include the stack evidence packet.
 
 ## PR Body Guidance
 
@@ -51,11 +52,23 @@ Support command-style requests such as `merge PR 152`, `merge ready PRs`, `squas
 
 Treat merge commands as consent to prepare a merge plan, not consent to execute it.
 
-Before any merge, verify the PR is open and not draft, hard dependencies are resolved, dependency or coordination notes are reflected in PR bodies when needed, ADR indexes are unique when ADRs changed, required checks are passing or explicitly accepted, the branch is not owned by an active or uncertain Codex worktree, the requested rebase or branch update is complete, any needed `validate-direction` verdict is `proceed` or its required changes are reflected in the plan, the Pre-Merge Gate is `pass` or justified `skip`, and the final squash commit follows Conventional Commits with the PR reference.
+Before any merge, verify the PR is open and not draft, hard dependencies are resolved, dependency or coordination notes are reflected in PR bodies when needed, ADR indexes are unique when ADRs changed, required checks are passing or explicitly accepted, unresolved review threads and requested changes are absent or explicitly accepted by the user after being shown, the branch is not owned by an active or uncertain Codex worktree, the requested rebase or branch update is complete, any needed `validate-direction` verdict is `proceed` or its required changes are reflected in the plan, the Pre-Merge Gate is `pass` or justified `skip`, and the final squash commit follows Conventional Commits with the PR reference.
 
 For batch merges, present an ordered plan but request confirmation per PR before executing each merge.
 
 Confirmation must include the exact final commit title and body.
+
+### Final Review State Gate
+
+Immediately before asking for merge confirmation, refetch the candidate PR's review state. Do not rely on earlier inspection from the same session.
+
+Required final facts:
+- unresolved review thread count and touched files
+- latest review decision and requested changes
+- top-level comments created after the last inspection that contain blocking language
+- current status check conclusion and required-check state
+
+If unresolved review threads, requested changes, new blocking comments, failing required checks, or unknown review-thread state remain, classify the PR as blocked. Show the blocker and route to `pr-refiner` unless the user explicitly accepts that exact blocker and repository policy allows it. A generic CI-green or approved signal is not enough when review-thread state is unknown.
 
 ## Pre-Merge Validation
 
@@ -76,6 +89,8 @@ Do not post PR or issue comments without explicit consent.
 ```md
 PR stack:
 - #...
+Stack evidence:
+- #... base/head, reviews, checks, worktree, ADR, dependency, and pre-merge state
 Ready:
 - #...
 Blocked:

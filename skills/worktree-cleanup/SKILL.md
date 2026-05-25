@@ -9,6 +9,8 @@ Use this skill to clean the current session repo by default. Only broaden to com
 
 The goal is to reduce disk usage without losing unique work.
 
+This skill is not an auth/setup workflow. If cleanup reveals missing GitHub, Vercel, Cloudflare, SSH, or device-login authorization, report the blocker and hand off to a setup/auth workflow instead of broadening the cleanup task. Do not turn scheduled cleanup into multi-provider login or account setup unless the user explicitly changes the task.
+
 ## Default Scope
 - Manual trigger: clean the repo for the current session `cwd`.
 - Automation trigger: clean common local roots and the shared VPS workspace.
@@ -105,6 +107,7 @@ Always summarize:
 - Docker/artifact space cleanup attempted
 - preserved dirty/untracked work
 - stale unique branches that require user review
+- auth or provider setup blockers that were deliberately left out of cleanup scope
 
 If anything is preserved because it may be unique, make that the top of the report.
 

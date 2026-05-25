@@ -17,6 +17,8 @@ It is not consent to post PR comments, approve, request changes, label, close, m
 
 For multiple PRs, stacked PRs, merge ordering, active worktree coordination, ADR index collisions, dependency markers, or rebase/squash/merge execution, use `pr-stack-coordinator` instead.
 
+When `pr-stack-coordinator` hands off a PR, preserve its stack evidence packet. Do not discard cross-PR blockers just because the current fix is local; either resolve them within the handoff scope or report them as still owned by `pr-stack-coordinator`.
+
 ## Workflow
 
 1. Resolve the PR scope: explicit PR URL/number first, otherwise current branch PR.
@@ -25,6 +27,7 @@ For multiple PRs, stacked PRs, merge ordering, active worktree coordination, ADR
    - review decision, unresolved review threads, top-level comments, and requested changes
    - CI/check status, conflicts, mergeability, and branch freshness
    - whether the PR is stacked and which diff range represents only this PR's own changes
+   - any stack evidence packet passed from `pr-stack-coordinator`
 3. Classify blockers before changing anything.
 4. Before mutating anything, classify the next action as one of: local edit, branch push, review-thread resolution, PR body edit, label change, close, merge, force-push, or comment.
 5. Route each blocker to the smallest useful fix.
@@ -87,6 +90,9 @@ Do not invent boilerplate headings such as `## Summary`. Do not add `Validation`
 
 ```md
 PR status:
+- ...
+
+Stack evidence:
 - ...
 
 Blockers:

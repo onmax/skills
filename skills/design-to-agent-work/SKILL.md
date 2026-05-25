@@ -18,6 +18,7 @@ Default output target is GitHub Issues. Other targets may be supported later, bu
 ## Workflow
 
 1. Establish the topic, repository, output target, and whether this is new work or continuation from a handoff, issue, PRD, ADR, or Codex session.
+   - If resuming after an interrupted or aborted turn, first restate the newest user correction and durable decisions already settled. Do not replay old branches unless the correction invalidates them.
 2. Clarify direction using the smallest useful mix of existing skills:
    - `grill-with-docs` for project language, boundaries, and ADR-worthy trade-offs.
    - `evidence-research` for internal or external evidence.

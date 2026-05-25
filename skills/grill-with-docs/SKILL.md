@@ -11,6 +11,15 @@ Ask the questions one at a time, waiting for feedback on each question before co
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
 
+If the user rejects a list of questions, gives several answers at once, or asks you to stop making them choose from a list, switch to decision-led mode:
+
+1. State the current recommended direction in one or two sentences.
+2. Name the single decision that would most change that recommendation.
+3. Ask one focused question only if code or docs cannot answer it.
+4. Capture hard constraints immediately before continuing to the next branch.
+
+Do not restart the interview from the top after an interruption. Resume from the newest user correction and restate only the durable decisions that still matter.
+
 Near the end, before writing or updating a final recommendation, ADR, PRD, issue plan, implementation plan, or handoff, run `validate-direction` on the emerging direction. Use its verdict to proceed, revise the direction, or ask one final blocking question.
 
 </what-to-do>
