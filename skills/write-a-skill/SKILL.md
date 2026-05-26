@@ -9,14 +9,16 @@ description: Creates or revises one portable agent skill with concise routing, p
 
 1. **Define one job** - identify the task, trigger, and boundary. If the request needs several jobs, split it into several composable skills.
 
-2. **Draft the skill** - create:
+2. **Challenge the shape** - before drafting, compare the request against the Quality Bar. If it would create a broad lifecycle skill, harness-specific wrapper, secret-handling shortcut, or multi-purpose catch-all, say so and propose the smaller composable shape.
+
+3. **Draft the skill** - create:
    - SKILL.md with concise instructions
    - Additional reference files for rarely needed details
    - Utility scripts only for deterministic repeatable operations
 
-3. **Review the shape** - check that the skill is concise, responsible for one thing, composable, progressively disclosed, harness-agnostic, documented, portable, and secure.
+4. **Review the shape** - check that the skill is concise, responsible for one thing, composable, progressively disclosed, harness-agnostic, documented, portable, and secure.
 
-4. **Validate direction** - before finalizing a new or materially changed skill, run `validate-direction` on the emerging skill design when the skill changes agent behavior, routing, permissions, workflow sequencing, or cross-skill coordination. Carry the verdict into the final edit before declaring the skill done.
+5. **Validate direction** - before finalizing a new or materially changed skill, run `validate-direction` on the emerging skill design when the skill changes agent behavior, routing, permissions, workflow sequencing, or cross-skill coordination. Carry the verdict into the final edit before declaring the skill done.
 
 ## Skill Structure
 
@@ -106,6 +108,27 @@ Skills should be:
 - **Well-documented**: include enough examples, rules, and failure modes for another agent to use it correctly.
 - **Portable**: avoid absolute local paths and private assumptions unless the skill is explicitly local.
 - **Secure**: preserve consent, privacy, and mutation boundaries; never normalize secret-printing or broad state changes.
+
+## Challenge Triggers
+
+Push back before editing when the proposed skill:
+
+- Owns an end-to-end lifecycle instead of one job.
+- Combines planning, implementation, review, deployment, and cleanup in one file.
+- Exists mainly to wrap a specific harness when a harness-agnostic skill plus a small harness reference would work.
+- Repeats another skill's responsibility instead of composing with it.
+- Needs many unrelated trigger words to explain when it should load.
+- Requires absolute local paths, private accounts, tokens, shell history, or hidden config to be useful.
+- Would make the agent mutate GitHub, infrastructure, files, or secrets without explicit consent boundaries.
+
+When pushing back, give the smaller replacement shape:
+
+```text
+Instead of one broad skill, split it into:
+- <skill-a>: owns ...
+- <skill-b>: owns ...
+Existing skill to compose with: <skill-name>
+```
 
 ## When to Split Files
 
