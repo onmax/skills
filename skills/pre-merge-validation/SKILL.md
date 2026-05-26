@@ -1,6 +1,6 @@
 ---
 name: pre-merge-validation
-description: Runs final pre-merge validation for PRs by generating dynamic consumer repros, installing PR artifacts, and recording evidence in a remote validation ledger. Use when a merge-ready PR still needs consumer-install proof, when pr-stack-coordinator is about to recommend or execute a merge, or when the user asks to validate package behavior before merging.
+description: Proves merge-ready PR behavior with consumer-install or runtime validation evidence. Use before merging package, provider, generated-output, runtime, or docs-as-contract changes.
 ---
 
 # Pre-Merge Validation

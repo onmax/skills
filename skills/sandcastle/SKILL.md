@@ -1,6 +1,6 @@
 ---
 name: sandcastle
-description: Explains Matt Pocock's Sandcastle configuration, providers, prompts, branch strategies, and completion signals. Use when setting up Sandcastle or choosing how an isolated agent run should execute.
+description: Explains Sandcastle configuration, providers, prompts, branch strategies, and completion signals. Use when setting up Sandcastle or choosing one isolated agent-run harness.
 ---
 
 # Sandcastle

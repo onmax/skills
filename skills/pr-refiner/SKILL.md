@@ -1,6 +1,6 @@
 ---
 name: pr-refiner
-description: Reviews and refines GitHub pull requests until they are ready for review or merge. Use when the user asks to check a PR, refine a PR, address review comments, resolve Codex comments, inspect CI, reduce PR scope, or decide what still blocks merge.
+description: Refines one GitHub PR toward review or merge readiness. Use to check a PR, address review comments, inspect CI, reduce scope, or identify remaining blockers.
 ---
 
 # PR Refiner

@@ -1,6 +1,6 @@
 ---
 name: worktree-cleanup
-description: Safely cleans local and SSH Git worktrees, stale branches, and accumulated build/Docker artifacts without losing unique work. Use when the user asks to clean worktrees, prune branches, reduce disk usage, remove stale Codex workspaces, or set up recurring cleanup.
+description: Cleans Git worktrees, stale branches, and build artifacts without losing unique work. Use to clean worktrees, prune branches, reduce disk usage, or remove stale Codex workspaces.
 ---
 
 # Worktree Cleanup

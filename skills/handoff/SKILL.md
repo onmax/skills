@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Writes a compact handoff document so another agent or future session can continue the work without replaying the whole conversation. Use when the user asks to hand off, compact context, continue later, summarize current state for another agent, or preserve next steps before ending a session.
+description: Writes a compact continuation handoff for another agent or future session. Use when the user asks to hand off, compact context, continue later, or preserve next steps.
 argument-hint: "What should the next session focus on?"
 ---
 

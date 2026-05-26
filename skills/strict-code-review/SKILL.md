@@ -1,6 +1,6 @@
 ---
 name: strict-code-review
-description: Runs a strict maintainability review for structural simplification, abstraction quality, spaghetti growth, large files, and codebase health. Use when the user asks for strict code review, harsh review, thermo-nuclear review, thermonuclear review, deep maintainability review, or ambitious structural cleanup of current branch changes.
+description: Reviews code for maintainability, structure, abstractions, large files, and cleanup opportunities. Use when the user asks for strict, harsh, deep, or ambitious code review.
 ---
 
 # Strict Code Review

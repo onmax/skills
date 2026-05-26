@@ -1,6 +1,6 @@
 ---
 name: codex-session-finder
-description: Finds local Codex sessions by thread id, title, repo path, rollout path, or session topic and returns thread-level locator metadata. Use when the user wants to locate a past Codex thread or give another agent the session coordinates needed for its own review.
+description: Finds Codex session coordinates by id, title, repo path, rollout path, or topic. Use when a user or another skill needs thread metadata and rollout paths for its own review.
 ---
 
 # Codex Session Finder

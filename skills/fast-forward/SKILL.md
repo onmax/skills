@@ -1,6 +1,6 @@
 ---
 name: fast-forward
-description: Fast-forwards low-uncertainty branches inside grilling sessions by stating assumed answers and jumping to the next non-obvious question. Use when the user says fast-forward, skip this branch, this is obvious, same as me, not interesting, or asks to move to the next unclear area during grill-me or grill-with-docs.
+description: Skips obvious branches inside grilling sessions by stating the assumed answer and moving on. Use when the user says fast-forward, skip, obvious, same as me, or next unclear area.
 ---
 
 # Fast Forward

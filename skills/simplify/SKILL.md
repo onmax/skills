@@ -1,6 +1,6 @@
 ---
 name: simplify
-description: Reviews a PR diff, explicit scope, or current direction for accidental complexity and returns the smallest useful simplification plan. Use when the user invokes `/simplify`, says simplify, says something feels too complex, asks for a smaller API surface, or wants to reduce PR/diff scope before applying changes.
+description: Finds accidental complexity and returns the smallest useful simplification plan. Use when the user says simplify, says scope feels too complex, or wants a smaller PR, API, or direction.
 ---
 
 # Simplify

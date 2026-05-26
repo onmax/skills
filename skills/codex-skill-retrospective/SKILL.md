@@ -1,6 +1,6 @@
 ---
 name: codex-skill-retrospective
-description: Analyzes recent Codex sessions and GitHub activity to find repeated agent failures, weak skill instructions, missing workflows, and opportunities for new or improved skills. Use when the user asks to review recent Codex work, audit skill usage, analyze agent patterns, improve skills from session history, or run a daily/weekly skill retrospective.
+description: Reviews recent Codex sessions for repeated agent failures and skill improvements. Use for daily/weekly retrospectives, skill audits, agent-pattern analysis, or cleanup recommendations.
 ---
 
 # Codex Skill Retrospective
@@ -42,26 +42,38 @@ Primary evidence is Codex session history. GitHub is supporting evidence when Co
    - repeated blockers
    - missing context
    - successful patterns worth preserving
-5. For non-trivial runs, write temporary artifacts outside the repo:
+5. Add a skill hygiene pass when the scope is a daily/weekly skill retrospective or the user asks to improve the skill system:
+   - Coverage: include all visible/enabled skills across every skill root in the session, including system, personal, repo-local, plugin, and cache roots. Do not restrict the pass to the current repo.
+   - Budget pressure: estimate whether all loaded skill descriptions are consuming too much prompt budget.
+   - Description candidates: flag long, vague, or trigger-poor descriptions that could be compacted while preserving product/tool/action/object trigger nouns.
+   - Duplicates: find same-name skills and near-duplicate descriptions or bodies across enabled roots, repo-local skills, personal roots, and plugin/cache roots.
+   - Unused candidates: identify skills with no recent `$skill` mention, `SKILL.md` read, or explicit skill-use trace in recent Codex sessions.
+   - Root summary: note every visible skill root and which roots produced candidates, including whether a root appears stale, duplicated, or disabled.
+   - Before recommending deletion or rewrite, verify the kept copy exists and is loaded.
+   - Keep repo-local skills when they encode project policy, live operations, or private workflow language.
+   - Suggest first. Do not delete, rewrite, disable, or move skills unless the user explicitly asks to apply the cleanup.
+6. For non-trivial runs, write temporary artifacts outside the repo:
    - place them under `$TMPDIR/codex-skill-retrospective/<date-or-topic>/`
    - `scope.md`
    - `evidence-ledger.md`
    - `github-evidence.md`
+   - `skill-hygiene.md`
    - `recommendations.md`
-6. Use the reference guides:
+7. Use the reference guides:
    - [references/codex-evidence.md](references/codex-evidence.md)
    - [references/github-evidence.md](references/github-evidence.md)
    - [references/pattern-rubric.md](references/pattern-rubric.md)
-7. Analyze patterns using [references/pattern-rubric.md](references/pattern-rubric.md).
+   - [references/skill-hygiene.md](references/skill-hygiene.md)
+8. Analyze patterns using [references/pattern-rubric.md](references/pattern-rubric.md).
    - Treat repeated patterns as actionable by default.
    - Treat one incident as actionable only when severity is high.
    - Put weak but suggestive evidence in `Investigations`.
-8. For large retrospectives, optionally use scoped subagents:
+9. For large retrospectives, optionally use scoped subagents:
    - split by repo, evidence source, or session cluster
    - ask each subagent for an evidence ledger, not final policy
    - synthesize and rank recommendations centrally
    - continue locally if subagents are unavailable
-9. Recommend improvements:
+10. Recommend improvements:
    - edits to existing skills
    - new skill candidates
    - setup or routing changes
@@ -89,6 +101,7 @@ Evidence reviewed:
 - Remote coverage: complete | partial | blocked, with reason
 - GitHub activity: ...
 - Temporary artifacts: ...
+- Skill hygiene: budget pressure, duplicates, unused candidates, description candidates
 
 Patterns:
 1. <pattern>. Evidence: <session/thread/PR references>. Impact: <why it matters>.

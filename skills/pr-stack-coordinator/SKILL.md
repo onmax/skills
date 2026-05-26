@@ -1,6 +1,6 @@
 ---
 name: pr-stack-coordinator
-description: Coordinates stacked or related GitHub PRs across local worktrees, active Codex sessions, ADR indexes, PR bodies, and squash-merge ordering. Use when the user asks which PRs are ready to merge, asks about multiple PRs, dependent PRs, active worktrees, ADR index collisions, PR body dependency markers, or rebase/squash/merge coordination.
+description: Coordinates related GitHub PRs, dependencies, worktrees, checks, ADR indexes, and merge order. Use when the user asks which PRs are ready, about multiple/dependent PRs, or about rebase/squash/merge coordination.
 ---
 
 # PR Stack Coordinator

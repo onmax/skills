@@ -1,6 +1,6 @@
 ---
 name: setup-onmax-skills
-description: Sets up lightweight repo-local guidance, GitHub issue labels, and `.agents` project memory for Onmax skills. Use before first using Onmax skills in a repo, when `.agents` context is missing, when GitHub issue labels need the Onmax workflow vocabulary, or when agents need clearer instructions for project language, ADRs, simplification, validation, research, and handoff.
+description: Sets up repo-local agent guidance, workflow labels, and `.agents` project memory. Use before first using Onmax skills in a repo or when agents need clearer project language, ADR, validation, research, or handoff guidance.
 ---
 
 # Setup Onmax Skills
@@ -32,12 +32,11 @@ Use this shape:
 ```md
 ## Agent skills
 
-This repo uses Onmax skills for project language, agent work shaping, autonomous execution, PR refinement, validation, and handoff.
+This repo uses Onmax skills for project language, agent work shaping, PR refinement, validation, and handoff.
 
 - Use `grill-with-docs` to clarify project language and record decisions.
 - Use `design-to-agent-work` to move from fuzzy direction to durable memory and agent-ready issue shaping.
 - Use `shape-agent-work` to turn resolved direction into GitHub issues labeled `ready-for-agent`.
-- Use `sandcastle-workflow` to run `ready-for-agent` issues through autonomous implementation, PR refinement, and merge-readiness validation.
 - Use `simplify` to review PR diffs or explicit scopes for accidental complexity.
 - Use `strict-code-review` for strict maintainability reviews and ambitious structural cleanup.
 - Use `validate-direction` before turning a direction into a plan, ADR, or implementation.
@@ -58,10 +57,10 @@ Project memory lives under `.agents/`:
 Agent work lifecycle:
 
 ```text
-clarify/design -> ready-for-agent -> in-agent-run -> PR ready for manual merge decision
+clarify/design -> ready-for-agent issue -> focused implementation -> PR ready for manual merge decision
 ```
 
-GitHub Issues are the default work contract. Autonomous stages may implement, refine the PR, and run merge-readiness validation, but final merge remains manual.
+GitHub Issues are the default work contract. Implementation, PR refinement, and merge-readiness validation stay as separate explicit steps; final merge remains manual.
 
 Use `pr-stack-coordinator` for the manual merge decision. Merge commands prepare and verify a plan first; each merge still needs explicit final confirmation.
 ```
@@ -86,7 +85,6 @@ Offer to create or update this minimal first-iteration label set when the reposi
 | --- | --- | --- |
 | `needs-info` | `F8D7DA` | Missing information before an agent or maintainer can proceed. |
 | `ready-for-agent` | `D8F3DC` | Issue has enough context and acceptance criteria for an autonomous agent run. |
-| `in-agent-run` | `DDEBFF` | An autonomous agent or Sandcastle run is actively working on this issue. |
 | `blocked` | `FFE5B4` | Work cannot continue without a human decision, external access, or dependency. |
 
 Use pastel colors and concise descriptions. Keep the set small until the workflow proves it needs more labels.

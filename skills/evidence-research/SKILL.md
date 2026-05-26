@@ -1,6 +1,6 @@
 ---
 name: evidence-research
-description: Researches internal or external evidence for a design decision and returns decision-oriented patterns with sources. Use during design, grilling, retrospectives, architecture work, or implementation planning when the user asks to research a topic, compare external systems, inspect prior sessions, analyze patterns, or gather evidence before deciding.
+description: Gathers internal or external evidence for one decision and returns sourced patterns. Use when design, planning, retrospectives, or architecture depends on research before deciding.
 ---
 
 # Evidence Research

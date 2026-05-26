@@ -1,6 +1,6 @@
 ---
 name: shape-agent-work
-description: Converts clarified direction, ADRs, PRDs, handoffs, or conversation context into executable GitHub issues. Use when resolved work should be split into ready-for-agent issues for autonomous implementation.
+description: Converts clarified direction into small executable GitHub issues. Use when resolved work should be split into focused agent-ready issues with acceptance criteria and proof.
 ---
 
 # Shape Agent Work
@@ -16,7 +16,6 @@ V1 labels:
 ```text
 needs-info
 ready-for-agent
-in-agent-run
 blocked
 ```
 
@@ -31,8 +30,8 @@ blocked
    - `needs-info`: a missing answer would change the work.
    - `blocked`: intent is clear, but execution depends on an external blocker.
 6. Create or update GitHub issues in dependency order.
-7. Apply exactly one workflow label from the V1 label set. A linked issue may intentionally have no workflow label after a PR is opened.
-8. Return the issue list, dependencies, and the suggested `sandcastle-workflow` invocation.
+7. Apply exactly one workflow label from the V1 label set.
+8. Return the issue list, dependencies, proof expectations, and suggested next implementation order.
 
 ## Issue Body
 
@@ -63,7 +62,7 @@ State the cheapest credible proof: test, typecheck, build, browser check, consum
 
 ## Example
 
-User: "Turn the accepted ADR into issues for Sandcastle."
+User: "Turn the accepted ADR into implementation issues."
 
 Expected output: one or more GitHub issues labeled `ready-for-agent`, each with a behavior-focused `What to build`, links to the ADR or PRD, acceptance criteria, expected proof, and out-of-scope notes.
 

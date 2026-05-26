@@ -1,6 +1,6 @@
 ---
 name: validate-direction
-description: Challenge an emerging direction before it is written down, acted on, merged, or turned into follow-on work. Use at any lifecycle phase when a decision is about to harden into a plan, ADR, PRD, issue breakdown, implementation direction, API change, merge strategy, workflow rule, or durable documentation.
+description: Challenges a direction before it hardens into work or documentation. Use before plans, ADRs, PRDs, issue breakdowns, API changes, merge strategy, workflow rules, or durable docs.
 ---
 
 # Validate Direction

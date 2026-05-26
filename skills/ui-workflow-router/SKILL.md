@@ -1,6 +1,6 @@
 ---
 name: ui-workflow-router
-description: Routes UI work through the user's preferred evolving reference stack and clarifies whether the task needs broad design judgment, external inspiration, or narrow visual adjustment. Use when the user asks to use ui, ui-skills, gh:ibelick/ui-skills, Mobbin, wants something visually good without specifying details, or asks for spacing, color, compactness, layout, table, selector, button, or visual hierarchy adjustments.
+description: Routes UI work to the right design/reference workflow. Use when the user mentions ui, ui-skills, Mobbin, visual quality, spacing, color, compactness, layout, tables, selectors, buttons, or hierarchy.
 ---
 
 # UI Workflow Router

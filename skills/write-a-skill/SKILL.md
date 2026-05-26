@@ -1,27 +1,20 @@
 ---
 name: write-a-skill
-description: Create new agent skills with proper structure, progressive disclosure, and bundled resources. Use when user wants to create, write, or build a new skill.
+description: Creates or revises one portable agent skill with concise routing, progressive disclosure, and clear safety boundaries. Use when the user wants to write, clean up, or restructure a skill.
 ---
 
 # Writing Skills
 
 ## Process
 
-1. **Gather requirements** - ask user about:
-   - What task/domain does the skill cover?
-   - What specific use cases should it handle?
-   - Does it need executable scripts or just instructions?
-   - Any reference materials to include?
+1. **Define one job** - identify the task, trigger, and boundary. If the request needs several jobs, split it into several composable skills.
 
 2. **Draft the skill** - create:
    - SKILL.md with concise instructions
-   - Additional reference files if content exceeds 500 lines
-   - Utility scripts if deterministic operations needed
+   - Additional reference files for rarely needed details
+   - Utility scripts only for deterministic repeatable operations
 
-3. **Review with user** - present draft and ask:
-   - Does this cover your use cases?
-   - Anything missing or unclear?
-   - Should any section be more/less detailed?
+3. **Review the shape** - check that the skill is concise, responsible for one thing, composable, progressively disclosed, harness-agnostic, documented, portable, and secure.
 
 4. **Validate direction** - before finalizing a new or materially changed skill, run `validate-direction` on the emerging skill design when the skill changes agent behavior, routing, permissions, workflow sequencing, or cross-skill coordination. Carry the verdict into the final edit before declaring the skill done.
 
@@ -29,10 +22,10 @@ description: Create new agent skills with proper structure, progressive disclosu
 
 ```
 skill-name/
-├── SKILL.md           # Main instructions (required)
-├── REFERENCE.md       # Detailed docs (if needed)
-├── EXAMPLES.md        # Usage examples (if needed)
-└── scripts/           # Utility scripts (if needed)
+├── SKILL.md           # Required routing + core workflow
+├── REFERENCE.md       # Optional deep details
+├── EXAMPLES.md        # Optional examples
+└── scripts/           # Optional deterministic helpers
     └── helper.js
 ```
 
@@ -74,6 +67,8 @@ The description is **the only thing your agent sees** when deciding which skill 
 - Write in third person
 - First sentence: what it does
 - Second sentence: "Use when [specific triggers]"
+- Preserve trigger nouns: product, tool, action, object.
+- Avoid describing a whole workflow when the skill only owns one step.
 
 **Good example**:
 
@@ -99,6 +94,19 @@ Add utility scripts when:
 
 Scripts save tokens and improve reliability vs generated code.
 
+## Quality Bar
+
+Skills should be:
+
+- **Concise**: short enough to load quickly and scan under pressure.
+- **Responsible for one thing**: one job, one trigger family, one output shape.
+- **Composable**: call or hand off to other skills instead of owning an end-to-end lifecycle. It is good for one skill to mention another when the boundary is explicit.
+- **Progressively disclosed**: keep common rules in `SKILL.md`; move rare detail to references or scripts.
+- **Harness-agnostic**: describe the job, not one execution harness, unless the skill is specifically about that harness.
+- **Well-documented**: include enough examples, rules, and failure modes for another agent to use it correctly.
+- **Portable**: avoid absolute local paths and private assumptions unless the skill is explicitly local.
+- **Secure**: preserve consent, privacy, and mutation boundaries; never normalize secret-printing or broad state changes.
+
 ## When to Split Files
 
 Split into separate files when:
@@ -112,9 +120,11 @@ Split into separate files when:
 After drafting, verify:
 
 - [ ] Description includes triggers ("Use when...")
-- [ ] SKILL.md under 100 lines
+- [ ] Skill owns one job and composes with other skills for adjacent work
+- [ ] SKILL.md is short; rare details are in references
 - [ ] No time-sensitive info
 - [ ] Consistent terminology
 - [ ] Concrete examples included
 - [ ] References one level deep
+- [ ] Security and mutation boundaries are explicit
 - [ ] `validate-direction` was run or explicitly skipped because the edit was mechanical and low-risk

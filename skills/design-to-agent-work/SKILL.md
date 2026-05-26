@@ -1,16 +1,16 @@
 ---
 name: design-to-agent-work
-description: Orchestrates fuzzy direction into validated memory and an issue-shaping handoff for agent work. Use when the user wants to design work for agents, turn a conversation into executable issues, or run the human-guided stages before Sandcastle/VPS execution.
+description: Clarifies fuzzy direction into durable memory and issue-shaping handoff. Use when the user wants to turn an idea, conversation, ADR, PRD, or prior session into clear agent-ready work.
 ---
 
 # Design To Agent Work
 
 ## Quick Start
 
-Use this as the parent workflow for the human-guided stages of the Onmax agent lifecycle:
+Use this for the human-guided stages before implementation:
 
 ```text
-Clarify Direction + Capture Durable Memory -> Shape Agent Work -> Invite Autonomous Execution
+Clarify Direction + Capture Durable Memory -> Shape Agent Work
 ```
 
 Default output target is GitHub Issues. Other targets may be supported later, but name the target explicitly so the lifecycle does not depend on GitHub-specific wording.
@@ -36,7 +36,7 @@ Default output target is GitHub Issues. Other targets may be supported later, bu
    - Issues and PR bodies carry most implementation detail, examples, references, expected proof, and out-of-scope notes.
 6. For scheduling, background jobs, callbacks, runtime execution, providers, or deployment work, explicitly resolve the buildtime/runtime boundary before issue shaping. Name which parts are static configuration, runtime state, provider output, bookkeeping, and execution behavior.
 7. Invite or run `shape-agent-work` once the direction is clear enough to create agent-ready issues.
-8. End by listing created/updated artifacts and the recommended next action, usually starting `sandcastle-workflow` manually on the created issues.
+8. End by listing created/updated artifacts and the recommended next action. Usually this is review the shaped issues, hand off context, or start one focused implementation session.
 
 ## Example
 
@@ -56,10 +56,7 @@ Expected flow: clarify terms with `grill-with-docs`, validate the direction befo
 ## Lifecycle
 
 ```text
-clarify/design -> ready-for-agent -> in-agent-run -> PR ready for manual merge decision
-                                      |
-                                      v
-                                blocked / needs-info
+clarify/design -> shaped issue or handoff -> focused implementation -> PR review/validation
 ```
 
-After autonomous implementation, refinement, and merge-readiness validation complete, remove `in-agent-run` and leave the issue open without a workflow label until the linked PR merges.
+After implementation starts, use `pr-refiner` for PR readiness and `pre-merge-validation` only when merge risk requires consumer-facing proof.
