@@ -18,6 +18,13 @@ If the user rejects a list of questions, gives several answers at once, or asks 
 3. Ask one focused question only if code or docs cannot answer it.
 4. Capture hard constraints immediately before continuing to the next branch.
 
+Every one or two turns, run an altitude check:
+
+1. State the current scope level in one phrase: vision, MVP, workflow, component, or implementation detail.
+2. If the conversation has dropped below the level of the unresolved decision, climb back up before asking the next question.
+3. If the unresolved decision is still "what is the MVP?" or "what belongs in scope?", do not continue into card formats, review mechanics, page-by-page flows, or implementation choices unless the user explicitly asks.
+4. When the user signals "this is getting too specific" or the plan keeps expanding sideways, route to `simplify` and use its smaller target as the next grilling baseline.
+
 Do not restart the interview from the top after an interruption. Resume from the newest user correction and restate only the durable decisions that still matter.
 
 Near the end, before writing or updating a final recommendation, ADR, PRD, issue plan, implementation plan, or handoff, run `validate-direction` on the emerging direction. Use its verdict to proceed, revise the direction, or ask one final blocking question.
@@ -33,6 +40,8 @@ During grilling, recommend `evidence-research` when the next decision depends on
 Do not silently run evidence research for every design question. First name the decision that evidence would clarify, recommend the source mode and research depth, and ask whether to pause grilling for that research unless the user already asked to research.
 
 When the user asks for research, pause the grilling loop and use the research result as input to the next question. If research artifacts or subagent reports are returned, synthesize their decision-changing evidence before continuing.
+
+When the user asks for repository inspection to understand product scope, architecture, or hidden complexity, inspect the repo before continuing the interview. Use what the code/docs already prove to avoid speculative grilling.
 
 ## Domain awareness
 
@@ -102,6 +111,8 @@ Use this skill to reach shared understanding, not to implement.
 During grilling, only write `.agents/` context or ADR files. Do not edit source, tests, config, package files, or other project docs.
 
 If the user says "grill with docs and fix this", treat the fix as the post-grilling goal. Finish the grilling loop, then ask before implementing.
+
+If the grilling session is happening inside a personal repo such as Bitácora de Vida and the durable outcome is a product-scope clarification rather than glossary policy, prefer writing a small ordinary Markdown note over forcing the decision into `.agents/CONTEXT.md`.
 
 ### Update CONTEXT.md inline
 
