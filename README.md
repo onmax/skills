@@ -49,6 +49,7 @@ When an autonomous run succeeds, it opens a PR with automatic issue linking such
 | [`grill-with-docs`](skills/grill-with-docs/SKILL.md) | Stress-tests a plan and captures project language. |
 | [`handoff`](skills/handoff/SKILL.md) | Captures continuation notes for another agent or session. |
 | [`library-craft`](skills/library-craft/SKILL.md) | Reviews reusable package shape and public API craft. |
+| [`people-skills`](skills/people-skills/SKILL.md) | Drafts relationship-preserving messages and interpersonal next actions. |
 | [`pr-body`](skills/pr-body/SKILL.md) | Writes or reviews PR bodies in the repository's preferred style. |
 | [`pr-refiner`](skills/pr-refiner/SKILL.md) | Reviews PR blockers and routes the next refinement step. |
 | [`pr-stack-coordinator`](skills/pr-stack-coordinator/SKILL.md) | Coordinates stacked PRs, worktrees, ADR indexes, merge commands, and per-PR merge confirmation. |
