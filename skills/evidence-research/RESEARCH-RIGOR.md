@@ -11,13 +11,13 @@ Before spawning subagents, write a source-area matrix in `brief.md`. Each row mu
 - questions this source area must answer
 - what would change in the target design if this source area is persuasive
 
-For broad platform or library design questions, consider splitting into official vendor docs, technical blogs, source repositories, comparable libraries, academic or benchmark papers, security or operations writing, and user-facing product documentation. Only include source areas that can change the decision.
+For broad platform or library design questions, consider splitting into official vendor docs, technical blogs, source repositories, comparable libraries, academic or benchmark papers, security or operations writing, and user-facing product documentation. Only include source areas that can change the decision. For `standard` research, prefer one source area unless separate areas are meaningfully independent and worth parallel surveillance.
 
 ## Subagent Reports
 
 Each subagent prompt should include the `brief.md` path, assigned source area, report path, chosen depth, source minimum for that area, whether source cloning into `sources/` is useful, a no-repo-mutation requirement, and a request for source links, trade-offs, patterns, disagreements, recommendations, and evidence-versus-inference separation.
 
-Use at least one subagent. Use multiple subagents when source areas are meaningfully independent, such as framework ecosystems, product ecosystems, company technical writing, benchmarks, security literature, Codex session clusters, PR stacks, and repository history.
+Use at least one subagent. Default to one subagent for `targeted` and `standard` research. Use multiple subagents only when source areas are meaningfully independent, likely to change the decision, and worth the extra latency, such as framework ecosystems, product ecosystems, company technical writing, benchmarks, security literature, Codex session clusters, PR stacks, and repository history. Record the reason for multiple subagents in `brief.md`.
 
 Subagents must write the requested report file. A progress message without a report is incomplete.
 

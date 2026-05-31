@@ -36,7 +36,7 @@ Do not mutate the project repo. Research artifacts belong under the temporary di
 Default to `standard` unless the user asks for "quick", "ambitious", "proper research", "deep research", or the decision is public API, security, data model, migration, pricing, irreversible architecture, or high-conflict.
 
 - `targeted`: one narrow source area, at least one subagent, at least 5 authoritative sources, one report, synthesis optional.
-- `standard`: 2-4 distinct source areas, 2-4 subagents when available, at least 12 authoritative sources total, synthesis required.
+- `standard`: one focused source area, one subagent when available, at least 8 authoritative sources total, synthesis required. Add more source areas only when they are meaningfully independent and likely to change the decision.
 - `ambitious`: broad or high-stakes work, 4+ source areas, 4+ subagents when available or staged local passes, at least 20 authoritative sources total, synthesis required, explicit evidence-versus-inference table required.
 
 If the user says the first pass was too shallow, immediately upgrade to `ambitious`. Do not repeat the same source area with a slightly longer prompt; add missing source areas and stronger completion checks.
@@ -65,7 +65,7 @@ For source-area matrices, report requirements, source-quality rules, and complet
 
 Each subagent prompt should include the `brief.md` path, assigned source area, report path, chosen depth, source minimum for that area, whether source cloning into `sources/` is useful, a no-repo-mutation requirement, and a request for source links, trade-offs, patterns, disagreements, recommendations, and evidence-versus-inference separation.
 
-Use at least one subagent. Use multiple subagents when source areas are meaningfully independent, such as framework ecosystems, product ecosystems, company technical writing, benchmarks, security literature, Codex session clusters, PR stacks, or repository history.
+Use at least one subagent. Default to one subagent for `targeted` and `standard` research. Use multiple subagents only when source areas are meaningfully independent, likely to change the decision, and worth the extra latency, such as framework ecosystems, product ecosystems, company technical writing, benchmarks, security literature, Codex session clusters, PR stacks, or repository history. Record the reason for multiple subagents in `brief.md`.
 
 Subagents must write the requested report file. A progress message without a report is incomplete.
 
