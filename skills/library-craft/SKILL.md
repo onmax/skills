@@ -1,6 +1,6 @@
 ---
 name: library-craft
-description: Reviews reusable package craft: exports, layout, naming, tests, docs, compatibility, and release shape. Use for npm packages, SDKs, framework utilities, reusable modules, or public APIs.
+description: "Reviews reusable package craft: exports, layout, naming, tests, docs, compatibility, and release shape. Use for npm packages, SDKs, framework utilities, reusable modules, or public APIs."
 ---
 
 # Library Craft

@@ -2,7 +2,7 @@
 
 ADRs live in `.agents/adr/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc.
 
-Create the `.agents/adr/` directory lazily — only when the first ADR is needed. Legacy `docs/adr/` may be read as fallback, but do not create new ADRs there unless the user explicitly asks for the old layout.
+Create the `.agents/adr/` directory lazily — only when the first ADR is needed.
 
 ## Template
 

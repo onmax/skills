@@ -38,7 +38,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`pr-refiner`](skills/pr-refiner/SKILL.md) | Reviews PR blockers and routes the next refinement step. |
 | [`simplify`](skills/simplify/SKILL.md) | Finds the smallest useful simplification for a PR or scope. |
 | [`strict-code-review`](skills/strict-code-review/SKILL.md) | Runs a strict maintainability review for structural quality and code-judo simplifications. |
-| [`ui-workflow-router`](skills/ui-workflow-router/SKILL.md) | Routes UI work to the right design/reference workflow. |
+| [`ui`](skills/ui/SKILL.md) | Routes UI work to the smallest useful design/reference workflow. |
 | [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
 | [`worktree-cleanup`](skills/worktree-cleanup/SKILL.md) | Safely cleans current-repo worktrees, stale branches, remote workspaces, and disk-heavy artifacts. |
 | [`write-a-skill`](skills/write-a-skill/SKILL.md) | Creates agent skills with proper structure and review checks. |

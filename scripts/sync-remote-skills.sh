@@ -7,6 +7,7 @@ repo_url="${SKILLS_REPO_URL:-gh:onmax/skills}"
 fallback_repo_url="${SKILLS_FALLBACK_REPO_URL:-https://github.com/onmax/skills.git}"
 skill_users="${SKILL_USERS:-maxi-main maxi-pipoyu maxi-onmax}"
 workspace_group="${WORKSPACE_GROUP:-codex-workspace}"
+skill_target_dirs="${SKILL_TARGET_DIRS:-.agents/skills .codex/skills}"
 
 if ! command -v git >/dev/null 2>&1; then
   echo "git is required" >&2
@@ -46,42 +47,48 @@ sudo find "$skills_repo" -type f -exec chmod g+rw {} +
 timestamp="$(date +%Y%m%d%H%M%S)"
 for user in $skill_users; do
   home_dir="$(getent passwd "$user" | cut -d: -f6)"
-  sudo install -d -o "$user" -g "$user" -m 700 "$home_dir/.agents"
-  sudo install -d -o "$user" -g "$user" -m 755 "$home_dir/.agents/skills"
+  for target_dir in $skill_target_dirs; do
+    target_root="$home_dir/$target_dir"
+    sudo install -d -o "$user" -g "$user" -m 700 "$(dirname "$target_root")"
+    sudo install -d -o "$user" -g "$user" -m 755 "$target_root"
 
-  for skill_dir in "$skills_repo"/skills/*; do
-    [ -f "$skill_dir/SKILL.md" ] || continue
-    name="$(basename "$skill_dir")"
-    target="$home_dir/.agents/skills/$name"
+    for skill_dir in "$skills_repo"/skills/*; do
+      [ -f "$skill_dir/SKILL.md" ] || continue
+      name="$(basename "$skill_dir")"
+      target="$target_root/$name"
 
-    if sudo test -L "$target"; then
-      current="$(sudo readlink "$target")"
-      if [ "$current" = "$skill_dir" ]; then
-        echo "ok $user $name"
-        continue
+      if sudo test -L "$target"; then
+        current="$(sudo readlink "$target")"
+        if [ "$current" = "$skill_dir" ]; then
+          echo "ok $user $target_dir $name"
+          continue
+        fi
+        sudo rm "$target"
+      elif sudo test -e "$target"; then
+        sudo mv "$target" "$target_root/${name}.backup.${timestamp}"
+        echo "backed up $user $target_dir $name"
       fi
-      sudo rm "$target"
-    elif sudo test -e "$target"; then
-      sudo mv "$target" "$home_dir/.agents/skills/${name}.backup.${timestamp}"
-      echo "backed up $user $name"
-    fi
 
-    sudo ln -s "$skill_dir" "$target"
-    sudo chown -h "$user:$user" "$target"
-    echo "linked $user $name"
+      sudo ln -s "$skill_dir" "$target"
+      sudo chown -h "$user:$user" "$target"
+      echo "linked $user $target_dir $name"
+    done
   done
 done
 
 for user in $skill_users; do
   home_dir="$(getent passwd "$user" | cut -d: -f6)"
-  for skill_dir in "$skills_repo"/skills/*; do
-    [ -f "$skill_dir/SKILL.md" ] || continue
-    name="$(basename "$skill_dir")"
-    target="$home_dir/.agents/skills/$name"
-    if ! sudo test -L "$target" || [ "$(sudo readlink "$target")" != "$skill_dir" ]; then
-      echo "bad link: $user $name" >&2
-      exit 1
-    fi
+  for target_dir in $skill_target_dirs; do
+    target_root="$home_dir/$target_dir"
+    for skill_dir in "$skills_repo"/skills/*; do
+      [ -f "$skill_dir/SKILL.md" ] || continue
+      name="$(basename "$skill_dir")"
+      target="$target_root/$name"
+      if ! sudo test -L "$target" || [ "$(sudo readlink "$target")" != "$skill_dir" ]; then
+        echo "bad link: $user $target_dir $name" >&2
+        exit 1
+      fi
+    done
   done
 done
 
