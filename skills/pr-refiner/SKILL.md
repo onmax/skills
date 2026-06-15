@@ -15,9 +15,7 @@ Default posture: autonomous refinement. An explicit `pr-refiner` invocation for 
 
 It is not consent to post PR comments, approve, request changes, label, close, merge, force-push, or resolve ambiguous/unverified threads.
 
-For multiple PRs, stacked PRs, merge ordering, active worktree coordination, ADR index collisions, dependency markers, or rebase/squash/merge execution, use `pr-stack-coordinator` instead.
-
-When `pr-stack-coordinator` hands off a PR, preserve its stack evidence packet. Do not discard cross-PR blockers just because the current fix is local; either resolve them within the handoff scope or report them as still owned by `pr-stack-coordinator`.
+For multiple PRs, stacked PRs, merge ordering, active worktree coordination, ADR index collisions, dependency markers, or rebase/squash/merge execution, stop and report that the work is outside `pr-refiner` scope.
 
 ## Workflow
 
@@ -27,7 +25,6 @@ When `pr-stack-coordinator` hands off a PR, preserve its stack evidence packet. 
    - review decision, unresolved review threads, top-level comments, and requested changes
    - CI/check status, conflicts, mergeability, and branch freshness
    - whether the PR is stacked and which diff range represents only this PR's own changes
-   - any stack evidence packet passed from `pr-stack-coordinator`
 3. Classify blockers before changing anything.
 4. Before mutating anything, classify the next action as one of: local edit, branch push, review-thread resolution, PR body edit, label change, close, merge, force-push, or comment.
 5. Route each blocker to the smallest useful fix.
@@ -45,7 +42,6 @@ When `pr-stack-coordinator` hands off a PR, preserve its stack evidence packet. 
 - Use `evidence-research` only when internal or external evidence would change the PR decision.
 - Use `handoff` when the PR cannot be finished in the current session.
 - Use `fast-forward` only inside a grilling flow to skip obvious branches.
-- Use `pr-stack-coordinator` when the request involves multiple PRs, dependent PRs, ADR index collisions, active worktree safety, PR body dependency markers, or merge execution.
 
 ## Blocker Routing
 
@@ -75,13 +71,13 @@ Use GitHub GraphQL when resolving inline review threads, especially Codex thread
 
 Stay in this skill only when one PR can be refined independently.
 
-Hand off to `pr-stack-coordinator` before editing when the PR appears stacked, depends on another PR, shares conflict-prone files with nearby PRs, changes ADR indexes, needs a merge-order decision, or belongs to an active or uncertain Codex worktree.
+Stop before editing when the PR appears stacked, depends on another PR, shares conflict-prone files with nearby PRs, changes ADR indexes, needs a merge-order decision, or belongs to an active or uncertain Codex worktree.
 
 If the PR only exists as part of a stack, challenge whether it should instead be independent against the default branch, merged after its dependency, or combined with its dependency. Do not preserve a stack just because it already exists.
 
 If the user explicitly asks to refine only the top item in a stack, do not inspect or fix `main...HEAD` wholesale. Use the PR's actual base branch, explicit commit range, or `HEAD^..HEAD` when that is the user's scoped range, and report that parent-stack findings are out of scope.
 
-When a PR changes ADR-like files, check for numeric index collisions against the base branch and nearby open PRs before pushing. If a collision exists, do not rename files silently; report the collision and route through `pr-stack-coordinator`.
+When a PR changes ADR-like files, check for numeric index collisions against the base branch and nearby open PRs before pushing. If a collision exists, do not rename files silently; report the collision.
 
 ## PR Body Edits
 
@@ -93,9 +89,6 @@ Do not invent boilerplate headings such as `## Summary`. Do not add `Validation`
 
 ```md
 PR status:
-- ...
-
-Stack evidence:
 - ...
 
 Blockers:
