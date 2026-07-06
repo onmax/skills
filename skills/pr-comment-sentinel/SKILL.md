@@ -32,9 +32,15 @@ Skip when the comment is stale, already handled, based on a false premise, or wo
 
 If a watched PR/head has no fresh Codex review signal and needs one, posting the exact nudge `@codex review` is allowed when Maxi has granted that permission for the run. Do not duplicate the nudge for the same head.
 
+## PR Titles
+
+Before handing off, pushing to, or merging a watched PR, confirm the PR title follows Conventional Commits: `<type>(<scope>)?: <subject>`, for example `fix(agent): honor webhook runtimes`.
+
+If the title does not match and the correct title is clear from the PR, rename it with `gh pr edit --title`. If the correct title is not clear, do not merge; report the title blocker.
+
 ## Merge Ready PRs
 
-Merge without waiting when the PR is authored by the current GitHub user, is not a draft, has a clean merge state, all required checks succeeded, no unresolved current review threads remain, and the latest Codex signal is a thumbs-up or no-major-issues comment for the current head.
+Merge without waiting when the PR is authored by the current GitHub user, has a Conventional Commits title, is not a draft, has a clean merge state, all required checks succeeded, no unresolved current review threads remain, and the latest Codex signal is a thumbs-up or no-major-issues comment for the current head.
 
 Use the recent repository strategy: squash merge. Delete the PR branch when GitHub allows it for same-repo branches. If any condition is missing, do not merge; report the blocker.
 
@@ -44,10 +50,11 @@ For each actionable item:
 1. Create or use a dedicated T3 Code or Codex worktree under the configured workspace.
 2. Load `workflow` and `pr-refiner`; keep one owner per PR.
 3. Make the smallest fix that satisfies the intent.
-4. Run focused checks.
-5. Push to the PR branch.
-6. Resolve addressed threads without adding a comment.
-7. Remove the worktree when the branch is clean and pushed.
+4. Preserve or repair the PR title so it follows Conventional Commits.
+5. Run focused checks.
+6. Push to the PR branch.
+7. Resolve addressed threads without adding a comment.
+8. Remove the worktree when the branch is clean and pushed.
 
 After a fix lands, use the merge-ready rule above. Do not merge when checks are pending or the latest Codex signal is stale.
 
