@@ -15,11 +15,21 @@ The queue is all open PRs in the watched repos where the current GitHub user is 
 
 Each heartbeat:
 - list open PRs and current heads
+- run one bounded single pass; do not watch pending checks or wait for spawned fix workers
+- load `workflow`; the root is a coordinator only, with one independent lane and one owner per PR
+- use metadata-only list calls first; never call `gh pr list --json comments,reviews,statusCheckRollup`
+- process clean merge-ready PRs in the listed repo order before deep-inspecting blocked or stale PRs
 - read unresolved review threads, reviews, and comments from Codex
-- ignore PRs with no new actionable signal
+- read PR-level reactions from Codex with GraphQL; a `THUMBS_UP` from `chatgpt-codex-connector[bot]` after the latest commit counts as a fresh Codex signal for the current head
+- use `gh api graphql` for review threads; `gh pr view --json reviewThreads` is not a valid field
+- ignore PRs with no new actionable signal unless they satisfy merge-ready preconditions
 - treat Codex code-review usage-limit comments as review-unavailable state
-- send one agent per actionable PR/comment group
-- squash-merge clean PRs after a fresh Codex thumbs-up or allowed quota fallback subagent review for the current head
+- start all ready or actionable PR lanes before waiting on any lane
+- send one owner per actionable PR/comment group; a lane is not spawned unless it has a durable child-thread id that can be polled or an OS worker with a pid file and log path
+- squash-merge clean PRs after a fresh Codex thumbs-up or allowed internal fallback subagent review for the current head
+- keep merge gates per PR; do not let pending checks or blocked state in one repo delay an unrelated PR whose own merge conditions are satisfied
+- draft status is not a terminal blocker for authored PRs; mark otherwise-ready authored drafts ready for review, then re-check before merging
+- report pending checks, running workers, and blocked PRs, then exit so the next timer run re-lists the queue
 
 Use a webhook when available. Until then, a 2-minute heartbeat is fine.
 
@@ -35,9 +45,19 @@ If a watched PR/head has no fresh Codex review signal and needs one, posting the
 
 If Codex replies that code-review usage limits were reached, treat the current head as review-unavailable. Do not post another `@codex review` for that head, do not try to switch Codex or ChatGPT accounts, and do not copy, move, or inspect auth material to bypass the limit.
 
-When the normal merge conditions are otherwise satisfied but the only missing condition is a fresh GitHub Codex review, run a bounded internal fallback review instead of posting to the PR. The fallback review must be carried out by a separate internal review subagent; do not self-review locally in the heartbeat. Ask the subagent to review the PR diff against base for correctness, behavior regressions, security issues, missing tests, and mismatch with the PR intent, then return one internal verdict: `no-major-issues`, `needs-fix`, or `inconclusive`.
+Before working the fix queue, evaluate merge-ready PRs first. Check PR-level Codex reactions before fallback review. If a `chatgpt-codex-connector[bot]` `THUMBS_UP` reaction was created after the latest commit on the current head, use it as the fresh GitHub Codex signal and do not start fallback review for that PR. When the normal merge conditions are otherwise satisfied but the only missing condition is a fresh GitHub Codex review or reaction signal, run a bounded internal fallback review instead of posting to the PR. The fallback review must be carried out by a separate observable review owner; do not self-review locally in the heartbeat. A review owner is real only when the heartbeat records a pollable child-thread id or an observable read-only OS review worker with pid, log, prompt, and status paths. Ask the reviewer to review the PR diff against base for correctness, behavior regressions, security issues, missing tests, and mismatch with the PR intent, then return one internal verdict: `no-major-issues`, `needs-fix`, or `inconclusive`.
 
-An internal fallback verdict is not a GitHub Codex thumbs-up. It may replace the fresh GitHub Codex signal only for a current-head quota-limit state when it came from the review subagent, the PR is authored by the current GitHub user, has a Conventional Commits title, is not a draft, has a clean merge state, all required checks succeeded, no unresolved current review threads remain, and no commits were pushed after the fallback review. If a review subagent cannot be created or does not return `no-major-issues`, do not merge; report the blocker.
+An internal fallback verdict is not a GitHub Codex thumbs-up. It may replace the fresh GitHub Codex signal when comments are disabled or Codex review is unavailable, but only when it came from the observable review owner, the verdict is for the exact current head SHA, the PR is authored by the current GitHub user, has a Conventional Commits title, is not a draft, has a clean merge state, all required checks succeeded, no unresolved current review threads remain, and no commits were pushed after the fallback review. If a review owner cannot be created or does not return `no-major-issues` for the current head, do not merge; report the blocker.
+
+When a worker pushes a fix, the earlier fallback verdict is stale. After the updated head has clean checks and no unresolved current review threads, run a fresh fallback review for that exact head and then apply the merge-ready rule. Do not wait for other PRs or repos before merging a PR whose own gates have passed.
+
+The heartbeat is not a long-running coordinator. Do not run `gh pr checks --watch`, sleep/poll loops, or `collab: Wait` for spawned fix workers or pending checks. If a PR is not ready now, report the blocker and exit; the timer will re-run and re-list all open PRs. A bounded internal fallback review for an already merge-ready PR is allowed, but if it cannot return during this pass, record `inconclusive` and exit.
+
+Workflow lane rule: one PR equals one lane and one owner. The root may reconcile, spawn, steer, and verify short read-only state, but it must not implement fixes or sit waiting for one lane while other lanes are ready when real worker capability exists. Create a lane ledger with PR number, head SHA, owner, state, and blocker. Launch independent fix/review/merge-ready lanes in parallel before doing deep work on any single PR. A claimed owner is real only when the heartbeat records a pollable child-thread id or an observable OS worker pid and log path; otherwise it is not spawned.
+
+Worker fallback rule: if durable child-thread tools are unavailable, launch a detached per-PR Codex worker process from the PR worktree and immediately verify that its pid exists. Record the worker prompt path, log path, pid file, and launch result in the lane ledger. The worker should leave its worktree, log, pid, and status marker in place; a later heartbeat cleans them after reading the result. If a worker exits with local diffs but no status marker, continue that same worktree in a follow-up worker instead of discarding or restarting from scratch. If an OS worker cannot be launched and verified, process at most one actionable PR lane inline in that heartbeat, then report that parallel workers were unavailable. Do not report "spawned worker" for a lane that has no pollable child id and no live pid/log.
+
+Query discipline: first run metadata-only `gh pr list` for each repo with number, title, author, head, draft, merge state, updated time, and URL only. Do not fetch comments, reviews, full check rollups, or review threads for non-authored, dirty, blocked, draft, or stale PRs. For authored clean/non-draft candidates, fetch only that PR's checks, review threads, latest commit, and PR-level reactions, then merge or record the exact blocker before moving to broad comment inspection.
 
 ## PR Titles
 
@@ -47,7 +67,9 @@ If the title does not match and the correct title is clear from the PR, rename i
 
 ## Merge Ready PRs
 
-Merge without waiting when the PR is authored by the current GitHub user, has a Conventional Commits title, is not a draft, has a clean merge state, all required checks succeeded, no unresolved current review threads remain, and either the latest Codex signal is a thumbs-up/no-major-issues comment for the current head or an allowed quota fallback subagent review returned `no-major-issues` for the current head.
+If a PR is authored by the current GitHub user, has a Conventional Commits title, is a draft, has a clean merge state, all required checks succeeded, no unresolved current review threads remain, and either the latest Codex signal is a thumbs-up/no-major-issues signal for the current head or an allowed internal fallback subagent review returned `no-major-issues` for the current head, mark it ready for review with `gh pr ready`. Then immediately re-read the PR head, draft state, checks, and review threads before deciding merge readiness.
+
+Merge without waiting when the PR is authored by the current GitHub user, has a Conventional Commits title, is not a draft, has a clean merge state, all required checks succeeded, no unresolved current review threads remain, and either the latest Codex signal is a thumbs-up/no-major-issues signal for the current head, a PR-level Codex bot thumbs-up reaction was created after the latest commit, or an allowed internal fallback subagent review returned `no-major-issues` for the current head.
 
 Use the recent repository strategy: squash merge. Delete the PR branch when GitHub allows it for same-repo branches. If any condition is missing, do not merge; report the blocker.
 
@@ -61,9 +83,9 @@ For each actionable item:
 5. Run focused checks.
 6. Push to the PR branch.
 7. Resolve addressed threads without adding a comment.
-8. Remove the worktree when the branch is clean and pushed.
+8. Remove the worktree when the branch is clean and pushed, except detached sentinel workers should leave their worktree and log for the next heartbeat to inspect.
 
-After a fix lands, use the merge-ready rule above. Do not merge when checks are pending or the latest Codex signal is stale.
+After a fix lands, use the merge-ready rule above for that PR only when its own checks are already settled in the current pass. Do not merge when that PR has pending checks or the latest Codex signal is stale. Do not watch checks or block one ready PR on another PR that is still pending, failing, conflicted, or review-blocked.
 
 ## Script
 

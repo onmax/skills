@@ -2,6 +2,8 @@
 
 Use GraphQL for inline review threads because REST comment IDs are not enough to resolve conversations. GitHub exposes review thread nodes through `PullRequestReviewThread`, and resolves them with `resolveReviewThread`.
 
+`PullRequestReviewThread` nodes do not expose a `url` field. Fetch URLs from the nested review comment nodes instead.
+
 ## Fetch unresolved threads
 
 ```sh
