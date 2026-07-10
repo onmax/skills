@@ -11,6 +11,7 @@ Usage:
 
 Options:
   --expected-head SHA       Fail closed if the observed head differs.
+  --codex-request FILE      Exact-head Codex request marker JSON.
   --fallback FILE           Exact-head fallback review JSON or legacy status file.
   --merge allowed|disabled  Whether a ready PR may be merged. Default: disabled.
   --repair allowed|disabled Whether actionable blockers may dispatch a repair owner. Default: disabled.
@@ -22,6 +23,7 @@ USAGE
 }
 
 expected_head=""
+request_file=""
 fallback_file=""
 merge_policy="disabled"
 repair_policy="disabled"
@@ -38,6 +40,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --fallback)
       fallback_file="${2:?missing fallback file}"
+      shift 2
+      ;;
+    --codex-request)
+      request_file="${2:?missing Codex request marker}"
       shift 2
       ;;
     --merge)
@@ -101,6 +107,23 @@ owner="${repo%%/*}"
 name="${repo#*/}"
 [ "$owner" != "$repo" ] || { echo "repository must be owner/name" >&2; exit 64; }
 
+request_json='null'
+if [ -n "$request_file" ] && [ -f "$request_file" ]; then
+  if jq -e --arg repository "$repo" --argjson number "$pr" '
+    .schema == 1
+    and .phase == "posted"
+    and .repository == $repository
+    and .number == $number
+    and (.head | type == "string")
+    and (.commentId | type == "number")
+    and (.requestedAt | type == "string")
+    and (.requestedAt | fromdateiso8601 | type == "number")
+    and (.author | type == "string")
+  ' "$request_file" >/dev/null; then
+    request_json="$(jq -c . "$request_file")"
+  fi
+fi
+
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -119,9 +142,16 @@ gh api --paginate "repos/$repo/pulls/$pr/reviews" \
   | jq -s 'add | map({id, body: (.body // ""), submittedAt: .submitted_at, head: .commit_id, author: .user.login, state})' \
   > "$tmp/reviews.json"
 
-gh api --paginate -H "Accept: application/vnd.github+json" "repos/$repo/issues/$pr/reactions" \
-  | jq -s 'add | map({id, content, createdAt: .created_at, author: .user.login})' \
-  > "$tmp/reactions.json"
+printf '[]\n' > "$tmp/reactions.json"
+if [ "$request_json" != null ]; then
+  comment_id="$(jq -r .commentId <<< "$request_json")"
+  if gh api --paginate -H "Accept: application/vnd.github+json" \
+    "repos/$repo/issues/comments/$comment_id/reactions" > "$tmp/reactions.raw" 2>/dev/null; then
+    jq -s --argjson commentId "$comment_id" \
+      'add | map({id, content, createdAt: .created_at, author: .user.login, commentId: $commentId})' \
+      "$tmp/reactions.raw" > "$tmp/reactions.json"
+  fi
+fi
 
 gh api graphql --paginate --slurp \
   -F owner="$owner" \
@@ -204,6 +234,7 @@ jq -n \
   --arg comments "$comment_policy" \
   --arg notBefore "$not_before" \
   --argjson codexTimeoutSeconds "$codex_timeout_seconds" \
+  --argjson codexRequest "$request_json" \
   --argjson fallback "$fallback_json" \
   --slurpfile pr "$tmp/pr.json" \
   --slurpfile checks "$tmp/checks.json" \
@@ -230,6 +261,7 @@ jq -n \
     comments: $issueComments[0],
     reviews: $reviews[0],
     reactions: $reactions[0],
+    codexRequest: $codexRequest,
     fallback: $fallback,
     collection: { startedAt: $startedAt, finishedAt: $finishedAt, headAfter: $headAfter }
   }' \

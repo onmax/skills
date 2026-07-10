@@ -57,9 +57,17 @@ fallback_path() {
   fi
 }
 
+request_path() {
+  local repo="$1"
+  local pr="$2"
+  local head="$3"
+  local request="$workspace/pr-comment-sentinel-state/${repo//\//-}/pr-$pr-$head/codex-request.json"
+  [ ! -f "$request" ] || printf '%s\n' "$request"
+}
+
 recheck() {
   local snapshot="$1"
-  local repo pr head merge_policy repair_policy comment_policy not_before fallback
+  local repo pr head merge_policy repair_policy comment_policy not_before request fallback
   repo="$(jq -r .repository <<< "$snapshot")"
   pr="$(jq -r .number <<< "$snapshot")"
   head="$(jq -r .head <<< "$snapshot")"
@@ -67,6 +75,7 @@ recheck() {
   repair_policy="$(jq -r .policy.repair <<< "$snapshot")"
   comment_policy="$(jq -r .policy.comments <<< "$snapshot")"
   not_before="$(jq -r '.policy.notBefore // ""' <<< "$snapshot")"
+  request="$(request_path "$repo" "$pr" "$head")"
   fallback="$(fallback_path "$repo" "$pr" "$head")"
 
   args=(
@@ -76,6 +85,7 @@ recheck() {
     --comments "$comment_policy"
   )
   [ -z "$not_before" ] || args+=(--not-before "$not_before")
+  [ -z "$request" ] || args+=(--codex-request "$request")
   [ -z "$fallback" ] || args+=(--fallback "$fallback")
   "$script_dir/pr-readiness.sh" "${args[@]}" "$repo" "$pr"
 }
@@ -117,6 +127,21 @@ while IFS= read -r snapshot; do
         owner="$(jq -cn --argjson exitCode "$rc" '{status:"launch-failed", exitCode:$exitCode}')"
         result="worker-launch-failed"
         blocker="review-owner-launch-failed"
+      fi
+      ;;
+    request-review)
+      if ! fresh="$(recheck "$snapshot")"; then
+        result="recheck-failed"
+        blocker="review-request-recheck-failed"
+      elif [ "$(jq -r .action <<< "$fresh")" = "request-review" ]; then
+        viewer="$(jq -r .viewer <<< "$fresh")"
+        request="$($script_dir/request-review.sh "$repo" "$pr" "$head" "$viewer")"
+        status="$(jq -r .status <<< "$request")"
+        result="review-$status"
+        blocker="$(jq -r '.blocker // ""' <<< "$request")"
+      else
+        result="cancelled-after-recheck"
+        blocker="$(jq -cr '.blockers | join(",")' <<< "$fresh")"
       fi
       ;;
     merge)

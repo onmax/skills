@@ -3,10 +3,6 @@ def latest: sort_by(.at) | last;
 def conventional_title:
   test("^(feat|fix|docs|refactor|perf|test|build|ci|chore|revert)(\\([^)]+\\))?!?: .+");
 
-def is_command($viewer):
-  .author == $viewer
-  and (.body // "" | test("(^|[\\r\\n])[[:space:]]*@codex[[:space:]]+(review|address)\\b"; "i"));
-
 def is_quota($bot):
   .author == $bot
   and (.body // "" | test("usage limits?.*code reviews?|code-review usage limits?"; "i"));
@@ -16,15 +12,14 @@ def is_quota($bot):
 | ($input.head.committedAt) as $head_at
 | ($input.viewer) as $viewer
 | ($input.codexBot) as $bot
-| ([
-    $input.comments[]?
-    | select(is_command($viewer) and .createdAt > $head_at)
-    | { id, at: .createdAt, author, body }
-  ] | latest) as $command
-| ($command.at // $head_at) as $cutoff
+| (($input.codexRequest // null)
+   | if . != null and .head == $head then
+       { id: .commentId, at: .requestedAt, author: $viewer, body: "@codex review", head: .head }
+     else null
+     end) as $command
 | ([
     ($input.reviews[]?
-      | select(.author == $bot and .head == $head and .submittedAt > $cutoff)
+      | select(.author == $bot and .head == $head and ($command == null or .submittedAt > $command.at))
       | {
           kind: "review",
           id,
@@ -32,10 +27,10 @@ def is_quota($bot):
           favorable: (.body // "" | test("no (major )?issues|no issues found"; "i"))
         }),
     ($input.reactions[]?
-      | select(.author == $bot and .content == "+1" and .createdAt > $cutoff)
+      | select($command != null and .commentId == $command.id and .author == $bot and .content == "+1" and .createdAt > $command.at)
       | { kind: "thumbs_up", id, at: .createdAt, favorable: true }),
     ($input.comments[]?
-      | select(is_quota($bot) and .createdAt > $cutoff)
+      | select($command != null and is_quota($bot) and .createdAt > $command.at)
       | { kind: "quota", id, at: .createdAt, favorable: false })
   ] | latest) as $terminal
 | (($command != null)
@@ -50,7 +45,7 @@ def is_quota($bot):
    | ($fallback != null
       and $fallback.observable == true
       and $fallback.head == $head
-      and $fallback.createdAt > $cutoff) as $fresh
+      and ($command == null or $fallback.createdAt > $command.at)) as $fresh
    | {
        value: $fallback,
        fresh: $fresh,
@@ -114,9 +109,11 @@ def is_quota($bot):
    elif ($title_valid | not) then (if $input.policy.repair == "allowed" then "repair" else "wait-title" end)
    elif ($input.mergeState == "DIRTY" or $input.mergeState == "BEHIND") then (if $input.policy.repair == "allowed" then "repair" else "wait-merge-state" end)
    elif $checks_state == "failed" then (if $input.policy.repair == "allowed" then "repair" else "wait-checks" end)
-   elif $checks_state != "passed" then "wait-checks"
    elif $review.verdict == "needs-fix" then (if $input.policy.repair == "allowed" then "repair" else "wait-review-findings" end)
    elif $review.verdict == "inconclusive" then "wait-review-inconclusive"
+   elif $lane == "missing" and $input.policy.comments == "allowed" and ($review.admissible | not) then "request-review"
+   elif $lane == "unavailable" and ($fallback.fresh | not) then "fallback-review"
+   elif $checks_state != "passed" then "wait-checks"
    elif $lane == "pending" then "wait-review"
    elif ($review.admissible | not) and ($lane == "unavailable" or $lane == "missing") then "fallback-review"
    elif ($review.admissible | not) then "wait-review"
@@ -136,6 +133,7 @@ def is_quota($bot):
     observedAt: $input.collection.finishedAt,
     headStable: $head_stable,
     authored: $authored,
+    viewer: $viewer,
     eligible: $eligible,
     draft: $input.draft,
     titleValid: $title_valid,

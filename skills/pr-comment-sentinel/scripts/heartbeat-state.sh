@@ -13,6 +13,8 @@ Environment:
   PR_COMMENT_SENTINEL_MERGE_REPOS   Space/comma-separated owner/repo values allowed to merge
   PR_COMMENT_SENTINEL_REPAIR_REPOS  Space/comma-separated owner/repo values allowed to repair
   PR_COMMENT_SENTINEL_COMMENT_REPOS Space/comma-separated owner/repo values allowed one @codex review nudge
+  PR_COMMENT_SENTINEL_FULL_QUEUE_REPOS
+                                    Repositories that admit existing heads despite NOT_BEFORE
   PR_COMMENT_SENTINEL_NOT_BEFORE     Optional ISO timestamp; older PR heads are grandfathered
 USAGE
   exit 0
@@ -28,6 +30,7 @@ workspace="${PR_COMMENT_SENTINEL_WORKSPACE:-/home/workspace}"
 merge_repos="${PR_COMMENT_SENTINEL_MERGE_REPOS:-}"
 repair_repos="${PR_COMMENT_SENTINEL_REPAIR_REPOS:-}"
 comment_repos="${PR_COMMENT_SENTINEL_COMMENT_REPOS:-}"
+full_queue_repos="${PR_COMMENT_SENTINEL_FULL_QUEUE_REPOS:-}"
 not_before="${PR_COMMENT_SENTINEL_NOT_BEFORE:-}"
 error_file="$(mktemp)"
 trap 'rm -f "$error_file"' EXIT
@@ -50,6 +53,8 @@ for repo_arg in "${repos[@]}"; do
   contains_repo "$merge_repos" "$repo" && merge_policy="allowed"
   contains_repo "$repair_repos" "$repo" && repair_policy="allowed"
   contains_repo "$comment_repos" "$repo" && comment_policy="allowed"
+  repo_not_before="$not_before"
+  contains_repo "$full_queue_repos" "$repo" && repo_not_before=""
   repo_dir="${repo//\//-}"
 
   if ! pr_rows="$(
@@ -69,6 +74,7 @@ for repo_arg in "${repos[@]}"; do
   while IFS=$'\t' read -r pr head; do
     [ -n "$pr" ] || continue
     worktree="$workspace/pr-comment-sentinel/$repo_dir/pr-$pr-$head"
+    request_state="$workspace/pr-comment-sentinel-state/$repo_dir/pr-$pr-$head/codex-request.json"
     review_state="$workspace/pr-comment-sentinel-state/$repo_dir/pr-$pr-$head/review/result.json"
     fallback=""
     if [ -f "$review_state" ]; then
@@ -85,7 +91,8 @@ for repo_arg in "${repos[@]}"; do
       --repair "$repair_policy"
       --comments "$comment_policy"
     )
-    [ -z "$not_before" ] || args+=(--not-before "$not_before")
+    [ -z "$repo_not_before" ] || args+=(--not-before "$repo_not_before")
+    [ ! -f "$request_state" ] || args+=(--codex-request "$request_state")
     [ -z "$fallback" ] || args+=(--fallback "$fallback")
     if snapshot="$($script_dir/pr-readiness.sh "${args[@]}" "$repo" "$pr" 2> "$error_file")"; then
       printf '%s\n' "$snapshot"

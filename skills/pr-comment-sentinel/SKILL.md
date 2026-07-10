@@ -14,6 +14,8 @@ Run one pass and exit:
 ```sh
 PR_COMMENT_SENTINEL_REPAIR_REPOS='vite-hub/vitehub quiverdk/portal' \
 PR_COMMENT_SENTINEL_MERGE_REPOS=vite-hub/vitehub \
+PR_COMMENT_SENTINEL_COMMENT_REPOS='vite-hub/vitehub quiverdk/portal' \
+PR_COMMENT_SENTINEL_FULL_QUEUE_REPOS=vite-hub/vitehub \
 PR_COMMENT_SENTINEL_NOT_BEFORE=2026-07-10T06:00:00Z \
 PR_COMMENT_SENTINEL_MAX_OWNERS=2 \
   scripts/run-heartbeat.sh gh:vite-hub/vitehub gh:quiverdk/portal
@@ -26,6 +28,7 @@ The timer supplies the next pass. A pass starts or reuses owners, records one le
 | Action | Response |
 | --- | --- |
 | `repair` | Reuse or start one write-capable owner for every actionable blocker on the exact head. |
+| `request-review` | Re-snapshot, then post one exact `@codex review` command for the head. |
 | `fallback-review` | Reuse or start one detached read-only reviewer for the exact head. |
 | `mark-ready` | Re-snapshot, then mark ready only if the action is unchanged. |
 | `merge` | Re-snapshot, then squash-merge only if the action and head are unchanged. |
@@ -36,6 +39,8 @@ The timer supplies the next pass. A pass starts or reuses owners, records one le
 
 - `pr-readiness.sh` is the single readiness authority and uses every visible check and current review thread.
 - Repair and merge are independent permissions. Portal may repair but never inherits ViteHub merge permission.
+- Comment permission authorizes only one exact `@codex review` command per head; a recoverable outbox binds its comment ID and reactions to that head, and all other PR chatter remains disabled.
+- Full-queue permission admits existing heads for repositories owned through merge, while the activation boundary can still grandfather human-merge backlogs.
 - Quota replies make the Codex lane unavailable, not permanently pending.
 - A Codex command with no terminal signal for 15 minutes enters the same fallback lane.
 - An activation boundary may grandfather existing PR heads while admitting new PRs and later commits.
