@@ -15,6 +15,7 @@ Run one pass and exit:
 PR_COMMENT_SENTINEL_REPAIR_REPOS='vite-hub/vitehub quiverdk/portal' \
 PR_COMMENT_SENTINEL_MERGE_REPOS=vite-hub/vitehub \
 PR_COMMENT_SENTINEL_NOT_BEFORE=2026-07-10T06:00:00Z \
+PR_COMMENT_SENTINEL_MAX_OWNERS=2 \
   scripts/run-heartbeat.sh gh:vite-hub/vitehub gh:quiverdk/portal
 ```
 
@@ -40,6 +41,7 @@ The timer supplies the next pass. A pass starts or reuses owners, records one le
 - An activation boundary may grandfather existing PR heads while admitting new PRs and later commits.
 - Fallback evidence must be observable, newer than the latest review command, and match the exact head.
 - Failed workers cool down for 15 minutes before retrying, preventing two-minute failure storms.
+- The queue runs at most two live owners by default; later PRs stay deferred until capacity opens.
 - Repair owners may edit, test, push, rerun one first-attempt infrastructure failure, and resolve addressed threads. They never comment or merge.
 - Review owners are read-only. Only the heartbeat may change draft state or perform the freshly gated merge action.
 - Merge permission is repository-specific and every merge gets an immediate fresh snapshot plus `--match-head-commit`.
