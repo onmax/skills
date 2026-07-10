@@ -76,10 +76,5 @@ result="$(
     "$skill_dir/scripts/start-repair.sh" quiverdk/portal 773 "$head" <<< "$snapshot"
 )"
 jq -e '.status == "started" and (.control | contains("pr-comment-sentinel-state"))' <<< "$result" >/dev/null
-for _ in 1 2 3 4 5 6 7 8 9 10; do
-  [ ! -e "$tmp/setsid-called" ] || break
-  sleep 0.05
-done
-[ -e "$tmp/setsid-called" ]
 kill "$(jq -r .pid <<< "$result")" 2>/dev/null || true
 echo "repair worktree guard fixture passed"

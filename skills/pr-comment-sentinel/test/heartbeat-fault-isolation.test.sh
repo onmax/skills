@@ -18,6 +18,11 @@ cat > "$tmp/scripts/start-repair.sh" <<'MOCK'
 #!/usr/bin/env bash
 exit 2
 MOCK
+
+cat > "$tmp/scripts/pr-readiness.sh" <<'MOCK'
+#!/usr/bin/env bash
+printf '%s\n' '{"repository":"quiverdk/portal","number":773,"head":"abc123","action":"repair","blockers":["checks-failed"],"policy":{"merge":"disabled","repair":"allowed","comments":"disabled","notBefore":""}}'
+MOCK
 chmod +x "$tmp/scripts"/*.sh
 
 result="$($tmp/scripts/run-heartbeat.sh gh:quiverdk/portal)"

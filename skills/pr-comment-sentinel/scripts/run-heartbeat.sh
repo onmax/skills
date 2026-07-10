@@ -103,10 +103,19 @@ while IFS= read -r snapshot; do
   case "$action" in
     repair)
       existing_pid="$(owner_pid "$repo" "$pr" "$head")"
-      if [ -z "$existing_pid" ] && [ "$(live_owner_count)" -ge "$max_owners" ]; then
+      if [ -n "$existing_pid" ]; then
+        owner="$(jq -cn --argjson pid "$existing_pid" '{status:"running", pid:$pid}')"
+        result="worker-running"
+      elif [ "$(live_owner_count)" -ge "$max_owners" ]; then
         result="deferred"
         blocker="owner-capacity"
-      elif owner="$($script_dir/start-repair.sh "$repo" "$pr" "$head" <<< "$snapshot")"; then
+      elif ! fresh="$(recheck "$snapshot")"; then
+        result="recheck-failed"
+        blocker="repair-owner-recheck-failed"
+      elif [ "$(jq -r .action <<< "$fresh")" != "repair" ]; then
+        result="cancelled-after-recheck"
+        blocker="$(jq -cr '.blockers | join(",")' <<< "$fresh")"
+      elif owner="$($script_dir/start-repair.sh "$repo" "$pr" "$head" <<< "$fresh")"; then
         result="worker-$(jq -r .status <<< "$owner")"
       else
         rc=$?
@@ -117,9 +126,18 @@ while IFS= read -r snapshot; do
       ;;
     fallback-review)
       existing_pid="$(owner_pid "$repo" "$pr" "$head")"
-      if [ -z "$existing_pid" ] && [ "$(live_owner_count)" -ge "$max_owners" ]; then
+      if [ -n "$existing_pid" ]; then
+        owner="$(jq -cn --argjson pid "$existing_pid" '{status:"running", pid:$pid}')"
+        result="worker-running"
+      elif [ "$(live_owner_count)" -ge "$max_owners" ]; then
         result="deferred"
         blocker="owner-capacity"
+      elif ! fresh="$(recheck "$snapshot")"; then
+        result="recheck-failed"
+        blocker="review-owner-recheck-failed"
+      elif [ "$(jq -r .action <<< "$fresh")" != "fallback-review" ]; then
+        result="cancelled-after-recheck"
+        blocker="$(jq -cr '.blockers | join(",")' <<< "$fresh")"
       elif owner="$($script_dir/start-fallback-review.sh "$repo" "$pr" "$head")"; then
         result="worker-$(jq -r .status <<< "$owner")"
       else
