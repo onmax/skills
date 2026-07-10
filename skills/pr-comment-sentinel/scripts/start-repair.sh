@@ -96,7 +96,9 @@ fi
 
 git -C "$worktree" cat-file -e "$base^{commit}" 2>/dev/null \
   || git -C "$worktree" fetch --quiet origin "$base"
-exclude="$(git -C "$worktree" rev-parse --absolute-git-dir)/info/exclude"
+git_common_dir="$(git -C "$worktree" rev-parse --path-format=absolute --git-common-dir)"
+exclude="$git_common_dir/info/exclude"
+mkdir -p "$(dirname "$exclude")"
 grep -qxF '/.pr-comment-sentinel-*' "$exclude" 2>/dev/null \
   || printf '%s\n' '/.pr-comment-sentinel-*' >> "$exclude"
 actual_head="$(git -C "$worktree" rev-parse HEAD)"
