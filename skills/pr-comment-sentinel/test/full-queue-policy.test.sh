@@ -35,7 +35,8 @@ PR_COMMENT_SENTINEL_FULL_QUEUE_REPOS=vite-hub/vitehub \
 vitehub_args="$(sed -n '1p' "$tmp/args.log")"
 portal_args="$(sed -n '2p' "$tmp/args.log")"
 
-[[ "$vitehub_args" != *"--not-before"* ]]
+[[ "$vitehub_args" == *"--not-before"* ]]
+[[ "$vitehub_args" != *"2026-07-10T05:50:28Z"* ]]
 [[ "$portal_args" == *"--not-before 2026-07-10T05:50:28Z"* ]]
 
 echo "full queue policy fixture passed"

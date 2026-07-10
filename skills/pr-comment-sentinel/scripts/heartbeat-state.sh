@@ -91,7 +91,7 @@ for repo_arg in "${repos[@]}"; do
       --repair "$repair_policy"
       --comments "$comment_policy"
     )
-    [ -z "$repo_not_before" ] || args+=(--not-before "$repo_not_before")
+    args+=(--not-before "$repo_not_before")
     [ ! -f "$request_state" ] || args+=(--codex-request "$request_state")
     [ -z "$fallback" ] || args+=(--fallback "$fallback")
     if snapshot="$($script_dir/pr-readiness.sh "${args[@]}" "$repo" "$pr" 2> "$error_file")"; then

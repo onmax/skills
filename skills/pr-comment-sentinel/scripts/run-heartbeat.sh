@@ -84,7 +84,7 @@ recheck() {
     --repair "$repair_policy"
     --comments "$comment_policy"
   )
-  [ -z "$not_before" ] || args+=(--not-before "$not_before")
+  args+=(--not-before "$not_before")
   [ -z "$request" ] || args+=(--codex-request "$request")
   [ -z "$fallback" ] || args+=(--fallback "$fallback")
   "$script_dir/pr-readiness.sh" "${args[@]}" "$repo" "$pr"

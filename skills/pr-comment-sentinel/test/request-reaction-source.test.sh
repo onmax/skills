@@ -43,13 +43,14 @@ MOCK
 chmod +x "$tmp/bin/gh"
 
 result="$(
-  PATH="$tmp/bin:$PATH" GH_LOG="$tmp/gh.log" \
+  PATH="$tmp/bin:$PATH" GH_LOG="$tmp/gh.log" PR_COMMENT_SENTINEL_NOT_BEFORE=2030-01-01T00:00:00Z \
     "$skill_dir/scripts/pr-readiness.sh" \
       --expected-head abc123 \
       --codex-request "$tmp/request.json" \
       --merge allowed \
       --repair allowed \
       --comments allowed \
+      --not-before '' \
       vite-hub/vitehub 525
 )"
 

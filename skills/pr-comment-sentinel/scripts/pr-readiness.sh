@@ -15,7 +15,7 @@ Options:
   --fallback FILE           Exact-head fallback review JSON or legacy status file.
   --merge allowed|disabled  Whether a ready PR may be merged. Default: disabled.
   --repair allowed|disabled Whether actionable blockers may dispatch a repair owner. Default: disabled.
-  --not-before ISO_TIME    Ignore PRs and heads older than this activation boundary.
+  --not-before ISO_TIME    Ignore older PR heads; an empty value clears the environment default.
   --comments allowed|disabled
                             Whether the exact @codex review nudge is authorized. Default: disabled.
   --input FILE              Classify a normalized fixture without calling GitHub.
@@ -55,7 +55,7 @@ while [ "$#" -gt 0 ]; do
       shift 2
       ;;
     --not-before)
-      not_before="${2:?missing activation boundary}"
+      not_before="${2?missing activation boundary}"
       shift 2
       ;;
     --comments)
