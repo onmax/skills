@@ -95,8 +95,8 @@ def is_quota($bot):
    elif ($head_stable | not) then "head-changed"
    elif $unresolved > 0 then "fix-feedback"
    elif ($title_valid | not) then "fix-title"
-   elif $input.mergeState == "DIRTY" or $input.mergeState == "BEHIND" then "refresh-branch"
-   elif $checks_state == "failed" then "repair-checks"
+   elif ($input.mergeState == "DIRTY" or $input.mergeState == "BEHIND") and $input.policy.merge == "allowed" then "refresh-branch"
+   elif $checks_state == "failed" and $input.policy.merge == "allowed" then "repair-checks"
    elif $checks_state != "passed" then "wait-checks"
    elif $input.mergeState != "CLEAN" then "wait-merge-state"
    elif $review.verdict == "needs-fix" then (if $review.source == "fallback" then "fix-fallback" else "wait-review" end)

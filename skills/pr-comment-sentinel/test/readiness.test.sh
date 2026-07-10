@@ -76,6 +76,8 @@ run_case comments_allowed missing request-review '.policy.comments = "allowed"'
 run_case head_changed missing head-changed '.collection.headAfter = "def456"'
 run_case unresolved missing fix-feedback '.threads = [{"isResolved":false,"isOutdated":false}]'
 run_case failed_check missing repair-checks '.checks = [{"name":"ci","bucket":"fail"}]'
+run_case no_merge_failed_check missing wait-checks '.checks = [{"name":"ci","bucket":"fail"}] | .policy.merge = "disabled"'
+run_case no_merge_dirty missing wait-merge-state '.mergeState = "DIRTY" | .policy.merge = "disabled"'
 run_case pending_check missing wait-checks '.checks = [{"name":"ci","bucket":"pending"}]'
 run_case missing_checks missing wait-checks '.checks = []'
 
