@@ -14,6 +14,7 @@ cat > "$tmp/base.json" <<'JSON'
   "viewer": "onmax",
   "codexBot": "chatgpt-codex-connector[bot]",
   "author": "onmax",
+  "createdAt": "2026-07-09T15:00:00Z",
   "title": "fix(agent): preserve data events",
   "draft": false,
   "mergeState": "CLEAN",
@@ -75,6 +76,8 @@ run_case newer_command pending wait-review ".comments = [$quota, ($command + {id
 run_case bot_quote missing fallback-review ".comments = [($command + {author: \"chatgpt-codex-connector[bot]\"})]"
 run_case comments_allowed missing fallback-review '.policy.comments = "allowed"'
 run_case head_changed missing head-changed '.collection.headAfter = "def456"'
+run_case grandfathered missing grandfathered '.policy.notBefore = "2026-07-09T17:00:00Z"'
+run_case later_commit missing fallback-review '.policy.notBefore = "2026-07-09T15:30:00Z"'
 run_case unresolved missing repair '.threads = [{"id":"thread-1","isResolved":false,"isOutdated":false}]'
 run_case repair_disabled_feedback missing wait-feedback '.threads = [{"id":"thread-1","isResolved":false,"isOutdated":false}] | .policy.repair = "disabled"'
 run_case failed_check missing repair '.checks = [{"name":"ci","bucket":"fail","link":"https://example.test/run/1","completedAt":"2026-07-09T16:12:00Z"}]'

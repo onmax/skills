@@ -29,13 +29,14 @@ fallback_path() {
 
 recheck() {
   local snapshot="$1"
-  local repo pr head merge_policy repair_policy comment_policy fallback
+  local repo pr head merge_policy repair_policy comment_policy not_before fallback
   repo="$(jq -r .repository <<< "$snapshot")"
   pr="$(jq -r .number <<< "$snapshot")"
   head="$(jq -r .head <<< "$snapshot")"
   merge_policy="$(jq -r .policy.merge <<< "$snapshot")"
   repair_policy="$(jq -r .policy.repair <<< "$snapshot")"
   comment_policy="$(jq -r .policy.comments <<< "$snapshot")"
+  not_before="$(jq -r '.policy.notBefore // ""' <<< "$snapshot")"
   fallback="$(fallback_path "$repo" "$pr" "$head")"
 
   args=(
@@ -44,6 +45,7 @@ recheck() {
     --repair "$repair_policy"
     --comments "$comment_policy"
   )
+  [ -z "$not_before" ] || args+=(--not-before "$not_before")
   [ -z "$fallback" ] || args+=(--fallback "$fallback")
   "$script_dir/pr-readiness.sh" "${args[@]}" "$repo" "$pr"
 }

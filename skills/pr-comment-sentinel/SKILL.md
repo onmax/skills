@@ -14,6 +14,7 @@ Run one pass and exit:
 ```sh
 PR_COMMENT_SENTINEL_REPAIR_REPOS='vite-hub/vitehub quiverdk/portal' \
 PR_COMMENT_SENTINEL_MERGE_REPOS=vite-hub/vitehub \
+PR_COMMENT_SENTINEL_NOT_BEFORE=2026-07-10T06:00:00Z \
   scripts/run-heartbeat.sh gh:vite-hub/vitehub gh:quiverdk/portal
 ```
 
@@ -28,7 +29,7 @@ The timer supplies the next pass. A pass starts or reuses owners, records one le
 | `mark-ready` | Re-snapshot, then mark ready only if the action is unchanged. |
 | `merge` | Re-snapshot, then squash-merge only if the action and head are unchanged. |
 | `ready-for-human-review` | Report ready; perform no merge. |
-| `wait-*`, `head-changed`, `ignore` | Report the blocker; perform no mutation. |
+| `grandfathered`, `wait-*`, `head-changed`, `ignore` | Report the blocker; perform no mutation. |
 
 ## Invariants
 
@@ -36,6 +37,7 @@ The timer supplies the next pass. A pass starts or reuses owners, records one le
 - Repair and merge are independent permissions. Portal may repair but never inherits ViteHub merge permission.
 - Quota replies make the Codex lane unavailable, not permanently pending.
 - A Codex command with no terminal signal for 15 minutes enters the same fallback lane.
+- An activation boundary may grandfather existing PR heads while admitting new PRs and later commits.
 - Fallback evidence must be observable, newer than the latest review command, and match the exact head.
 - Failed workers cool down for 15 minutes before retrying, preventing two-minute failure storms.
 - Repair owners may edit, test, push, rerun one first-attempt infrastructure failure, and resolve addressed threads. They never comment or merge.

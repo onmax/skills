@@ -14,6 +14,7 @@ Options:
   --fallback FILE           Exact-head fallback review JSON or legacy status file.
   --merge allowed|disabled  Whether a ready PR may be merged. Default: disabled.
   --repair allowed|disabled Whether actionable blockers may dispatch a repair owner. Default: disabled.
+  --not-before ISO_TIME    Ignore PRs and heads older than this activation boundary.
   --comments allowed|disabled
                             Whether the exact @codex review nudge is authorized. Default: disabled.
   --input FILE              Classify a normalized fixture without calling GitHub.
@@ -26,6 +27,7 @@ merge_policy="disabled"
 repair_policy="disabled"
 comment_policy="disabled"
 codex_timeout_seconds="${PR_COMMENT_SENTINEL_CODEX_TIMEOUT_SECONDS:-900}"
+not_before="${PR_COMMENT_SENTINEL_NOT_BEFORE:-}"
 input_file=""
 
 while [ "$#" -gt 0 ]; do
@@ -44,6 +46,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --repair)
       repair_policy="${2:?missing repair policy}"
+      shift 2
+      ;;
+    --not-before)
+      not_before="${2:?missing activation boundary}"
       shift 2
       ;;
     --comments)
@@ -84,6 +90,10 @@ fi
 [ "$repair_policy" = "allowed" ] || [ "$repair_policy" = "disabled" ] || { echo "invalid repair policy" >&2; exit 64; }
 [ "$comment_policy" = "allowed" ] || [ "$comment_policy" = "disabled" ] || { echo "invalid comment policy" >&2; exit 64; }
 [[ "$codex_timeout_seconds" =~ ^[0-9]+$ ]] || { echo "invalid Codex timeout" >&2; exit 64; }
+if [ -n "$not_before" ]; then
+  jq -en --arg value "$not_before" '$value | fromdateiso8601' >/dev/null \
+    || { echo "invalid activation boundary" >&2; exit 64; }
+fi
 
 repo="${1#gh:}"
 pr="$2"
@@ -96,7 +106,7 @@ trap 'rm -rf "$tmp"' EXIT
 started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 viewer="$(gh api user --jq .login)"
-gh pr view "$pr" --repo "$repo" --json number,title,author,headRefOid,isDraft,mergeStateStatus > "$tmp/pr.json"
+gh pr view "$pr" --repo "$repo" --json number,title,author,createdAt,headRefOid,isDraft,mergeStateStatus > "$tmp/pr.json"
 head_sha="$(jq -r '.headRefOid' "$tmp/pr.json")"
 [ -n "$expected_head" ] || expected_head="$head_sha"
 head_date="$(gh api "repos/$repo/commits/$head_sha" --jq '.commit.committer.date')"
@@ -192,6 +202,7 @@ jq -n \
   --arg merge "$merge_policy" \
   --arg repair "$repair_policy" \
   --arg comments "$comment_policy" \
+  --arg notBefore "$not_before" \
   --argjson codexTimeoutSeconds "$codex_timeout_seconds" \
   --argjson fallback "$fallback_json" \
   --slurpfile pr "$tmp/pr.json" \
@@ -208,11 +219,12 @@ jq -n \
     viewer: $viewer,
     codexBot: $codexBot,
     author: $pr[0].author.login,
+    createdAt: $pr[0].createdAt,
     title: $pr[0].title,
     draft: $pr[0].isDraft,
     mergeState: ($pr[0].mergeStateStatus // "UNKNOWN"),
     head: { sha: $pr[0].headRefOid, committedAt: $headDate },
-    policy: { merge: $merge, repair: $repair, comments: $comments, checks: "all-visible", codexTimeoutSeconds: $codexTimeoutSeconds },
+    policy: { merge: $merge, repair: $repair, comments: $comments, checks: "all-visible", codexTimeoutSeconds: $codexTimeoutSeconds, notBefore: $notBefore },
     checks: $checks[0],
     threads: $threads[0],
     comments: $issueComments[0],

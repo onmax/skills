@@ -13,6 +13,7 @@ Environment:
   PR_COMMENT_SENTINEL_MERGE_REPOS   Space/comma-separated owner/repo values allowed to merge
   PR_COMMENT_SENTINEL_REPAIR_REPOS  Space/comma-separated owner/repo values allowed to repair
   PR_COMMENT_SENTINEL_COMMENT_REPOS Space/comma-separated owner/repo values allowed one @codex review nudge
+  PR_COMMENT_SENTINEL_NOT_BEFORE     Optional ISO timestamp; older PR heads are grandfathered
 USAGE
   exit 0
 fi
@@ -27,6 +28,7 @@ workspace="${PR_COMMENT_SENTINEL_WORKSPACE:-/home/workspace}"
 merge_repos="${PR_COMMENT_SENTINEL_MERGE_REPOS:-}"
 repair_repos="${PR_COMMENT_SENTINEL_REPAIR_REPOS:-}"
 comment_repos="${PR_COMMENT_SENTINEL_COMMENT_REPOS:-}"
+not_before="${PR_COMMENT_SENTINEL_NOT_BEFORE:-}"
 error_file="$(mktemp)"
 trap 'rm -f "$error_file"' EXIT
 
@@ -83,6 +85,7 @@ for repo_arg in "${repos[@]}"; do
       --repair "$repair_policy"
       --comments "$comment_policy"
     )
+    [ -z "$not_before" ] || args+=(--not-before "$not_before")
     [ -z "$fallback" ] || args+=(--fallback "$fallback")
     if snapshot="$($script_dir/pr-readiness.sh "${args[@]}" "$repo" "$pr" 2> "$error_file")"; then
       printf '%s\n' "$snapshot"

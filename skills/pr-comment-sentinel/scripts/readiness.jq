@@ -67,6 +67,10 @@ def is_quota($bot):
 | ($input.author == $viewer) as $authored
 | ($input.expectedHead == $head and $input.collection.headAfter == $head) as $head_stable
 | ($input.title | conventional_title) as $title_valid
+| (($input.policy.notBefore // "") as $not_before
+   | ($not_before == ""
+      or (($input.createdAt | fromdateiso8601) >= ($not_before | fromdateiso8601))
+      or (($head_at | fromdateiso8601) >= ($not_before | fromdateiso8601)))) as $eligible
 | (if $terminal.favorable == true then
      { source: (if $terminal.kind == "thumbs_up" then "codex-thumbs-up" else "codex-review" end), verdict: "no-major-issues", at: $terminal.at, admissible: true }
    elif $terminal.kind == "review" then
@@ -85,6 +89,7 @@ def is_quota($bot):
 | ([
     if ($authored | not) then "not-authored" else empty end,
     if ($head_stable | not) then "head-changed" else empty end,
+    if ($eligible | not) then "before-activation" else empty end,
     if ($title_valid | not) then "invalid-title" else empty end,
     if $unresolved > 0 then "unresolved-review-threads" else empty end,
     if ($input.mergeState == "DIRTY" or $input.mergeState == "BEHIND") then ("merge-state-" + ($input.mergeState | ascii_downcase))
@@ -104,6 +109,7 @@ def is_quota($bot):
   ]) as $blockers
 | (if ($authored | not) then "ignore"
    elif ($head_stable | not) then "head-changed"
+   elif ($eligible | not) then "grandfathered"
    elif $unresolved > 0 then (if $input.policy.repair == "allowed" then "repair" else "wait-feedback" end)
    elif ($title_valid | not) then (if $input.policy.repair == "allowed" then "repair" else "wait-title" end)
    elif ($input.mergeState == "DIRTY" or $input.mergeState == "BEHIND") then (if $input.policy.repair == "allowed" then "repair" else "wait-merge-state" end)
@@ -130,6 +136,7 @@ def is_quota($bot):
     observedAt: $input.collection.finishedAt,
     headStable: $head_stable,
     authored: $authored,
+    eligible: $eligible,
     draft: $input.draft,
     titleValid: $title_valid,
     mergeState: $input.mergeState,
