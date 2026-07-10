@@ -42,4 +42,18 @@ jq -e '
 grep -F -- '--model gpt-5.6-sol' "$tmp/args" >/dev/null
 grep -F -- 'model_reasoning_effort="high"' "$tmp/args" >/dev/null
 
+failed_worktree="$tmp/workspace/pr-comment-sentinel/vite-hub-vitehub/pr-525-abc123"
+mkdir -p "$failed_worktree"
+printf '%s\n' 'model unavailable' > "$failed_worktree/.pr-comment-sentinel-review.error"
+cooldown="$(
+  PR_COMMENT_SENTINEL_WORKSPACE="$tmp/workspace" \
+  PR_COMMENT_SENTINEL_RETRY_SECONDS=900 \
+    "$skill_dir/scripts/start-fallback-review.sh" vite-hub/vitehub 525 abc123
+)"
+jq -e '
+  .status == "failed"
+  and .retryInSeconds > 0
+  and (.error | endswith(".pr-comment-sentinel-review.error"))
+' <<< "$cooldown" >/dev/null
+
 echo "fallback review runner fixture passed"

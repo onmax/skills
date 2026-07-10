@@ -17,6 +17,7 @@ pid_file="$worktree/.pr-comment-sentinel-review.pid"
 prompt="$worktree/.pr-comment-sentinel-review.prompt.md"
 schema="$worktree/.pr-comment-sentinel-review.schema.json"
 output="$worktree/.pr-comment-sentinel-review.output.json"
+error="$worktree/.pr-comment-sentinel-review.error"
 
 if [ -s "$pid_file" ] && kill -0 "$(cat "$pid_file")" 2>/dev/null; then
   jq -cn \
@@ -24,6 +25,20 @@ if [ -s "$pid_file" ] && kill -0 "$(cat "$pid_file")" 2>/dev/null; then
     --arg worktree "$worktree" \
     '{status:"running", pid:$pid, worktree:$worktree}'
   exit
+fi
+
+if [ -f "$error" ]; then
+  error_epoch="$(stat -c %Y "$error" 2>/dev/null || stat -f %m "$error")"
+  retry_seconds="${PR_COMMENT_SENTINEL_RETRY_SECONDS:-900}"
+  retry_in="$((error_epoch + retry_seconds - $(date +%s)))"
+  if [ "$retry_in" -gt 0 ]; then
+    jq -cn \
+      --arg error "$error" \
+      --argjson retryInSeconds "$retry_in" \
+      --arg worktree "$worktree" \
+      '{status:"failed", error:$error, retryInSeconds:$retryInSeconds, worktree:$worktree}'
+    exit
+  fi
 fi
 
 pr_json="$(gh pr view "$pr" --repo "$repo" --json baseRefOid,headRefOid,title,url)"

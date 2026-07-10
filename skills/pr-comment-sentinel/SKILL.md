@@ -33,6 +33,7 @@ PR_COMMENT_SENTINEL_MERGE_REPOS=vite-hub/vitehub \
 - `pr-readiness.sh` is the single readiness authority and uses every visible check.
 - Quota replies make the Codex lane unavailable, not permanently pending.
 - Fallback evidence must be observable, newer than the latest review command, and match the exact head.
+- Failed workers cool down for 15 minutes before retrying, preventing two-minute failure storms.
 - Workers never comment, edit, push, resolve threads, or merge. Only the heartbeat can perform the freshly gated merge action.
 - Merge permission is repository-specific and every merge gets an immediate fresh snapshot plus `--match-head-commit`.
 - Dirty source checkouts fail closed.
