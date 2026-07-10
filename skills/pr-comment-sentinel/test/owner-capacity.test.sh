@@ -3,10 +3,22 @@ set -euo pipefail
 
 skill_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 tmp="$(mktemp -d)"
-trap 'rm -rf "$tmp"' EXIT
+owner_pid=""
+cleanup() {
+  if [ -n "$owner_pid" ]; then
+    kill "$owner_pid" 2>/dev/null || true
+    wait "$owner_pid" 2>/dev/null || true
+  fi
+  rm -rf "$tmp"
+}
+trap cleanup EXIT
 mkdir -p "$tmp/scripts" "$tmp/workspace/pr-comment-sentinel-state/existing/pr-1-head/review"
 cp "$skill_dir/scripts/run-heartbeat.sh" "$tmp/scripts/run-heartbeat.sh"
-printf '%s\n' "$$" > "$tmp/workspace/pr-comment-sentinel-state/existing/pr-1-head/review/pid"
+cp "$skill_dir/scripts/process-owner.sh" "$tmp/scripts/process-owner.sh"
+owner_state="$tmp/workspace/pr-comment-sentinel-state/existing/pr-1-head"
+bash -c 'sleep 30 & wait' "$owner_state" &
+owner_pid=$!
+printf '%s\n' "$owner_pid" > "$owner_state/review/pid"
 
 cat > "$tmp/scripts/heartbeat-state.sh" <<'MOCK'
 #!/usr/bin/env bash

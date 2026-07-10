@@ -47,6 +47,7 @@ The timer supplies the next pass. A pass starts or reuses owners, records one le
 - Fallback evidence must be observable, newer than the latest review command, and match the exact head.
 - Failed workers cool down for 15 minutes before retrying, preventing two-minute failure storms.
 - The queue runs at most two live owners by default; later PRs stay deferred until capacity opens.
+- Owner liveness requires an exact PR state path in the process command; a reusable PID alone is not evidence.
 - Repair owners may edit, test, push, rerun one first-attempt infrastructure failure, and resolve addressed threads. They never comment or merge.
 - Review owners are read-only. Only the heartbeat may change draft state or perform the freshly gated merge action.
 - Merge permission is repository-specific and every merge gets an immediate fresh snapshot plus `--match-head-commit`.

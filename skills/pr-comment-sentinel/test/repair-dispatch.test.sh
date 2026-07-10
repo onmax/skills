@@ -6,6 +6,7 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 mkdir -p "$tmp/scripts"
 cp "$skill_dir/scripts/run-heartbeat.sh" "$tmp/scripts/run-heartbeat.sh"
+cp "$skill_dir/scripts/process-owner.sh" "$tmp/scripts/process-owner.sh"
 
 cat > "$tmp/scripts/heartbeat-state.sh" <<'MOCK'
 #!/usr/bin/env bash

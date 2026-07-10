@@ -44,7 +44,8 @@ grep -F -- 'model_reasoning_effort="high"' "$tmp/args" >/dev/null
 [ -z "$(find "$tmp/worktree" -mindepth 1 -maxdepth 1 -print -quit)" ]
 
 failed_control="$tmp/workspace/pr-comment-sentinel-state/vite-hub-vitehub/pr-525-abc123/review"
-mkdir -p "$failed_control"
+mkdir -p "$failed_control" "$(dirname "$failed_control")/repair-stale"
+printf '%s\n' "$$" > "$(dirname "$failed_control")/repair-stale/pid"
 printf '%s\n' 'model unavailable' > "$failed_control/error"
 cooldown="$(
   PR_COMMENT_SENTINEL_WORKSPACE="$tmp/workspace" \

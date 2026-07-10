@@ -2,6 +2,7 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/process-owner.sh"
 workspace="${PR_COMMENT_SENTINEL_WORKSPACE:-/home/workspace}"
 max_owners="${PR_COMMENT_SENTINEL_MAX_OWNERS:-2}"
 repos=("$@")
@@ -18,26 +19,22 @@ owner_pid() {
   local pr="$2"
   local head="$3"
   local state="$workspace/pr-comment-sentinel-state/${repo//\//-}/pr-$pr-$head"
-  local file pid
-  for file in "$state"/review/pid "$state"/repair-*/pid; do
-    [ -s "$file" ] || continue
-    pid="$(cat "$file")"
-    if kill -0 "$pid" 2>/dev/null; then
-      printf '%s\n' "$pid"
-      return
-    fi
-  done
+  process_for_path "$state" || true
 }
 
 live_owner_count() {
-  local count=0 file pid
-  while IFS= read -r file; do
-    [ -s "$file" ] || continue
-    pid="$(cat "$file")"
-    if kill -0 "$pid" 2>/dev/null; then
+  local count=0 state
+  while IFS= read -r state; do
+    [ -n "$state" ] || continue
+    if process_for_path "$state" >/dev/null; then
       count="$((count + 1))"
     fi
-  done < <(find "$workspace/pr-comment-sentinel-state" -type f -name pid -print 2>/dev/null || true)
+  done < <(
+    find "$workspace/pr-comment-sentinel-state" -type f -name pid -print 2>/dev/null \
+      | sed -E 's#/(review|repair-[^/]+)/pid$##' \
+      | sort -u \
+      || true
+  )
   printf '%s\n' "$count"
 }
 

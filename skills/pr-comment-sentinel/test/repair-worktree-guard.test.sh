@@ -46,6 +46,7 @@ snapshot="$(jq -cn \
 state_root="$workspace/pr-comment-sentinel-state/quiverdk-portal/pr-773-$head"
 mkdir -p "$state_root/review"
 printf '%s\n' 'review only' > "$state_root/review/prompt.md"
+printf '%s\n' "$$" > "$state_root/review/pid"
 
 set +e
 PATH="$tmp/bin:$PATH" \

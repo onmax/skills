@@ -10,6 +10,7 @@ repo="${1#gh:}"
 pr="$2"
 head="$3"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/process-owner.sh"
 workspace="${PR_COMMENT_SENTINEL_WORKSPACE:-/home/workspace}"
 repo_dir="${repo//\//-}"
 worktree="$workspace/pr-comment-sentinel/$repo_dir/pr-$pr-$head"
@@ -25,18 +26,19 @@ mkdir -p "$control"
 
 for repair_pid in "$repair_state"/repair-*/pid; do
   [ -s "$repair_pid" ] || continue
-  if kill -0 "$(cat "$repair_pid")" 2>/dev/null; then
+  repair_control="$(dirname "$repair_pid")"
+  if running_pid="$(process_for_path "$repair_control")"; then
     jq -cn \
-      --argjson pid "$(cat "$repair_pid")" \
+      --argjson pid "$running_pid" \
       --arg worktree "$worktree" \
       '{status:"waiting-repair", pid:$pid, worktree:$worktree}'
     exit
   fi
 done
 
-if [ -s "$pid_file" ] && kill -0 "$(cat "$pid_file")" 2>/dev/null; then
+if [ -s "$pid_file" ] && running_pid="$(process_for_path "$control")"; then
   jq -cn \
-    --argjson pid "$(cat "$pid_file")" \
+    --argjson pid "$running_pid" \
     --arg worktree "$worktree" \
     '{status:"running", pid:$pid, worktree:$worktree}'
   exit

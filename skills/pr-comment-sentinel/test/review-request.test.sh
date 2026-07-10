@@ -7,6 +7,7 @@ trap 'rm -rf "$tmp"' EXIT
 mkdir -p "$tmp/bin" "$tmp/scripts"
 cp "$skill_dir/scripts/run-heartbeat.sh" "$tmp/scripts/run-heartbeat.sh"
 cp "$skill_dir/scripts/request-review.sh" "$tmp/scripts/request-review.sh"
+cp "$skill_dir/scripts/process-owner.sh" "$tmp/scripts/process-owner.sh"
 
 snapshot='{"repository":"vite-hub/vitehub","number":532,"head":"abc123","viewer":"onmax","action":"request-review","blockers":["review-missing"],"policy":{"merge":"allowed","repair":"allowed","comments":"allowed","notBefore":""}}'
 

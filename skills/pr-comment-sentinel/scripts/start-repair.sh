@@ -11,6 +11,7 @@ pr="$2"
 head="$3"
 snapshot="$(cat)"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/process-owner.sh"
 workspace="${PR_COMMENT_SENTINEL_WORKSPACE:-/home/workspace}"
 repo_dir="${repo//\//-}"
 worktree="$workspace/pr-comment-sentinel/$repo_dir/pr-$pr-$head"
@@ -44,8 +45,9 @@ fi
 
 for candidate in "$state_root"/repair-*/pid; do
   [ -s "$candidate" ] || continue
-  if kill -0 "$(cat "$candidate")" 2>/dev/null; then
-    jq -cn --argjson pid "$(cat "$candidate")" --arg worktree "$worktree" --arg control "$(dirname "$candidate")" \
+  candidate_control="$(dirname "$candidate")"
+  if running_pid="$(process_for_path "$candidate_control")"; then
+    jq -cn --argjson pid "$running_pid" --arg worktree "$worktree" --arg control "$candidate_control" \
       '{status:"running", pid:$pid, worktree:$worktree, control:$control}'
     exit
   fi
@@ -53,11 +55,11 @@ done
 
 review_pid="$state_root/review/pid"
 legacy_review_pid="$worktree/.pr-comment-sentinel-review.pid"
-if [ -s "$review_pid" ] && kill -0 "$(cat "$review_pid")" 2>/dev/null; then
-  jq -cn --argjson pid "$(cat "$review_pid")" --arg worktree "$worktree" \
+if [ -s "$review_pid" ] && running_pid="$(process_for_path "$state_root/review")"; then
+  jq -cn --argjson pid "$running_pid" --arg worktree "$worktree" \
     '{status:"waiting-review", pid:$pid, worktree:$worktree}'
   exit
-elif [ -s "$legacy_review_pid" ] && kill -0 "$(cat "$legacy_review_pid")" 2>/dev/null; then
+elif [ -s "$legacy_review_pid" ] && pid_owns_path "$(cat "$legacy_review_pid")" "$worktree"; then
   jq -cn --argjson pid "$(cat "$legacy_review_pid")" --arg worktree "$worktree" \
     '{status:"waiting-review", pid:$pid, worktree:$worktree}'
   exit
