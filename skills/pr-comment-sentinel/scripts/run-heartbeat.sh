@@ -16,8 +16,11 @@ fallback_path() {
   local pr="$2"
   local head="$3"
   local worktree="$workspace/pr-comment-sentinel/${repo//\//-}/pr-$pr-$head"
+  local state="$workspace/pr-comment-sentinel-state/${repo//\//-}/pr-$pr-$head/review/result.json"
 
-  if [ -f "$worktree/.pr-comment-sentinel-review.json" ]; then
+  if [ -f "$state" ]; then
+    printf '%s\n' "$state"
+  elif [ -f "$worktree/.pr-comment-sentinel-review.json" ]; then
     printf '%s\n' "$worktree/.pr-comment-sentinel-review.json"
   elif [ -f "$worktree/.pr-comment-sentinel-review.status" ]; then
     printf '%s\n' "$worktree/.pr-comment-sentinel-review.status"
@@ -26,17 +29,19 @@ fallback_path() {
 
 recheck() {
   local snapshot="$1"
-  local repo pr head merge_policy comment_policy fallback
+  local repo pr head merge_policy repair_policy comment_policy fallback
   repo="$(jq -r .repository <<< "$snapshot")"
   pr="$(jq -r .number <<< "$snapshot")"
   head="$(jq -r .head <<< "$snapshot")"
   merge_policy="$(jq -r .policy.merge <<< "$snapshot")"
+  repair_policy="$(jq -r .policy.repair <<< "$snapshot")"
   comment_policy="$(jq -r .policy.comments <<< "$snapshot")"
   fallback="$(fallback_path "$repo" "$pr" "$head")"
 
   args=(
     --expected-head "$head"
     --merge "$merge_policy"
+    --repair "$repair_policy"
     --comments "$comment_policy"
   )
   [ -z "$fallback" ] || args+=(--fallback "$fallback")
@@ -54,33 +59,61 @@ while IFS= read -r snapshot; do
   blocker="$(jq -cr '.blockers | join(",")' <<< "$snapshot")"
 
   case "$action" in
+    repair)
+      if owner="$($script_dir/start-repair.sh "$repo" "$pr" "$head" <<< "$snapshot")"; then
+        result="worker-$(jq -r .status <<< "$owner")"
+      else
+        rc=$?
+        owner="$(jq -cn --argjson exitCode "$rc" '{status:"launch-failed", exitCode:$exitCode}')"
+        result="worker-launch-failed"
+        blocker="repair-owner-launch-failed"
+      fi
+      ;;
     fallback-review)
-      owner="$($script_dir/start-fallback-review.sh "$repo" "$pr" "$head")"
-      result="worker-$(jq -r .status <<< "$owner")"
+      if owner="$($script_dir/start-fallback-review.sh "$repo" "$pr" "$head")"; then
+        result="worker-$(jq -r .status <<< "$owner")"
+      else
+        rc=$?
+        owner="$(jq -cn --argjson exitCode "$rc" '{status:"launch-failed", exitCode:$exitCode}')"
+        result="worker-launch-failed"
+        blocker="review-owner-launch-failed"
+      fi
       ;;
     merge)
-      fresh="$(recheck "$snapshot")"
-      if [ "$(jq -r .action <<< "$fresh")" = "merge" ]; then
+      if ! fresh="$(recheck "$snapshot")"; then
+        result="recheck-failed"
+        blocker="merge-recheck-failed"
+      elif [ "$(jq -r .action <<< "$fresh")" = "merge" ]; then
         title="$(jq -r .title <<< "$fresh")"
-        gh pr merge "$pr" \
+        if gh pr merge "$pr" \
           --repo "$repo" \
           --squash \
           --subject "$title" \
           --body "" \
-          --match-head-commit "$head"
-        result="merged"
-        blocker=""
+          --match-head-commit "$head"; then
+          result="merged"
+          blocker=""
+        else
+          result="merge-failed"
+          blocker="merge-command-failed"
+        fi
       else
         result="cancelled-after-recheck"
         blocker="$(jq -cr '.blockers | join(",")' <<< "$fresh")"
       fi
       ;;
     mark-ready)
-      fresh="$(recheck "$snapshot")"
-      if [ "$(jq -r .action <<< "$fresh")" = "mark-ready" ]; then
-        gh pr ready "$pr" --repo "$repo"
-        result="marked-ready"
-        blocker=""
+      if ! fresh="$(recheck "$snapshot")"; then
+        result="recheck-failed"
+        blocker="ready-recheck-failed"
+      elif [ "$(jq -r .action <<< "$fresh")" = "mark-ready" ]; then
+        if gh pr ready "$pr" --repo "$repo"; then
+          result="marked-ready"
+          blocker=""
+        else
+          result="ready-transition-failed"
+          blocker="ready-command-failed"
+        fi
       else
         result="cancelled-after-recheck"
         blocker="$(jq -cr '.blockers | join(",")' <<< "$fresh")"

@@ -1,27 +1,29 @@
 ---
 name: pr-comment-sentinel
-description: Checks authored pull requests for current-head review evidence, green checks, unresolved feedback, and merge readiness. Use for a passive PR heartbeat, Codex quota fallback review, or explicitly allowed automatic merge.
+description: Converges authored pull requests by repairing actionable review feedback, failed checks, and branch blockers; substitutes exact-head Sol review when Codex is unavailable; and applies repository-specific ready or merge gates. Use for an autonomous PR heartbeat or review-fix loop.
 ---
 
 # PR Comment Sentinel
 
-The heartbeat is deterministic. AI is used only for an isolated, read-only fallback review when the external Codex reviewer is unavailable.
+The heartbeat is a convergence loop. Scripts own observation and final gates; one exact-head agent owns each review or repair lane.
 
 ## Heartbeat
 
 Run one pass and exit:
 
 ```sh
+PR_COMMENT_SENTINEL_REPAIR_REPOS='vite-hub/vitehub quiverdk/portal' \
 PR_COMMENT_SENTINEL_MERGE_REPOS=vite-hub/vitehub \
   scripts/run-heartbeat.sh gh:vite-hub/vitehub gh:quiverdk/portal
 ```
 
-`run-heartbeat.sh` watches ViteHub and Portal by default and prints one JSON ledger row per authored open PR. The merge allowlist remains independent: Portal is report-only unless explicitly added. The timer supplies the next pass; do not poll inside a pass.
+The timer supplies the next pass. A pass starts or reuses owners, records one ledger row per PR, and exits without polling.
 
 ## Actions
 
 | Action | Response |
 | --- | --- |
+| `repair` | Reuse or start one write-capable owner for every actionable blocker on the exact head. |
 | `fallback-review` | Reuse or start one detached read-only reviewer for the exact head. |
 | `mark-ready` | Re-snapshot, then mark ready only if the action is unchanged. |
 | `merge` | Re-snapshot, then squash-merge only if the action and head are unchanged. |
@@ -30,14 +32,18 @@ PR_COMMENT_SENTINEL_MERGE_REPOS=vite-hub/vitehub \
 
 ## Invariants
 
-- `pr-readiness.sh` is the single readiness authority and uses every visible check.
+- `pr-readiness.sh` is the single readiness authority and uses every visible check and current review thread.
+- Repair and merge are independent permissions. Portal may repair but never inherits ViteHub merge permission.
 - Quota replies make the Codex lane unavailable, not permanently pending.
+- A Codex command with no terminal signal for 15 minutes enters the same fallback lane.
 - Fallback evidence must be observable, newer than the latest review command, and match the exact head.
 - Failed workers cool down for 15 minutes before retrying, preventing two-minute failure storms.
-- Workers never comment, edit, push, resolve threads, or merge. Only the heartbeat can perform the freshly gated merge action.
+- Repair owners may edit, test, push, rerun one first-attempt infrastructure failure, and resolve addressed threads. They never comment or merge.
+- Review owners are read-only. Only the heartbeat may change draft state or perform the freshly gated merge action.
 - Merge permission is repository-specific and every merge gets an immediate fresh snapshot plus `--match-head-commit`.
-- Dirty source checkouts fail closed.
+- One live owner may use an exact-head worktree; an orphaned exact-head repair resumes in place.
+- A systemd heartbeat uses `KillMode=process` so detached owners survive the oneshot process.
 
 ## Fallback Model
 
-Fallback reviewers default to `gpt-5.6-sol` with `high` reasoning. Override with `PR_COMMENT_SENTINEL_MODEL` and `PR_COMMENT_SENTINEL_REASONING_EFFORT`.
+Review and repair owners default to `gpt-5.6-sol` with `high` reasoning. Override with `PR_COMMENT_SENTINEL_MODEL` and `PR_COMMENT_SENTINEL_REASONING_EFFORT`.

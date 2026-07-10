@@ -18,7 +18,7 @@ cat > "$tmp/base.json" <<'JSON'
   "draft": false,
   "mergeState": "CLEAN",
   "head": {"sha": "abc123", "committedAt": "2026-07-09T16:00:00Z"},
-  "policy": {"merge": "allowed", "comments": "disabled", "checks": "all-visible"},
+  "policy": {"merge": "allowed", "repair": "allowed", "comments": "disabled", "checks": "all-visible"},
   "checks": [{"name": "ci", "bucket": "pass"}],
   "threads": [],
   "comments": [],
@@ -56,7 +56,7 @@ run_case() {
 
 command='{"id":1,"body":"@codex review","createdAt":"2026-07-09T16:10:00Z","author":"onmax"}'
 quota='{"id":2,"body":"You have reached your Codex usage limits for code reviews.","createdAt":"2026-07-09T16:10:08Z","author":"chatgpt-codex-connector[bot]"}'
-fallback='{"verdict":"no-major-issues","head":"abc123","createdAt":"2026-07-09T16:11:00Z","observable":true}'
+fallback='{"verdict":"no-major-issues","reason":"reviewed exact diff","head":"abc123","createdAt":"2026-07-09T16:11:00Z","observable":true}'
 stale_fallback='{"verdict":"no-major-issues","head":"abc123","createdAt":"2026-07-09T16:09:00Z","observable":true}'
 wrong_head_fallback='{"verdict":"no-major-issues","head":"def456","createdAt":"2026-07-09T16:11:00Z","observable":true}'
 thumb='{"id":3,"content":"+1","createdAt":"2026-07-09T16:10:09Z","author":"chatgpt-codex-connector[bot]"}'
@@ -64,6 +64,7 @@ review='{"id":5,"body":"No major issues found.","submittedAt":"2026-07-09T16:10:
 
 run_case missing missing fallback-review '.'
 run_case pending pending wait-review ".comments = [$command]"
+run_case timed_out unavailable fallback-review ".comments = [($command + {createdAt: \"2026-07-09T16:00:01Z\"})] | .policy.codexTimeoutSeconds = 600"
 run_case quota unavailable fallback-review ".comments = [$command, $quota]"
 run_case quota_fallback unavailable merge ".comments = [$command, $quota] | .fallback = $fallback"
 run_case stale_fallback unavailable fallback-review ".comments = [$command, $quota] | .fallback = $stale_fallback"
@@ -74,13 +75,32 @@ run_case newer_command pending wait-review ".comments = [$quota, ($command + {id
 run_case bot_quote missing fallback-review ".comments = [($command + {author: \"chatgpt-codex-connector[bot]\"})]"
 run_case comments_allowed missing fallback-review '.policy.comments = "allowed"'
 run_case head_changed missing head-changed '.collection.headAfter = "def456"'
-run_case unresolved missing wait-feedback '.threads = [{"isResolved":false,"isOutdated":false}]'
-run_case failed_check missing wait-checks '.checks = [{"name":"ci","bucket":"fail"}]'
-run_case no_merge_failed_check missing wait-checks '.checks = [{"name":"ci","bucket":"fail"}] | .policy.merge = "disabled"'
-run_case no_merge_dirty missing wait-merge-state '.mergeState = "DIRTY" | .policy.merge = "disabled"'
+run_case unresolved missing repair '.threads = [{"id":"thread-1","isResolved":false,"isOutdated":false}]'
+run_case repair_disabled_feedback missing wait-feedback '.threads = [{"id":"thread-1","isResolved":false,"isOutdated":false}] | .policy.repair = "disabled"'
+run_case failed_check missing repair '.checks = [{"name":"ci","bucket":"fail","link":"https://example.test/run/1","completedAt":"2026-07-09T16:12:00Z"}]'
+run_case repair_disabled_check missing wait-checks '.checks = [{"name":"ci","bucket":"fail"}] | .policy.repair = "disabled"'
+run_case no_merge_failed_check missing repair '.checks = [{"name":"ci","bucket":"fail"}] | .policy.merge = "disabled"'
+run_case no_merge_dirty missing repair '.mergeState = "DIRTY" | .policy.merge = "disabled"'
 run_case pending_check missing wait-checks '.checks = [{"name":"ci","bucket":"pending"}]'
 run_case missing_checks missing wait-checks '.checks = []'
-run_case fallback_findings unavailable wait-review-findings ".comments = [$command, $quota] | .fallback = ($fallback + {verdict: \"needs-fix\"})"
+run_case fallback_findings unavailable repair ".comments = [$command, $quota] | .fallback = ($fallback + {verdict: \"needs-fix\"})"
+run_case repair_disabled_findings unavailable wait-review-findings ".comments = [$command, $quota] | .fallback = ($fallback + {verdict: \"needs-fix\"}) | .policy.repair = \"disabled\""
 run_case fallback_inconclusive unavailable wait-review-inconclusive ".comments = [$command, $quota] | .fallback = ($fallback + {verdict: \"inconclusive\"})"
+run_case portal_blocked_reviewed reviewed ready-for-human-review ".comments = [$command] | .reactions = [$thumb] | .policy.merge = \"disabled\" | .mergeState = \"BLOCKED\""
+run_case vitehub_blocked_reviewed reviewed wait-merge-state ".comments = [$command] | .reactions = [$thumb] | .mergeState = \"BLOCKED\""
+
+portal_result="$(
+  jq ".comments = [$command] | .reactions = [$thumb] | .policy.merge = \"disabled\" | .mergeState = \"BLOCKED\"" "$tmp/base.json" \
+    | "$skill_dir/scripts/pr-readiness.sh" --input /dev/stdin
+)"
+jq -e '.action == "ready-for-human-review" and .ready == true and (.blockers | length) == 0' \
+  <<< "$portal_result" >/dev/null
+
+finding_result="$(
+  jq ".comments = [$command, $quota] | .fallback = ($fallback + {verdict: \"needs-fix\", reason: \"missing null guard\"})" "$tmp/base.json" \
+    | "$skill_dir/scripts/pr-readiness.sh" --input /dev/stdin
+)"
+jq -e '.action == "repair" and .fallback.reason == "missing null guard" and .blockers == ["review-needs-fix"]' \
+  <<< "$finding_result" >/dev/null
 
 echo "readiness fixtures passed"

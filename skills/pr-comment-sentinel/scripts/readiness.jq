@@ -38,7 +38,10 @@ def is_quota($bot):
       | select(is_quota($bot) and .createdAt > $cutoff)
       | { kind: "quota", id, at: .createdAt, favorable: false })
   ] | latest) as $terminal
-| (if $terminal.kind == "quota" then "unavailable"
+| (($command != null)
+   and ($terminal == null)
+   and (($input.collection.finishedAt | fromdateiso8601) - ($command.at | fromdateiso8601) >= ($input.policy.codexTimeoutSeconds // 900))) as $command_timed_out
+| (if $terminal.kind == "quota" or $command_timed_out then "unavailable"
    elif $terminal.kind == "review" or $terminal.kind == "thumbs_up" then "reviewed"
    elif $command != null then "pending"
    else "missing"
@@ -74,37 +77,48 @@ def is_quota($bot):
      { source: "none", verdict: "none", at: null, admissible: false }
    end) as $review
 | ([$input.checks[]? | select((.bucket // "unknown" | ascii_downcase) == "fail" or (.bucket // "unknown" | ascii_downcase) == "cancel") | .name]) as $failed_checks
+| ([$input.checks[]?
+    | select((.bucket // "unknown" | ascii_downcase) == "fail" or (.bucket // "unknown" | ascii_downcase) == "cancel")
+    | {name, link: (.link // null), completedAt: (.completedAt // null), workflow: (.workflow // null)}]) as $failed_check_details
 | ([$input.checks[]? | select((.bucket // "unknown" | ascii_downcase) == "pending") | .name]) as $pending_checks
+| ([$input.threads[]? | select((.isResolved | not) and (.isOutdated | not)) | .id]) as $unresolved_ids
 | ([
     if ($authored | not) then "not-authored" else empty end,
     if ($head_stable | not) then "head-changed" else empty end,
     if ($title_valid | not) then "invalid-title" else empty end,
     if $unresolved > 0 then "unresolved-review-threads" else empty end,
-    if $input.mergeState != "CLEAN" then ("merge-state-" + ($input.mergeState | ascii_downcase)) else empty end,
+    if ($input.mergeState == "DIRTY" or $input.mergeState == "BEHIND") then ("merge-state-" + ($input.mergeState | ascii_downcase))
+    elif $input.policy.merge == "allowed" and $input.mergeState != "CLEAN" then ("merge-state-" + ($input.mergeState | ascii_downcase))
+    elif $input.policy.merge == "disabled" and $input.mergeState != "CLEAN" and $input.mergeState != "BLOCKED" then ("merge-state-" + ($input.mergeState | ascii_downcase))
+    else empty end,
     if $checks_state != "passed" then ("checks-" + $checks_state) else empty end,
     if ($review.admissible | not) then
-      (if $lane == "pending" then "codex-review-pending"
+      (if $review.verdict == "needs-fix" then "review-needs-fix"
+       elif $review.verdict == "inconclusive" then "review-inconclusive"
+       elif $lane == "pending" then "codex-review-pending"
        elif $lane == "unavailable" then "fallback-review-required"
        elif $lane == "missing" then "review-missing"
-       elif $review.verdict == "needs-fix" then "review-needs-fix"
        else "review-not-favorable"
        end)
     else empty end
   ]) as $blockers
 | (if ($authored | not) then "ignore"
    elif ($head_stable | not) then "head-changed"
-   elif $unresolved > 0 then "wait-feedback"
-   elif ($title_valid | not) then "wait-title"
+   elif $unresolved > 0 then (if $input.policy.repair == "allowed" then "repair" else "wait-feedback" end)
+   elif ($title_valid | not) then (if $input.policy.repair == "allowed" then "repair" else "wait-title" end)
+   elif ($input.mergeState == "DIRTY" or $input.mergeState == "BEHIND") then (if $input.policy.repair == "allowed" then "repair" else "wait-merge-state" end)
+   elif $checks_state == "failed" then (if $input.policy.repair == "allowed" then "repair" else "wait-checks" end)
    elif $checks_state != "passed" then "wait-checks"
-   elif $input.mergeState != "CLEAN" then "wait-merge-state"
-   elif $review.verdict == "needs-fix" then "wait-review-findings"
+   elif $review.verdict == "needs-fix" then (if $input.policy.repair == "allowed" then "repair" else "wait-review-findings" end)
    elif $review.verdict == "inconclusive" then "wait-review-inconclusive"
    elif $lane == "pending" then "wait-review"
    elif ($review.admissible | not) and ($lane == "unavailable" or $lane == "missing") then "fallback-review"
    elif ($review.admissible | not) then "wait-review"
    elif $input.draft then "mark-ready"
-   elif $input.policy.merge == "allowed" then "merge"
-   else "ready-for-human-review"
+   elif $input.policy.merge == "allowed" and $input.mergeState == "CLEAN" then "merge"
+   elif $input.policy.merge == "allowed" then "wait-merge-state"
+   elif $input.mergeState == "CLEAN" or $input.mergeState == "BLOCKED" then "ready-for-human-review"
+   else "wait-merge-state"
    end) as $action
 | {
     schema: 1,
@@ -124,11 +138,13 @@ def is_quota($bot):
       state: $checks_state,
       total: ($buckets | length),
       failed: $failed_checks,
+      failedDetails: $failed_check_details,
       pending: $pending_checks
     },
-    reviewThreads: { unresolved: $unresolved },
+    reviewThreads: { unresolved: $unresolved, ids: $unresolved_ids },
     codexLane: {
       state: $lane,
+      timedOut: $command_timed_out,
       command: $command,
       terminal: $terminal
     },
@@ -137,6 +153,7 @@ def is_quota($bot):
       fresh: $fallback.fresh,
       admissible: $fallback.admissible,
       verdict: ($fallback.value.verdict // null),
+      reason: ($fallback.value.reason // null),
       head: ($fallback.value.head // null),
       createdAt: ($fallback.value.createdAt // null),
       observable: ($fallback.value.observable // false)

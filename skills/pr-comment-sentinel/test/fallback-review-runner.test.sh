@@ -4,7 +4,7 @@ set -euo pipefail
 skill_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
-mkdir -p "$tmp/bin" "$tmp/worktree"
+mkdir -p "$tmp/bin" "$tmp/worktree" "$tmp/control"
 
 cat > "$tmp/bin/codex" <<'MOCK'
 #!/usr/bin/env bash
@@ -21,15 +21,15 @@ printf '%s\n' '{"verdict":"no-major-issues","reason":"reviewed exact diff"}' > "
 MOCK
 chmod +x "$tmp/bin/codex"
 
-printf '%s\n' 'review prompt' > "$tmp/worktree/prompt"
-printf '%s\n' '{}' > "$tmp/worktree/schema"
+printf '%s\n' 'review prompt' > "$tmp/control/prompt"
+printf '%s\n' '{}' > "$tmp/control/schema"
 
 PATH="$tmp/bin:$PATH" \
 CODEX_ARGS_LOG="$tmp/args" \
 PR_COMMENT_SENTINEL_MODEL=gpt-5.6-sol \
 PR_COMMENT_SENTINEL_REASONING_EFFORT=high \
   "$skill_dir/scripts/fallback-review-runner.sh" \
-  "$tmp/worktree" abc123 "$tmp/worktree/prompt" "$tmp/worktree/schema" "$tmp/worktree/output"
+  "$tmp/worktree" abc123 "$tmp/control" "$tmp/control/prompt" "$tmp/control/schema" "$tmp/control/output"
 
 jq -e '
   .schema == 1
@@ -38,13 +38,14 @@ jq -e '
   and .reason == "reviewed exact diff"
   and .model == "gpt-5.6-sol"
   and .reasoningEffort == "high"
-' "$tmp/worktree/.pr-comment-sentinel-review.json" >/dev/null
+' "$tmp/control/result.json" >/dev/null
 grep -F -- '--model gpt-5.6-sol' "$tmp/args" >/dev/null
 grep -F -- 'model_reasoning_effort="high"' "$tmp/args" >/dev/null
+[ -z "$(find "$tmp/worktree" -mindepth 1 -maxdepth 1 -print -quit)" ]
 
-failed_worktree="$tmp/workspace/pr-comment-sentinel/vite-hub-vitehub/pr-525-abc123"
-mkdir -p "$failed_worktree"
-printf '%s\n' 'model unavailable' > "$failed_worktree/.pr-comment-sentinel-review.error"
+failed_control="$tmp/workspace/pr-comment-sentinel-state/vite-hub-vitehub/pr-525-abc123/review"
+mkdir -p "$failed_control"
+printf '%s\n' 'model unavailable' > "$failed_control/error"
 cooldown="$(
   PR_COMMENT_SENTINEL_WORKSPACE="$tmp/workspace" \
   PR_COMMENT_SENTINEL_RETRY_SECONDS=900 \
@@ -53,7 +54,7 @@ cooldown="$(
 jq -e '
   .status == "failed"
   and .retryInSeconds > 0
-  and (.error | endswith(".pr-comment-sentinel-review.error"))
+  and (.error | endswith("/review/error"))
 ' <<< "$cooldown" >/dev/null
 
 echo "fallback review runner fixture passed"

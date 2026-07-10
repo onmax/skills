@@ -11,6 +11,7 @@ Defaults to gh:vite-hub/vitehub and gh:quiverdk/portal.
 Environment:
   PR_COMMENT_SENTINEL_WORKSPACE     Worktree root. Default: /home/workspace
   PR_COMMENT_SENTINEL_MERGE_REPOS   Space/comma-separated owner/repo values allowed to merge
+  PR_COMMENT_SENTINEL_REPAIR_REPOS  Space/comma-separated owner/repo values allowed to repair
   PR_COMMENT_SENTINEL_COMMENT_REPOS Space/comma-separated owner/repo values allowed one @codex review nudge
 USAGE
   exit 0
@@ -24,7 +25,10 @@ fi
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 workspace="${PR_COMMENT_SENTINEL_WORKSPACE:-/home/workspace}"
 merge_repos="${PR_COMMENT_SENTINEL_MERGE_REPOS:-}"
+repair_repos="${PR_COMMENT_SENTINEL_REPAIR_REPOS:-}"
 comment_repos="${PR_COMMENT_SENTINEL_COMMENT_REPOS:-}"
+error_file="$(mktemp)"
+trap 'rm -f "$error_file"' EXIT
 
 contains_repo() {
   local haystack="${1//,/ }"
@@ -39,16 +43,35 @@ contains_repo() {
 for repo_arg in "${repos[@]}"; do
   repo="${repo_arg#gh:}"
   merge_policy="disabled"
+  repair_policy="disabled"
   comment_policy="disabled"
   contains_repo "$merge_repos" "$repo" && merge_policy="allowed"
+  contains_repo "$repair_repos" "$repo" && repair_policy="allowed"
   contains_repo "$comment_repos" "$repo" && comment_policy="allowed"
   repo_dir="${repo//\//-}"
+
+  if ! pr_rows="$(
+    gh pr list \
+      --repo "$repo" \
+      --author @me \
+      --state open \
+      --limit 100 \
+      --json number,headRefOid \
+      --jq '.[] | [.number, .headRefOid] | @tsv'
+  )"; then
+    jq -cn --arg repository "$repo" \
+      '{repository:$repository, action:"observation-failed", blocker:"pr-list-failed"}' >&2
+    continue
+  fi
 
   while IFS=$'\t' read -r pr head; do
     [ -n "$pr" ] || continue
     worktree="$workspace/pr-comment-sentinel/$repo_dir/pr-$pr-$head"
+    review_state="$workspace/pr-comment-sentinel-state/$repo_dir/pr-$pr-$head/review/result.json"
     fallback=""
-    if [ -f "$worktree/.pr-comment-sentinel-review.json" ]; then
+    if [ -f "$review_state" ]; then
+      fallback="$review_state"
+    elif [ -f "$worktree/.pr-comment-sentinel-review.json" ]; then
       fallback="$worktree/.pr-comment-sentinel-review.json"
     elif [ -f "$worktree/.pr-comment-sentinel-review.status" ]; then
       fallback="$worktree/.pr-comment-sentinel-review.status"
@@ -57,17 +80,34 @@ for repo_arg in "${repos[@]}"; do
     args=(
       --expected-head "$head"
       --merge "$merge_policy"
+      --repair "$repair_policy"
       --comments "$comment_policy"
     )
     [ -z "$fallback" ] || args+=(--fallback "$fallback")
-    "$script_dir/pr-readiness.sh" "${args[@]}" "$repo" "$pr"
-  done < <(
-    gh pr list \
-      --repo "$repo" \
-      --author @me \
-      --state open \
-      --limit 100 \
-      --json number,headRefOid \
-      --jq '.[] | [.number, .headRefOid] | @tsv'
-  )
+    if snapshot="$($script_dir/pr-readiness.sh "${args[@]}" "$repo" "$pr" 2> "$error_file")"; then
+      printf '%s\n' "$snapshot"
+    else
+      rc=$?
+      error="$(cat "$error_file")"
+      jq -cn \
+        --arg repository "$repo" \
+        --argjson number "$pr" \
+        --arg head "$head" \
+        --arg merge "$merge_policy" \
+        --arg repair "$repair_policy" \
+        --arg comments "$comment_policy" \
+        --arg error "$error" \
+        --argjson exitCode "$rc" \
+        '{
+          schema:1,
+          repository:$repository,
+          number:$number,
+          head:$head,
+          action:"wait-observation",
+          blockers:["snapshot-failed"],
+          policy:{merge:$merge, repair:$repair, comments:$comments},
+          observation:{exitCode:$exitCode, error:$error}
+        }'
+    fi
+  done <<< "$pr_rows"
 done

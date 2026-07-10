@@ -13,6 +13,7 @@ Options:
   --expected-head SHA       Fail closed if the observed head differs.
   --fallback FILE           Exact-head fallback review JSON or legacy status file.
   --merge allowed|disabled  Whether a ready PR may be merged. Default: disabled.
+  --repair allowed|disabled Whether actionable blockers may dispatch a repair owner. Default: disabled.
   --comments allowed|disabled
                             Whether the exact @codex review nudge is authorized. Default: disabled.
   --input FILE              Classify a normalized fixture without calling GitHub.
@@ -22,7 +23,9 @@ USAGE
 expected_head=""
 fallback_file=""
 merge_policy="disabled"
+repair_policy="disabled"
 comment_policy="disabled"
+codex_timeout_seconds="${PR_COMMENT_SENTINEL_CODEX_TIMEOUT_SECONDS:-900}"
 input_file=""
 
 while [ "$#" -gt 0 ]; do
@@ -37,6 +40,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --merge)
       merge_policy="${2:?missing merge policy}"
+      shift 2
+      ;;
+    --repair)
+      repair_policy="${2:?missing repair policy}"
       shift 2
       ;;
     --comments)
@@ -74,7 +81,9 @@ fi
 
 [ "$#" -eq 2 ] || { usage >&2; exit 64; }
 [ "$merge_policy" = "allowed" ] || [ "$merge_policy" = "disabled" ] || { echo "invalid merge policy" >&2; exit 64; }
+[ "$repair_policy" = "allowed" ] || [ "$repair_policy" = "disabled" ] || { echo "invalid repair policy" >&2; exit 64; }
 [ "$comment_policy" = "allowed" ] || [ "$comment_policy" = "disabled" ] || { echo "invalid comment policy" >&2; exit 64; }
+[[ "$codex_timeout_seconds" =~ ^[0-9]+$ ]] || { echo "invalid Codex timeout" >&2; exit 64; }
 
 repo="${1#gh:}"
 pr="$2"
@@ -112,7 +121,7 @@ gh api graphql --paginate --slurp \
     repository(owner: $owner, name: $name) {
       pullRequest(number: $number) {
         reviewThreads(first: 100, after: $endCursor) {
-          nodes { isResolved isOutdated }
+          nodes { id isResolved isOutdated }
           pageInfo { hasNextPage endCursor }
         }
       }
@@ -122,7 +131,7 @@ gh api graphql --paginate --slurp \
   > "$tmp/threads.json"
 
 set +e
-gh pr checks "$pr" --repo "$repo" --json bucket,name,state,workflow > "$tmp/checks.json" 2> "$tmp/checks.err"
+gh pr checks "$pr" --repo "$repo" --json bucket,completedAt,link,name,state,workflow > "$tmp/checks.json" 2> "$tmp/checks.err"
 checks_rc=$?
 set -e
 if ! jq -e 'type == "array"' "$tmp/checks.json" >/dev/null 2>&1; then
@@ -135,9 +144,12 @@ fallback_json='null'
 if [ -n "$fallback_file" ] && [ -f "$fallback_file" ]; then
   fallback_dir="$(cd "$(dirname "$fallback_file")" && pwd)"
   observable=false
-  if [ -f "$fallback_dir/.pr-comment-sentinel-review.prompt.md" ] \
-    && [ -f "$fallback_dir/.pr-comment-sentinel-review.log" ] \
-    && [ -f "$fallback_dir/.pr-comment-sentinel-review.pid" ]; then
+  if { [ -f "$fallback_dir/prompt.md" ] \
+      && [ -f "$fallback_dir/worker.log" ] \
+      && [ -f "$fallback_dir/pid" ]; } \
+    || { [ -f "$fallback_dir/.pr-comment-sentinel-review.prompt.md" ] \
+      && [ -f "$fallback_dir/.pr-comment-sentinel-review.log" ] \
+      && [ -f "$fallback_dir/.pr-comment-sentinel-review.pid" ]; }; then
     observable=true
   fi
 
@@ -178,7 +190,9 @@ jq -n \
   --arg startedAt "$started_at" \
   --arg finishedAt "$finished_at" \
   --arg merge "$merge_policy" \
+  --arg repair "$repair_policy" \
   --arg comments "$comment_policy" \
+  --argjson codexTimeoutSeconds "$codex_timeout_seconds" \
   --argjson fallback "$fallback_json" \
   --slurpfile pr "$tmp/pr.json" \
   --slurpfile checks "$tmp/checks.json" \
@@ -198,7 +212,7 @@ jq -n \
     draft: $pr[0].isDraft,
     mergeState: ($pr[0].mergeStateStatus // "UNKNOWN"),
     head: { sha: $pr[0].headRefOid, committedAt: $headDate },
-    policy: { merge: $merge, comments: $comments, checks: "all-visible" },
+    policy: { merge: $merge, repair: $repair, comments: $comments, checks: "all-visible", codexTimeoutSeconds: $codexTimeoutSeconds },
     checks: $checks[0],
     threads: $threads[0],
     comments: $issueComments[0],

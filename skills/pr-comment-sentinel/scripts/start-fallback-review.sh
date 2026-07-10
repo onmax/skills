@@ -13,11 +13,26 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 workspace="${PR_COMMENT_SENTINEL_WORKSPACE:-/home/workspace}"
 repo_dir="${repo//\//-}"
 worktree="$workspace/pr-comment-sentinel/$repo_dir/pr-$pr-$head"
-pid_file="$worktree/.pr-comment-sentinel-review.pid"
-prompt="$worktree/.pr-comment-sentinel-review.prompt.md"
-schema="$worktree/.pr-comment-sentinel-review.schema.json"
-output="$worktree/.pr-comment-sentinel-review.output.json"
-error="$worktree/.pr-comment-sentinel-review.error"
+state_root="$workspace/pr-comment-sentinel-state/$repo_dir/pr-$pr-$head"
+control="$state_root/review"
+pid_file="$control/pid"
+prompt="$control/prompt.md"
+schema="$control/schema.json"
+output="$control/output.json"
+error="$control/error"
+repair_state="$state_root"
+mkdir -p "$control"
+
+for repair_pid in "$repair_state"/repair-*/pid; do
+  [ -s "$repair_pid" ] || continue
+  if kill -0 "$(cat "$repair_pid")" 2>/dev/null; then
+    jq -cn \
+      --argjson pid "$(cat "$repair_pid")" \
+      --arg worktree "$worktree" \
+      '{status:"waiting-repair", pid:$pid, worktree:$worktree}'
+    exit
+  fi
+done
 
 if [ -s "$pid_file" ] && kill -0 "$(cat "$pid_file")" 2>/dev/null; then
   jq -cn \
@@ -96,14 +111,15 @@ printf '%s\n' \
   > "$prompt"
 
 setsid "$script_dir/fallback-review-runner.sh" \
-  "$worktree" "$head" "$prompt" "$schema" "$output" </dev/null >/dev/null 2>&1 &
+  "$worktree" "$head" "$control" "$prompt" "$schema" "$output" </dev/null >/dev/null 2>&1 &
 pid=$!
 printf '%s\n' "$pid" > "$pid_file"
 
 kill -0 "$pid"
 jq -cn \
-  --argjson pid "$pid" \
-  --arg worktree "$worktree" \
+    --argjson pid "$pid" \
+    --arg worktree "$worktree" \
+    --arg control "$control" \
   --arg model "${PR_COMMENT_SENTINEL_MODEL:-gpt-5.6-sol}" \
   --arg effort "${PR_COMMENT_SENTINEL_REASONING_EFFORT:-high}" \
-  '{status:"started", pid:$pid, worktree:$worktree, model:$model, reasoningEffort:$effort}'
+  '{status:"started", pid:$pid, worktree:$worktree, control:$control, model:$model, reasoningEffort:$effort}'
