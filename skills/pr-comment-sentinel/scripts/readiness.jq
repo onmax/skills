@@ -51,7 +51,7 @@ def is_quota($bot):
    | {
        value: $fallback,
        fresh: $fresh,
-       admissible: ($fresh and ($lane == "unavailable" or ($lane == "missing" and $input.policy.comments == "disabled")))
+       admissible: ($fresh and ($lane == "unavailable" or $lane == "missing"))
      }) as $fallback
 | ([$input.checks[]? | (.bucket // "unknown" | ascii_downcase)]) as $buckets
 | (if ($buckets | length) == 0 then "missing"
@@ -93,15 +93,13 @@ def is_quota($bot):
   ]) as $blockers
 | (if ($authored | not) then "ignore"
    elif ($head_stable | not) then "head-changed"
-   elif $unresolved > 0 then "fix-feedback"
-   elif ($title_valid | not) then "fix-title"
-   elif ($input.mergeState == "DIRTY" or $input.mergeState == "BEHIND") and $input.policy.merge == "allowed" then "refresh-branch"
-   elif $checks_state == "failed" and $input.policy.merge == "allowed" then "repair-checks"
+   elif $unresolved > 0 then "wait-feedback"
+   elif ($title_valid | not) then "wait-title"
    elif $checks_state != "passed" then "wait-checks"
    elif $input.mergeState != "CLEAN" then "wait-merge-state"
-   elif $review.verdict == "needs-fix" then (if $review.source == "fallback" then "fix-fallback" else "wait-review" end)
+   elif $review.verdict == "needs-fix" then "wait-review-findings"
+   elif $review.verdict == "inconclusive" then "wait-review-inconclusive"
    elif $lane == "pending" then "wait-review"
-   elif ($review.admissible | not) and $lane == "missing" and $input.policy.comments == "allowed" then "request-review"
    elif ($review.admissible | not) and ($lane == "unavailable" or $lane == "missing") then "fallback-review"
    elif ($review.admissible | not) then "wait-review"
    elif $input.draft then "mark-ready"

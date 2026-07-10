@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ "$#" -ne 3 ]; then
+  echo "usage: start-fallback-review.sh owner/repo pr-number head" >&2
+  exit 64
+fi
+
+repo="${1#gh:}"
+pr="$2"
+head="$3"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+workspace="${PR_COMMENT_SENTINEL_WORKSPACE:-/home/workspace}"
+repo_dir="${repo//\//-}"
+worktree="$workspace/pr-comment-sentinel/$repo_dir/pr-$pr-$head"
+pid_file="$worktree/.pr-comment-sentinel-review.pid"
+prompt="$worktree/.pr-comment-sentinel-review.prompt.md"
+schema="$worktree/.pr-comment-sentinel-review.schema.json"
+output="$worktree/.pr-comment-sentinel-review.output.json"
+
+if [ -s "$pid_file" ] && kill -0 "$(cat "$pid_file")" 2>/dev/null; then
+  jq -cn \
+    --argjson pid "$(cat "$pid_file")" \
+    --arg worktree "$worktree" \
+    '{status:"running", pid:$pid, worktree:$worktree}'
+  exit
+fi
+
+pr_json="$(gh pr view "$pr" --repo "$repo" --json baseRefOid,headRefOid,title,url)"
+observed_head="$(jq -r .headRefOid <<< "$pr_json")"
+[ "$observed_head" = "$head" ] || {
+  jq -cn --arg expected "$head" --arg observed "$observed_head" \
+    '{status:"head-changed", expected:$expected, observed:$observed}'
+  exit 2
+}
+base="$(jq -r .baseRefOid <<< "$pr_json")"
+title="$(jq -r .title <<< "$pr_json")"
+url="$(jq -r .url <<< "$pr_json")"
+
+if [ ! -e "$worktree/.git" ]; then
+  mkdir -p "$(dirname "$worktree")"
+  gh repo clone "$repo" "$worktree" -- --filter=blob:none --no-checkout >/dev/null
+  git -C "$worktree" fetch --quiet origin "$base" "$head"
+  git -C "$worktree" checkout --quiet --detach "$head"
+fi
+
+actual_head="$(git -C "$worktree" rev-parse HEAD)"
+[ "$actual_head" = "$head" ] || {
+  echo "existing checkout is at $actual_head, expected $head: $worktree" >&2
+  exit 1
+}
+
+if git -C "$worktree" status --porcelain --untracked-files=all \
+  | sed -E 's/^...//' \
+  | grep -Ev '^\.pr-comment-sentinel-' \
+  | grep -q .; then
+  echo "source checkout is dirty: $worktree" >&2
+  exit 1
+fi
+
+git -C "$worktree" cat-file -e "$base^{commit}" 2>/dev/null \
+  || git -C "$worktree" fetch --quiet origin "$base"
+
+jq -n '{
+  type: "object",
+  additionalProperties: false,
+  required: ["verdict", "reason"],
+  properties: {
+    verdict: {type: "string", enum: ["no-major-issues", "needs-fix", "inconclusive"]},
+    reason: {type: "string", minLength: 1, maxLength: 2000}
+  }
+}' > "$schema"
+
+printf '%s\n' \
+  "Review $url at exact head $head against base $base." \
+  "PR title: $title" \
+  "Inspect the complete base-to-head diff for correctness, regressions, security, missing tests, and mismatch with the PR intent." \
+  "Run useful read-only checks when dependencies are already available. Do not install dependencies." \
+  "Do not edit files, post comments, push, resolve threads, change PR state, or merge." \
+  "Return only the JSON object required by the output schema. Use no-major-issues only when there is no material merge blocker; otherwise use needs-fix or inconclusive and explain why." \
+  > "$prompt"
+
+setsid "$script_dir/fallback-review-runner.sh" \
+  "$worktree" "$head" "$prompt" "$schema" "$output" </dev/null >/dev/null 2>&1 &
+pid=$!
+printf '%s\n' "$pid" > "$pid_file"
+
+kill -0 "$pid"
+jq -cn \
+  --argjson pid "$pid" \
+  --arg worktree "$worktree" \
+  --arg model "${PR_COMMENT_SENTINEL_MODEL:-gpt-5.6-sol}" \
+  --arg effort "${PR_COMMENT_SENTINEL_REASONING_EFFORT:-high}" \
+  '{status:"started", pid:$pid, worktree:$worktree, model:$model, reasoningEffort:$effort}'

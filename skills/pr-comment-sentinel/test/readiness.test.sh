@@ -72,13 +72,15 @@ run_case reviewed reviewed merge ".comments = [$command] | .reactions = [$thumb]
 run_case reviewed_body reviewed merge ".comments = [$command] | .reviews = [$review]"
 run_case newer_command pending wait-review ".comments = [$quota, ($command + {id: 4, createdAt: \"2026-07-09T16:10:10Z\"})]"
 run_case bot_quote missing fallback-review ".comments = [($command + {author: \"chatgpt-codex-connector[bot]\"})]"
-run_case comments_allowed missing request-review '.policy.comments = "allowed"'
+run_case comments_allowed missing fallback-review '.policy.comments = "allowed"'
 run_case head_changed missing head-changed '.collection.headAfter = "def456"'
-run_case unresolved missing fix-feedback '.threads = [{"isResolved":false,"isOutdated":false}]'
-run_case failed_check missing repair-checks '.checks = [{"name":"ci","bucket":"fail"}]'
+run_case unresolved missing wait-feedback '.threads = [{"isResolved":false,"isOutdated":false}]'
+run_case failed_check missing wait-checks '.checks = [{"name":"ci","bucket":"fail"}]'
 run_case no_merge_failed_check missing wait-checks '.checks = [{"name":"ci","bucket":"fail"}] | .policy.merge = "disabled"'
 run_case no_merge_dirty missing wait-merge-state '.mergeState = "DIRTY" | .policy.merge = "disabled"'
 run_case pending_check missing wait-checks '.checks = [{"name":"ci","bucket":"pending"}]'
 run_case missing_checks missing wait-checks '.checks = []'
+run_case fallback_findings unavailable wait-review-findings ".comments = [$command, $quota] | .fallback = ($fallback + {verdict: \"needs-fix\"})"
+run_case fallback_inconclusive unavailable wait-review-inconclusive ".comments = [$command, $quota] | .fallback = ($fallback + {verdict: \"inconclusive\"})"
 
 echo "readiness fixtures passed"
