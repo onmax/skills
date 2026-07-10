@@ -4,7 +4,7 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 workspace="${PR_COMMENT_SENTINEL_WORKSPACE:-/home/workspace}"
 repos=("$@")
-[ "${#repos[@]}" -gt 0 ] || repos=("gh:vite-hub/vitehub")
+[ "${#repos[@]}" -gt 0 ] || repos=("gh:vite-hub/vitehub" "gh:quiverdk/portal")
 
 tmp="$(mktemp)"
 trap 'rm -f "$tmp"' EXIT

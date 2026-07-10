@@ -13,10 +13,10 @@ Run one pass and exit:
 
 ```sh
 PR_COMMENT_SENTINEL_MERGE_REPOS=vite-hub/vitehub \
-  scripts/run-heartbeat.sh gh:vite-hub/vitehub
+  scripts/run-heartbeat.sh gh:vite-hub/vitehub gh:quiverdk/portal
 ```
 
-`run-heartbeat.sh` prints one JSON ledger row per authored open PR. The timer supplies the next pass; do not poll inside a pass.
+`run-heartbeat.sh` watches ViteHub and Portal by default and prints one JSON ledger row per authored open PR. The merge allowlist remains independent: Portal is report-only unless explicitly added. The timer supplies the next pass; do not poll inside a pass.
 
 ## Actions
 

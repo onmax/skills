@@ -6,6 +6,7 @@ if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
 Usage: heartbeat-state.sh [gh:owner/repo ...]
 
 Prints one readiness JSON object per open PR authored by the current GitHub user.
+Defaults to gh:vite-hub/vitehub and gh:quiverdk/portal.
 
 Environment:
   PR_COMMENT_SENTINEL_WORKSPACE     Worktree root. Default: /home/workspace
@@ -17,7 +18,7 @@ fi
 
 repos=("$@")
 if [ "${#repos[@]}" -eq 0 ]; then
-  repos=("gh:vite-hub/vitehub")
+  repos=("gh:vite-hub/vitehub" "gh:quiverdk/portal")
 fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
