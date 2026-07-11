@@ -64,6 +64,23 @@ Avoid duplicate user-facing skills in:
 
 Codex may keep internal system files under `.codex`; do not delete auth or Codex-owned system state just to remove skill duplication.
 
+## Claude Code Shape
+
+Canonical `~/.claude/settings.json` baseline for agent profiles (merge into existing settings, do not replace the file):
+
+```json
+{
+  "permissions": {
+    "deny": ["EnterPlanMode", "ExitPlanMode", "DesignSync", "NotebookEdit", "SendMessage", "PushNotification", "RemoteTrigger", "ReportFindings", "ScheduleWakeup", "AskUserQuestion", "CronCreate", "CronDelete", "CronList"]
+  },
+  "disableBundledSkills": true,
+  "disableWorkflows": true,
+  "disableRemoteControl": true,
+  "disableClaudeAiConnectors": true,
+  "disableArtifact": true
+}
+```
+
 ## Tailscale And T3 Code
 
 Use official docs or CLI help at execution time because T3 remote commands are moving quickly.

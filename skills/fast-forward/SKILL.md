@@ -1,80 +1,20 @@
 ---
 name: fast-forward
-description: Skips obvious branches inside grilling sessions by stating the assumed answer and moving on. Use when the user says fast-forward, skip, obvious, same as me, or next unclear area.
+description: Prunes one user-accepted branch inside a grilling session. Use when the user asks to skip it or accepts the current recommendation.
 ---
 
 # Fast Forward
 
-## Quick Start
+Prune exactly one current branch per user signal inside an active `grilling` session, including sessions started through its wrapper skills.
 
-Use this as a companion maneuver inside `grill-me` or `grill-with-docs`.
+Treat `your recommendation` and equivalent replies as acceptance of the recommendation already attached to the current question.
 
-When the user signals that the current line of questioning is obvious or low-value, do not end the grilling session. Instead:
+1. Name the branch being pruned.
+2. State the accepted answer as one or more provisional assumptions.
+3. Mark only that branch provisionally resolved and leave adjacent branches open.
+4. Name the next genuinely uncertain branch.
+5. Ask exactly one next question, then return control to the active grilling skill.
 
-1. Identify the current question branch.
-2. Infer the likely default answers.
-3. State the assumptions compactly.
-4. Treat the branch as provisionally resolved.
-5. Jump to the next genuinely uncertain branch.
-6. Continue with one question.
+The maneuver is complete when the response contains the pruned branch, its provisional assumptions, the next unclear branch, and one question.
 
-## Workflow
-
-Use this response shape:
-
-```md
-Fast-forwarding this branch.
-
-I am treating these assumptions as provisionally resolved:
-- ...
-- ...
-
-Next unclear branch: ...
-
-Question: ...
-```
-
-Keep the assumptions short. The goal is to remove boring detail, not create a new report.
-
-## Composition Rules
-
-- Follow the active grilling skill's behavior.
-- In `grill-me`, this only changes conversation flow.
-- In `grill-with-docs`, documentation still follows `grill-with-docs` rules.
-- If fast-forwarded assumptions would be written to `.agents/CONTEXT.md` or an ADR under `.agents/adr/`, ask for explicit confirmation before writing.
-- For conversation-only fast-forwarding, implicit confirmation is enough: state assumptions and continue.
-
-## What To Skip
-
-Fast-forward branches where:
-
-- the user says the topic is obvious or not interesting
-- the likely answer is already implied by resolved decisions
-- the branch is implementation detail below the current design level
-- the agent and user are likely aligned and no meaningful trade-off remains
-
-Do not fast-forward when:
-
-- the branch contains a real unresolved trade-off
-- terms conflict with an existing glossary
-- the user is asking for careful review or adversarial challenge
-- the next step would mutate files without confirmation
-
-## Example
-
-User:
-
-> fast forward, this is obvious
-
-Assistant:
-
-> Fast-forwarding this branch.
->
-> I am treating these assumptions as provisionally resolved:
-> - The hosted client remains the default.
-> - Embedded delivery is not part of the public API.
-> - Package-local opt-out is enough for now.
->
-> Next unclear branch: how feature discovery should be represented.
->
-> Question: should discovery use one shared endpoint or one endpoint per feature?
+The user's signal is enough for conversation-only pruning. Ask for explicit confirmation before persisting fast-forwarded assumptions in durable project documentation.

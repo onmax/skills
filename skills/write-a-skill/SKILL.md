@@ -5,11 +5,13 @@ description: Creates or revises one portable agent skill with concise routing, p
 
 # Writing Skills
 
+This is the Onmax adaptation of Matt Pocock's `writing-great-skills` reference. For non-trivial edits, load [GLOSSARY.md](GLOSSARY.md) and use its vocabulary for predictability, invocation, information hierarchy, and failure modes.
+
 ## Process
 
 1. **Define one job** - identify the task, trigger, and boundary. If the request needs several jobs, split it into several composable skills.
 
-2. **Challenge the shape** - before drafting, compare the request against the Quality Bar. If it would create a broad lifecycle skill, harness-specific wrapper, secret-handling shortcut, or multi-purpose catch-all, say so and propose the smaller composable shape.
+2. **Challenge the shape** - before drafting, compare the request against the Quality Bar and glossary. If it would create a broad lifecycle skill, harness-specific wrapper, secret-handling shortcut, or multi-purpose catch-all, say so and propose the smaller composable shape.
 
 3. **Draft the skill** - create:
    - SKILL.md with concise instructions
@@ -101,9 +103,12 @@ Scripts save tokens and improve reliability vs generated code.
 Skills should be:
 
 - **Concise**: short enough to load quickly and scan under pressure.
+- **Predictable**: makes the agent follow the same process each run, even when outputs differ.
 - **Responsible for one thing**: one job, one trigger family, one output shape.
 - **Composable**: call or hand off to other skills instead of owning an end-to-end lifecycle. It is good for one skill to mention another when the boundary is explicit.
-- **Progressively disclosed**: keep common rules in `SKILL.md`; move rare detail to references or scripts.
+- **Correctly invoked**: model-invoked only when the agent must discover it; user-invoked only when human reach is enough.
+- **Progressively disclosed**: keep steps in `SKILL.md`; move rare reference behind clear context pointers.
+- **Bounded**: each workflow step has a completion criterion strong enough to prevent thin legwork or premature completion.
 - **Harness-agnostic**: describe the job, not one execution harness, unless the skill is specifically about that harness.
 - **Well-documented**: include enough examples, rules, and failure modes for another agent to use it correctly.
 - **Portable**: avoid absolute local paths and private assumptions unless the skill is explicitly local.
@@ -144,7 +149,8 @@ After drafting, verify:
 
 - [ ] Description includes triggers ("Use when...")
 - [ ] Skill owns one job and composes with other skills for adjacent work
-- [ ] SKILL.md is short; rare details are in references
+- [ ] SKILL.md keeps steps primary; rare reference is behind context pointers
+- [ ] No duplication, sediment, sprawl, or no-op instructions
 - [ ] No time-sensitive info
 - [ ] Consistent terminology
 - [ ] Concrete examples included

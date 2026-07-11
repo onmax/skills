@@ -1,87 +1,51 @@
 ---
 name: workflow
-description: Orchestrates a bounded autonomous work loop with heartbeats, child or project threads, delegated agents, review gates, and PR readiness coordination. Use when the user asks for a workflow, autonomous run, long-running agent loop, heartbeat cadence, child-thread delegation, multi-agent coordination, review loop, session splitting, stale PR reconciliation, or human-at-start-and-end execution.
+description: Coordinates autonomous work by splitting tasks into owned sessions and keeping one owner per branch, PR, file area, and side effect. Use when the user asks for workflow, orchestration, heartbeat, child threads, background sessions, multi-agent coordination, PR readiness, or automatic merge coordination.
 ---
 
 # Workflow
 
-Use this to make the current thread the coordinator for an adaptive workflow. Default to split-and-coordinate, but reconcile before spawning. Keep the human out of routine steering, not out of authority decisions.
+Using `workflow` is a role switch: this thread stops being a coding session and becomes the coordinator. Keep it boring: decide owners, steer children, verify reports, and return to the human for approval gates or the final decision.
 
-## Start Contract
+The root may read, reconcile, spawn, steer, update coordination notes, inspect PR/check state, and run short read-only confirmation commands. It does not implement product/source/test changes, create fixtures, or fix CI unless the user explicitly says the root should implement inline or collaboration subagents are unavailable; record that exception.
 
-Establish the smallest contract that can carry the work:
+## Hard Rules
 
-- objective, scope, out-of-scope work, final decision, and stop conditions
-- autonomy window and heartbeat cadence, if thread wakeups exist
-- allowed mutations: files, branches, PRs, commands, network, and external systems
-- forbidden actions and approval gates
-- delegation rules, target projects, and whether children may spawn descendants
-- evidence required before completion
+- One owner per branch, PR, file area, deploy, or external side effect.
+- One PR per task per repo. Update the most advanced valid PR; do not open duplicates.
+- The root does not own implementation. Source, test, fixture, docs, PR-readiness, CI-fix, and real-provider validation work is child-owned by default; root-owned coordination notes are the exception.
+- After a child owns implementation, the parent does not edit the same area. Steer the child through the active collaboration surface; taking over a child-owned area is exceptional and requires a recorded hard blocker, owner conflict, unsafe side effect, explicit user instruction, or child-confirmed handoff.
+- A read-only review child or subagent is not an implementation owner. If a fix is needed, assign a real implementation child instead of letting the root code.
+- Use collaboration subagents for bounded internal slices. Create a user-visible Codex task only when the user explicitly requests a durable, new, or background task.
+- Run independent child slices in parallel. Waiting on one owner is not a reason to delay unrelated owners.
+- For broad or long-running work, split it into bounded slices and launch the first useful batch of collaboration subagents before broad repo analysis. Allow useful descendants and peer coordination, then switch the root to heartbeat mode. A plan to spawn does not count.
+- Every owner starts from applicable skills and reference patterns. A child prompt with no named skill, reference, or discovery fallback is a smell; fix it or record why none applies.
+- Children report blockers, ownership changes, and final status to the parent or related owner through the active collaboration surface; otherwise return a `Parent report:` block instead of just "done".
+- Quiet or slow child work is not a blocker. Do not take over because no file changed, no progress is visible, or a command is taking longer than expected. Poll read-only and wait unless there is a hard blocker, owner conflict, new user requirement, unsafe side effect, repeated heartbeat failure, or explicit child handoff.
+- Never merge, close PRs, comment, label, deploy, force-push, or touch production/secrets unless the start contract grants that exact action.
 
-Infer harmless details. Ask only when missing authority, safety, or objective details would change the workflow.
+## Start
 
-## Reconcile And Ledger
+1. Keep a short working note in whatever format fits: goal, owners, children/PRs, blockers, and done condition.
+2. Reconcile before spawning: inspect active collaboration state, worktrees, branches, PRs, stale/superseded work, checks, and bot reviews.
+3. Cross-project, PR, or implementation work is independent by default: use the current runtime's collaboration surface to inspect active owners and delegate each bounded slice.
+4. Give coordinator children `workflow`. Give implementation children the ownership contract directly: one owned slice, relevant skills or references, discovery fallback, expected output, stop condition, branch or PR boundary, and descendant or peer coordination permission.
+5. Keep coordinator edits to coordination artifacts only. If collaboration subagents are unavailable, run inline and record that limitation.
 
-Before creating work, inspect available thread, worktree, branch, PR, CI, and review state. Find existing sessions on the same goal, more advanced branches or PRs, stale or superseded PRs, bot review signals, and files/branches/PRs already claimed by another active session.
+## Heartbeat
 
-Prefer updating the most advanced valid branch over duplicating work. If a PR looks stale or superseded, record evidence and a recommended action; do not close, label, comment, or merge unless the user granted that authority.
+Default active heartbeats to 5-10 minutes; use 30+ minutes only for slow external waits. Each heartbeat: read new user messages, check children/PRs, stop duplicates, verify reported work, and update the working note. If a child is silent, ask or steer first and wait through multiple heartbeats unless there is objective evidence of a hard blocker. Do not sit in the root running long provider/dev-server loops; assign that proof to a child and poll it.
 
-Keep a compact ledger in the thread or a temporary artifact:
+## Skills, Research, PRs, And Handoff
 
-```text
-objective:
-checkpoint:
-next heartbeat:
-existing work:
-active children:
-claimed areas:
-prs and reviews:
-checks and artifacts:
-blockers:
-approval gates:
-verification:
-residual risk:
-stop condition:
-```
+- Name the local, plugin, or remote skills for each owner before work starts. For example: `evidence-research` for uncertain patterns, `design` for new UI, `library-craft` for packages, security skills for trust boundaries, `pr-body`/`pr-refiner` for PRs, and `handoff` for continuation.
+- If no local skill fits, run discovery first: `npx skills --help`, then a focused `npx skills find <topic>` or skills.sh lookup when available. Record the skill/reference chosen or the reason none applied.
+- Use `evidence-research` when the implementation pattern is unclear or public precedent would change the decision. Do not also spawn separate research subagents unless that is the assigned research slice.
+- Use `pr-body` for PR text and `pr-refiner` for one-PR readiness.
+- Track the PR head SHA for every check, preview, `pkg.pr.new` artifact, and bot review.
+- Automatic merge is opt-in only. Re-read current head, checks, comments, review threads, and validation; squash with an empty body and conventional subject ending in the PR ref.
+- Use `handoff` before pausing, moving context to another thread, or handing a child enough state to continue alone.
 
-Update it after each heartbeat, child result, review pass, or material state change.
+## Finish
 
-## Loop
-
-1. Reconcile existing work, then build the smallest task graph that can reach the final decision.
-2. For non-trivial workflows, spawn child or project threads by default. Keep only trivial one-step work inline.
-3. Give each child one owned slice, inherited guardrails, expected output, completion criterion, target branch or PR, and descendant-spawn permission.
-4. Avoid collisions: no two active children own the same files, branch, PR, deploy, or external side effect unless the conflict is explicit and coordinated.
-5. On each heartbeat, read new user messages first, then check child states, PR/review state, CI/status checks, logs, command output, and artifacts.
-6. Reconcile conflicts, update the ledger, then continue, revise delegation, cancel stale work, or stop.
-7. Run review loops only against concrete criteria. Repair with the smallest check that can prove the fix.
-8. Parent-gate delegated work: verify each child report, changed files, branch/head, and at least one integrated check before treating it as complete.
-9. Finish when every child has a terminal state and the final decision package is ready.
-
-If the environment has no heartbeat or child-thread tool, run the same loop inline and report the missing capability as a limitation.
-
-## PR Readiness
-
-When a workflow creates or touches PRs, coordinate readiness without becoming the PR worker:
-
-- Use `pr-refiner` for one-PR refinement, review-comment handling, CI, branch freshness, mergeability, and current-head checks.
-- Use `pr-body` when opening, updating, or checking PR body text, issue links, dependency notes, or coordination notes.
-- Treat bot comments, Codex thumbs-up, and AI review output as readiness evidence, not human approval.
-- Track which head SHA each check, preview, browser proof, or bot review applies to.
-- Batch fixes to avoid noisy pushes and reviewer notifications.
-- For multiple PRs or stacks, keep dependency and stale/superseded status in the ledger and route single-PR execution to the right child thread.
-
-## Guardrails
-
-- Never merge to `main`, a release branch, or a protected branch unless the user explicitly said to merge.
-- Do not post issue or PR comments, approve/request changes, label, close, force-push, deploy, release, mutate infrastructure, touch production data, expose secrets, or expand access unless the start contract explicitly permits that action.
-- Do not let child agents or descendants exceed the parent contract.
-- Do not hide approval-sensitive work inside a child thread.
-- Treat automated review as evidence, not human approval.
-- Stop scheduling heartbeats when the workflow is complete, blocked on approval, or no longer gaining signal.
-
-If progress needs a forbidden action, record it as an approval gate for the final decision package instead of taking it.
-
-## Output
-
-End with workflow status, evidence, child states, PRs and reviews, verification passed/failed/skipped/residual risk, approval gates, and the recommended final decision.
+End with status, owner ledger, child states, PRs, checks, validation, blockers, residual risk, and the final decision.

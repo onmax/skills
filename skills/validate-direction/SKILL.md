@@ -1,40 +1,70 @@
 ---
 name: validate-direction
-description: Challenges a direction before it hardens into work or documentation. Use before plans, ADRs, PRDs, issue breakdowns, API changes, merge strategy, workflow rules, or durable docs.
+description: Validates a direction on explicit request or immediately before an authorized direction hardens into a plan, durable artifact, API, workflow, merge strategy, or implementation.
 ---
 
 # Validate Direction
 
-## Quick Start
+Challenge one current direction while it is still cheap to change. Start from the actual direction, preserve the user's intent, and return the smallest correction that makes the next move safe.
 
-Use this as a lifecycle checkpoint whenever a direction is about to become costly to unwind. It is not owned by `grill-with-docs`; that skill is only one caller.
+Use this on explicit request or immediately before an authorized direction hardens. A direction exists when the next move chooses between plausible alternatives or establishes scope, ownership, a boundary, or an invariant. Route already-specified or mechanical execution straight to work, regardless of whether it includes a small plan.
 
-Good trigger points include:
-
-- Before writing or updating an ADR, PRD, issue plan, implementation plan, or final recommendation.
-- Before acting on a design, API, workflow, merge, testing, or documentation direction that will shape later work.
-- During implementation when new evidence changes the direction, not merely the code.
-- During review or PR coordination before accepting a merge strategy, dependency relationship, broad refactor, or durable follow-up plan.
-
-The goal is not to make the plan sound better. The goal is to find the strongest reason it might be wrong, vague, or premature while it is still cheap to change.
-
-Keep it practical. Do not add philosophical commentary. Do not re-run the whole planning session. Validate the current direction, name the exact weakness, then return the smallest useful correction.
-
-Do not use this for every small edit. Skip it when the work is local, reversible, already specified, or only mechanical.
-
-## Workflow
+## Steps
 
 1. State the direction being validated in one plain sentence.
-2. Identify the project, topic, absolute project root, lifecycle phase, intended artifact or action, user constraints, known evidence, and open doubts.
-3. Create `<os-temp-dir>/validate-direction/<project>/<topic>/brief.md`, where `<os-temp-dir>` is the temporary directory of the user's OS.
-4. Choose intensity and state it.
-5. Run the four lenses: Evidence, Precedent, Synthesis, and Communication.
-6. Write `verdict.md`.
-7. Return the verdict and either continue with the parent skill's next action or ask one blocking question.
+2. Identify the project, absolute project root, lifecycle phase, authorized artifact or action, user constraints, known evidence, and load-bearing unknowns.
+3. Reuse existing research, ADRs, code, tests, PR context, and conversation evidence. Gather only missing evidence that could change the verdict.
+4. Choose the advisory or persisted branch.
+5. Apply all four lenses to the same direction.
+6. Choose exactly one verdict: `proceed`, `revise`, or `pause`.
+7. Return the verdict first, then the evidence, required correction, lens trace, and next action.
+8. Resume the caller's already-authorized action after `proceed`. After `revise`, carry the correction forward and resume when it stays within existing authority; otherwise ask for the missing decision. Stop only for `pause` or a new authority boundary.
 
-Subagents are optional. Use them when available and useful, but do not block on them. If they are unavailable, state that and run the lenses locally.
+This skill never writes project documentation. The persisted branch writes only its temporary validation artifacts and returns decision wording to the active caller.
 
-This skill does not write project docs directly. It hands wording and required changes back to the active skill or session.
+## Branches
+
+### Advisory
+
+Use this branch for an automatic checkpoint when a real direction choice is about to harden but the choice and its correction remain cheap to reverse. Skip it when the next move only schedules or executes an already-specified direction.
+
+Apply all four lenses inline. Create no files and use no subagents. Return a compact trace with one line per lens, the exact verdict, and one next action or blocking question.
+
+### Persisted
+
+Use this branch when the user explicitly requests validation or an imminent authorized action is costly or durable.
+
+1. Resolve the OS temporary directory and create the artifact layout below.
+2. Write `brief.md` before lens work begins.
+3. Choose intensity from residual risk and the depth each lens needs.
+4. Load every lens reference and write its expected report. Delegate only independent legwork that could change the verdict; worker count is not an intensity target.
+5. Verify `brief.md` and all four reports before writing `verdict.md`. Claim completion only after the full artifact gate passes.
+
+Store artifacts under the OS temporary directory, such as `$TMPDIR` on macOS/Linux or `%TEMP%` on Windows.
+
+## Intensity
+
+Choose intensity after reusing existing evidence. Intensity controls lens depth and evidence legwork:
+
+- `light`: the direction is narrow, evidence is mostly settled, and residual risk is low; keep each lens concise.
+- `standard`: meaningful uncertainty remains; inspect the evidence and nearest precedents that could change scope or wording.
+- `heavy`: residual risk is broad, high-stakes, or hard to reverse; deepen the load-bearing lenses and add an independent challenge or second pass where useful.
+
+Use subagents only when their source areas or critiques are meaningfully independent. Run the work locally when delegation adds no decision value.
+
+## Lenses
+
+- Evidence: separate facts, constraints, assumptions, inferences, and missing observations. Name the strongest load-bearing uncertainty.
+- Precedent: check local language and ownership plus genuinely comparable external precedent. Name intentional breaks.
+- Synthesis: test responsibility, boundary, dependency, and invariant coherence. Find the smallest coherent correction.
+- Communication: ensure the decision sentence, scope, trade-offs, and operational consequences cause the next reader to act correctly.
+
+For the persisted branch, load every lens reference before running or assigning it:
+
+- Evidence: [references/evidence.md](references/evidence.md)
+- Precedent: [references/precedent.md](references/precedent.md)
+- Synthesis: [references/synthesis.md](references/synthesis.md)
+- Communication: [references/communication.md](references/communication.md)
 
 ## Artifact Layout
 
@@ -49,85 +79,52 @@ This skill does not write project docs directly. It hands wording and required c
 +-- verdict.md
 ```
 
-`brief.md` should include the relevant conversation history, user concerns, resolved decisions, unresolved doubts, lifecycle phase, intended artifact or action, and the direction being validated.
+`brief.md` must contain the direction, absolute `project_root`, lifecycle phase, authorized artifact or action, relevant conversation history, user constraints, reused evidence, load-bearing unknowns, chosen intensity, and every expected report path. Use absolute project file paths throughout the artifacts.
 
-Because validation artifacts live outside the project workspace, `brief.md` must also include `project_root` as an absolute path. Any project file reference in the brief, reports, verdict, or subagent prompt must be absolute, such as `/Users/maxi/vitehub/vitehub/.agents/adr/0013-hosted-vitehub-devtools-client.md`. Never use repo-relative paths like `.agents/...` inside temporary artifacts unless they are paired with the absolute `project_root`.
+## Artifact Gate
 
-Resolve `<os-temp-dir>` with the platform temp-dir API or environment, such as `$TMPDIR` on macOS/Linux or `%TEMP%` on Windows.
+Claim persisted validation complete only when all of these checks pass:
 
-## Intensity
+- `brief.md` exists and contains every required field before lens work begins.
+- All four expected report paths exist.
+- Each report answers its lens, names its strongest objection, and recommends `proceed`, `revise`, or `pause`.
+- `verdict.md` exists, reconciles conflicting lens recommendations, and explains any override of the strongest load-bearing objection.
+- `verdict.md` contains the exact verdict, key evidence, required changes, risks, wording to carry forward, and one final question only when the verdict is `pause`.
 
-Choose automatically:
-
-- `light`: one subagent runs all lenses for small, low-risk directions.
-- `standard`: four subagents, one per lens. Default for meaningful architecture or product direction.
-- `heavy`: four lens subagents plus synthesis coordination or a second pass for public API, migration, security, data model, irreversible architecture, or high-conflict decisions.
-
-State the choice before spawning.
-
-## Lenses
-
-Load the reference file for each active lens:
-
-- Evidence: [references/evidence.md](references/evidence.md)
-- Precedent: [references/precedent.md](references/precedent.md)
-- Synthesis: [references/synthesis.md](references/synthesis.md)
-- Communication: [references/communication.md](references/communication.md)
-
-Use plain lens names in user-facing output.
-
-Apply the lenses like this:
-
-- **Evidence**: separate facts, constraints, assumptions, and missing observations. This borrows the useful part of an assumption audit: do not let an inference pretend to be a fact.
-- **Precedent**: check the direction against local project language, existing patterns, and comparable external systems. Do not reward consistency blindly; name intentional breaks.
-- **Synthesis**: ask whether the direction makes the system more coherent. Look for responsibility drift, wrong abstraction, dependency confusion, or a smaller coherent direction.
-- **Communication**: check whether the future reader will know what to do, what not to do, and why. Rewrite the decision sentence if the current wording invites a wrong move.
-
-Keep the roles distinct. Evidence answers "what do we know?" Precedent answers "what are we extending or breaking?" Synthesis answers "does this make the system simpler in the right place?" Communication answers "will the next reader act correctly?"
+Repair any failed report locally or through a focused follow-up before writing the verdict.
 
 ## Verdict
 
-`verdict.md` must choose exactly one:
+Choose exactly one literal verdict:
 
-- `proceed`: coherent enough to write or act on.
-- `revise`: direction is basically right, but specific changes are needed first.
-- `pause`: risks are serious enough that the parent session should ask another question before writing or acting.
+- `proceed`: the direction is coherent enough to write or act on.
+- `revise`: the direction is sound after a specific scope, boundary, wording, migration, or verification change.
+- `pause`: one load-bearing unanswered question could reverse the direction.
 
-Include:
+Use `revise` when a concrete correction resolves the risk. Use `pause` only when the unanswered question can reverse the decision.
 
-- verdict
-- key evidence
-- required changes
-- risks
-- wording to carry into the artifact
-- one final question, if needed
-
-## Review Rules
-
-- Start from the actual direction, not a better direction you wish existed.
-- Preserve the user's intent unless evidence shows it is unsafe, incoherent, or underspecified.
-- Prefer `revise` over `pause` when a concrete wording, scope, or boundary change would fix the issue.
-- Prefer `pause` only when one unanswered question could reverse the decision.
-- Do not block on harmless uncertainty. Name it and proceed.
-- Do not produce a long essay. The output should make the next move obvious.
-- If the active skill is `grill-with-docs`, return the decision sentence and any ADR-worthy trade-off.
-- If the active skill is `evidence-research`, carry forward only findings that change the decision pressure.
-- If the active work is implementation planning, include the tests or checks that would protect the decision.
-- If the active work is implementation, distinguish code-level execution from direction change; validate only the latter.
-- If the active work is review, PR coordination, or merge readiness, include the evidence that would make the recommendation safe to act on.
-
-## Output Shape
+## Output
 
 ```md
-Validation artifacts:
-- Brief: <os-temp-dir>/validate-direction/<project>/<topic>/brief.md
-- Verdict: <os-temp-dir>/validate-direction/<project>/<topic>/verdict.md
-
-Verdict: proceed | revise | pause
+Verdict: <proceed | revise | pause>
 
 Why:
 - ...
 
-Next:
-...
+Required changes:
+- ...
+
+Trace:
+- Evidence: ...
+- Precedent: ...
+- Synthesis: ...
+- Communication: ...
+
+Artifacts:
+- Brief: <path>
+- Verdict: <path>
+
+Next: ...
 ```
+
+Omit artifact paths for the advisory branch. Ask one blocking question only for `pause`; otherwise state the next authorized action.

@@ -18,7 +18,7 @@ Do not create branches or worktrees for normal changes in this repo. This reposi
 
 This repo uses Onmax skills for project language, simplification, research, validation, and handoff.
 
-- Use `grill-with-docs` to clarify project language and record decisions.
+- Use `grill-with-docs` only when the user explicitly asks to capture a grilling result in project documentation.
 - Use `simplify` to review PR diffs or explicit scopes for accidental complexity.
 - Use `strict-code-review` for strict maintainability reviews and ambitious structural cleanup.
 - Use `validate-direction` before turning a direction into a plan, ADR, or implementation.
@@ -26,10 +26,4 @@ This repo uses Onmax skills for project language, simplification, research, vali
 - Use `handoff` to preserve continuation context for another agent or session.
 - Use `fast-forward` inside grilling sessions to skip low-value branches.
 
-Project memory lives under `.agents/`:
-
-- `.agents/CONTEXT.md` for project vocabulary in a single-context repo.
-- `.agents/CONTEXT-MAP.md` plus `.agents/contexts/<name>/CONTEXT.md` for multi-context repos.
-- `.agents/adr/` for decisions worth preserving.
-
-Read `.agents/CONTEXT.md` first for this repo's current language.
+Create glossaries, context maps, or ADRs only when the user explicitly requests them.

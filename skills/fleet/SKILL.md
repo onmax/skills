@@ -18,6 +18,7 @@ Use `worktree-cleanup` for Git worktrees, stale branches, generated artifacts, o
 - Remote access is private by default: Tailscale first, public ports only with explicit user consent.
 - Scheduled jobs are exceptional. Keep OS maintenance timers; remove stale app, sync, export, and cleanup crons.
 - Global CLIs are limited to machine primitives and tools that cannot reasonably be project-local.
+- Claude Code profiles carry the baseline `~/.claude/settings.json` from [REFERENCE.md](REFERENCE.md): interactive/remote tools denied, bundled skills/workflows/remote control/connectors/artifact disabled.
 
 ## Workflow
 

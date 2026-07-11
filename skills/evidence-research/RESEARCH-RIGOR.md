@@ -19,6 +19,8 @@ Each subagent prompt should include the `brief.md` path, assigned source area, r
 
 Use at least one subagent. Default to one subagent for `targeted` and `standard` research. Use multiple subagents only when source areas are meaningfully independent, likely to change the decision, and worth the extra latency, such as framework ecosystems, product ecosystems, company technical writing, benchmarks, security literature, Codex session clusters, PR stacks, and repository history. Record the reason for multiple subagents in `brief.md`.
 
+If subagents are unavailable, state that and run the assigned source-area passes locally with the same report paths and requirements.
+
 Subagents must write the requested report file. A progress message without a report is incomplete.
 
 ## Source Guidance
@@ -61,7 +63,7 @@ Verdict rules:
 
 Separate decision-changing evidence from background context. Background can explain the landscape, but it must not carry the recommendation unless it changes the target design.
 
-## Completion Gate
+## Report Gate
 
 Before writing `synthesis.md`, verify:
 
@@ -71,7 +73,17 @@ Before writing `synthesis.md`, verify:
 - each report has patterns, trade-offs, recommendations, and applicability limits
 - broad or high-stakes research has evidence-versus-inference separation
 - no report only summarizes one vendor/source family unless it was explicitly assigned that narrow area
-- each major synthesis claim has a finding verdict
-- decision-changing evidence is separated from background context
+- the distinct qualifying sources across accepted reports meet the minimum for the chosen depth
 
-If any report fails the gate, send a follow-up prompt to that subagent or run a local repair pass before synthesis. In the final answer, mention any report that remained weak and why.
+If any report fails the gate, send a follow-up prompt to that subagent or run a local repair pass before synthesis.
+
+## Synthesis Gate
+
+Before returning required synthesis:
+
+- every major claim has a finding verdict
+- decision-changing evidence is separated from background context
+- disagreements and inconclusive results are preserved rather than forced into consensus
+- the recommendation names the reversing constraints that remain live
+
+Repair a failed synthesis before returning. In the final answer, mention any report or claim that remained weak and why.

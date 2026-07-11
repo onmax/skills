@@ -14,28 +14,28 @@ Help the user communicate in a sincere, specific, relationship-preserving way. U
 - Do not help deceive, coerce, guilt, flatter insincerely, impersonate, or exploit private information.
 - For apologies or harm, own the concrete impact and propose repair; do not optimize only for forgiveness.
 - If stakes are legal, medical, HR-disciplinary, or safety-related, keep the message careful and suggest the relevant professional channel.
-- Preserve the user's voice unless they ask for a different style.
+- Preserve the user's meaning and voice unless they ask for a substantive or stylistic change. Do not invent a request, commitment, appreciation, fact, or relationship claim.
 
 ## Workflow
 
 1. Identify the relationship, channel, stakes, desired outcome, and what the other person likely cares about.
-2. If missing context would change the advice, ask one concise question; otherwise state your assumption and continue.
+2. If missing context would materially change the result, ask one concise question; otherwise make a conservative assumption and continue.
 3. Pick 1-3 of the nine principles that matter most for the situation.
-4. Recommend the next action before drafting: listen, apologize, ask, decline, repair, invite, clarify, or wait.
-5. Draft the artifact when useful: email, DM, text, conversation script, subject line, follow-up, or talking points.
-6. Include a short "avoid" note when the user's instinct may backfire.
+4. Draft the requested artifact using the drafting method, then follow the output contract.
 
 ## Drafting Method
 
 - Name the situation or observation without judgment.
 - Reflect their likely concern, interest, or pressure.
 - Add sincere appreciation or accountability when true.
-- Make one clear request or next step.
+- Make one clear request or next step when the message needs one.
 - Preserve dignity and agency.
 
 ## Output
 
-For a message, return `Recommendation`, `Draft`, `Why this works`, and `Avoid`; for advice without a draft, return `Read of the situation`, `Next move`, `Words to use`, and `Avoid`.
+- Simple write, draft, or rewrite: return only the draft unless the user asks for explanation or a material risk requires one brief note.
+- Advice, conflict repair, material risk, or requested explanation: add only the useful parts of `Recommendation`, `Why this works`, and `Avoid`.
+- Advice without a draft: use `Read of the situation`, `Next move`, `Words to use`, and `Avoid` when each section helps.
 
 ## Nine Principles
 
@@ -43,52 +43,43 @@ For a message, return `Recommendation`, `Draft`, `Why this works`, and `Avoid`; 
 
 - Describe the impact, pattern, or need instead of attacking character.
 - Replace criticism, condemnation, and complaint with curiosity and factual feedback.
-- Example: "I think we crossed wires on the deadline" works better than "You ignored the deadline."
 
 ### 2. Remember Their Self-Interest
 
 - Assume the other person is mostly thinking about their own needs, pressure, pride, and goals.
-- Before drafting, write one sentence naming what matters to them.
-- Example: ask a busy teammate for help by acknowledging their deadline before making the request.
+- Before drafting, identify what matters to them.
 
 ### 3. Be a Good Conversationalist and Listener
 
 - Ask about their world, use their language, and let them finish before solving.
 - Reduce "I/me/my" framing when the other person needs to feel heard.
-- Example: in conflict, say "I want to understand what felt unfair from your side first."
 
 ### 4. Make People Feel Important
 
 - Give honest, specific appreciation and use names or personal details naturally.
 - Praise real contribution; never use flattery as bait.
-- Example: begin feedback by naming the part of the work that made the next step possible.
 
 ### 5. Be Welcome Anywhere
 
 - Make a good first impression with sincerity, enthusiasm, and calm confidence.
 - Do not build yourself up by putting others down.
-- Example: introduce your work with pride and usefulness, not "I just do X."
 
 ### 6. Convince With Evidence
 
 - Use facts, examples, results, or credible third-party evidence when trust is low.
 - Let evidence answer skepticism instead of overasserting yourself.
-- Example: propose a new workflow by showing measured time saved or teams already succeeding with it.
 
 ### 7. Be Agreeable Before Disagreeing
 
 - Look for the true part first, admit your mistakes quickly, and avoid argument contests.
 - Disagree only when needed, with curiosity and shared goals.
-- Example: "I agree the deadline matters; the risk I see is quality dropping if we skip review."
 
 ### 8. Influence Through Their Wants
 
 - Find what they want by asking, watching, and listening.
 - Show how the next step helps them get something they already value.
-- Example: recruit someone to a project by connecting it to their growth goal, not only your staffing need.
 
 ### 9. Show Gratitude and Make the Next Step Worthwhile
 
 - Thank people specifically, by name when appropriate, and close the loop after they help.
 - Make the requested action small, possible, and connected to a motive they can endorse.
-- Example: "Thanks, Maya, your review caught the issue before it reached the client; one more pass on the intro would make the proposal match that quality."

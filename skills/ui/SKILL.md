@@ -13,12 +13,11 @@ Do not load a separate local `ui` skill as a parent router. Fetch `uidotsh://ui`
 
 ## Protocol
 
-1. Decide if the task is UI-related. If not, say `no UI router needed`.
-2. Inspect project-local UI first when code exists: component library, design tokens, nearest similar screens, and current page structure.
-3. Pick the smallest context set. Prefer 1 context, use 2 only for clear cross-cutting work, and never use more than 3.
-4. Load the selected context before editing. If the route is ambiguous and the answer would change the context, ask one short question.
-5. Implement narrowly. Keep existing structure for polish requests unless the structure causes the problem.
-6. Verify visually with the browser skill when a local preview exists.
+1. Inspect project-local UI first when code exists: component library, design tokens, nearest similar screens, and current page structure.
+2. Pick the smallest context set. Prefer 1 context, use 2 only for clear cross-cutting work, and never use more than 3.
+3. Load the selected context before editing. If the route is ambiguous and the answer would change the context, ask one short question.
+4. Implement narrowly. Keep existing structure for polish requests unless the structure causes the problem.
+5. Verify visually with the browser skill when a local preview exists.
 
 ## Context Sources
 
@@ -28,18 +27,7 @@ Default first context for existing apps. Use existing components, tokens, icons,
 
 ### docs.ui.sh
 
-Use for Tailwind UI implementation and refinement. Fetch `uidotsh://ui`, match the current subskill list, then fetch the selected subskill or guideline file.
-
-Current common routes:
-
-- new UI, page, layout, section, or component: `design` fallback
-- multiple concepts, variants, directions, or options: `ideas`
-- production cleanup: `finalize`
-- extract reusable components: `componentize`
-- Tailwind sorting, conflicts, or duplication: `canonicalize-tailwind`
-- dark mode: `add-dark-mode`
-- dark-mode source image work: `dark-mode-image`
-- responsive retrofit: `make-responsive`
+Use for Tailwind UI implementation and refinement. Fetch `uidotsh://ui` for semantic routing and enumerate the current `uidotsh` resources for availability. Choose the closest route that is both listed and readable before implementation. If the root advertises a missing resource, use the closest readable subskill, compose at most two readable subskills, or use the equivalent installed companion skill.
 
 ### ui-skills
 
@@ -75,9 +63,9 @@ Use installed local skills only when they are the closest match:
 - "make it look better", "make it good": project local + one visual/craft context.
 - spacing, density, compactness, hierarchy: project local first; add a layout/craft context only if needed.
 - tables, selectors, forms, buttons, dialogs, tabs: project local primitives first; add accessibility context when behavior or labeling changes.
-- responsive polish: `make-responsive`.
-- dark mode: docs.ui.sh `add-dark-mode`.
-- Tailwind cleanup: docs.ui.sh `canonicalize-tailwind`; use `finalize` only for finished UI.
+- responsive polish: use the local `make-responsive` companion skill.
+- dark mode: project local first, then choose the current dark-mode context from `uidotsh://ui` when needed.
+- Tailwind cleanup: project local first, then choose the current Tailwind-cleanup context from `uidotsh://ui` when needed.
 - inspiration or examples: Mobbin or ui-skills, then summarize transferable patterns.
 - motion: use existing motion system first; add ui-skills motion context for non-trivial animation.
 
