@@ -138,7 +138,7 @@ for user in $skill_users; do
           echo "removed legacy codex link: $user $(basename "$legacy_link")"
           ;;
       esac
-    done < <(sudo -u "$user" find "$legacy_root" -mindepth 1 -maxdepth 1 -type l -print)
+    done < <(sudo -u "$user" sh -c 'cd / && find "$1" -mindepth 1 -maxdepth 1 -type l -print' _ "$legacy_root")
   fi
 done
 
