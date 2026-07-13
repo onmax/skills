@@ -1,5 +1,45 @@
 # Fleet Reference
 
+Read only the sections needed by the selected `fleet` branch. Vendor installation commands drift; verify them against current official documentation before changing package sources.
+
+## New-node Bootstrap
+
+Run the deterministic bootstrap from a temporary public checkout after the provider image accepts the operator's SSH key:
+
+```sh
+git clone --depth=1 https://github.com/onmax/skills.git /tmp/onmax-skills
+cd /tmp/onmax-skills
+sudo ADMIN_USER="$USER" AGENT_USERS="maxi-main" skills/fleet/scripts/bootstrap-node.sh prepare
+```
+
+`prepare` patches Ubuntu, installs the base CLIs, Docker, Tailscale, and UFW, creates the workspace and agent profiles, stages Portainer, and syncs the public skills repo. It leaves public SSH available for the bootstrap session.
+
+Complete the interactive Tailscale login, prove a second SSH session through the tailnet, then finish private services:
+
+```sh
+sudo tailscale up --ssh --operator="$USER"
+sudo ADMIN_USER="$USER" AGENT_USERS="maxi-main" LOCK_PUBLIC_SSH=1 \
+  /tmp/onmax-skills/skills/fleet/scripts/bootstrap-node.sh finish
+```
+
+Use `LOCK_PUBLIC_SSH=1` only while a working tailnet SSH session is open. `finish` starts Portainer on `127.0.0.1:9443`, configures Tailscale Serve, and removes the public UFW SSH allowance when requested.
+
+## Private Inventory
+
+Keep provider IDs, public addresses, tailnet names, and SSH aliases in operator-controlled state such as `~/.ssh/config` or a password manager. A public fleet skill records only generic roles and verification commands.
+
+Prefer an SSH alias that resolves through MagicDNS after bootstrap:
+
+```sshconfig
+Host <private-alias>
+  HostName <magicdns-name>
+  User <agent-user>
+  IdentityFile <operator-private-key-path>
+  IdentitiesOnly yes
+```
+
+The private key path and concrete host values stay outside the repository.
+
 ## Snapshot Commands
 
 ```sh
@@ -107,7 +147,53 @@ tailscale ip -4
 systemctl is-active tailscaled
 ```
 
+Tailnet-only Portainer:
+
+```sh
+docker ps --filter name=^/portainer$
+ss -lntp | grep ':9443 '
+tailscale serve --https=443 https+insecure://127.0.0.1:9443
+tailscale serve status
+```
+
+The listener check must show `127.0.0.1:9443`, never `0.0.0.0`, `[::]`, or the public address. Port `8000` is omitted unless Edge Agents are explicitly required.
+
 Keep T3 reachable through Tailscale only unless the user explicitly asks for public exposure.
+
+## Authentication Handoff
+
+Run authentication inside each agent profile. Device flows are interactive; the operator finishes them in a browser while the command remains attached to that profile.
+
+```sh
+sudo -iu <agent-user> codex login --device-auth
+sudo -iu <agent-user> gh auth login --web --git-protocol https --skip-ssh-key
+```
+
+Verify state without reading stored tokens:
+
+```sh
+sudo -iu <agent-user> codex login status
+sudo -iu <agent-user> gh auth status
+sudo -iu <agent-user> test -f ~/.codex/auth.json
+```
+
+Each profile performs its own login. Auth directories and tokens are never copied between users or committed to the shared workspace.
+
+## Bootstrap Verification
+
+```sh
+systemctl is-active docker tailscaled ssh
+tailscale status
+tailscale ip -4
+tailscale serve status
+docker ps --filter name=^/portainer$
+ss -lntup
+ufw status verbose
+git -C /home/workspace/onmax/skills status --short --branch
+git -C /home/workspace/onmax/skills rev-parse HEAD
+```
+
+Verify every requested agent profile with the auth-presence and skills checks from the snapshot section. Completion requires no public Portainer listener, a working tailnet SSH session, and an exact skills commit.
 
 ## Remove Classes
 
