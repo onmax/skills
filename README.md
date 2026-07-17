@@ -26,6 +26,8 @@ These skills are meant to compose into a lightweight delivery loop:
 
 | Skill | What it does |
 | --- | --- |
+| [`code-review`](skills/code-review/SKILL.md) | Reviews a diff independently against repository standards and its originating spec. |
+| [`codebase-design`](skills/codebase-design/SKILL.md) | Provides the shared vocabulary and methods for designing deep modules. |
 | [`codex-session-finder`](skills/codex-session-finder/SKILL.md) | Finds local Codex sessions for review. |
 | [`diagnosing-bugs`](skills/diagnosing-bugs/SKILL.md) | Runs the Matt Pocock diagnosis loop for hard bugs and performance regressions. |
 | [`domain-modeling`](skills/domain-modeling/SKILL.md) | Builds `.agents` domain language and ADRs. |
@@ -37,6 +39,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`grilling`](skills/grilling/SKILL.md) | Runs the shared grilling interview loop. |
 | [`handoff`](skills/handoff/SKILL.md) | Captures continuation notes for another agent or session. |
 | [`implement`](skills/implement/SKILL.md) | Implements work from a spec or tickets, then reviews the result. |
+| [`improve-codebase-architecture`](skills/improve-codebase-architecture/SKILL.md) | Finds and explores deepening opportunities in active code. |
 | [`library-craft`](skills/library-craft/SKILL.md) | Reviews reusable package shape and public API craft. |
 | [`people-skills`](skills/people-skills/SKILL.md) | Drafts relationship-preserving messages and interpersonal next actions. |
 | [`pr-body`](skills/pr-body/SKILL.md) | Writes or reviews PR bodies in the repository's preferred style. |
@@ -44,6 +47,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`pr-refiner`](skills/pr-refiner/SKILL.md) | Reviews PR blockers and routes the next refinement step. |
 | [`prototype`](skills/prototype/SKILL.md) | Builds throwaway prototypes to answer design questions. |
 | [`research`](skills/research/SKILL.md) | Delegates source-backed research and saves the findings in the repo. |
+| [`resolving-merge-conflicts`](skills/resolving-merge-conflicts/SKILL.md) | Resolves merge and rebase conflicts from the intent of both sides. |
 | [`setup-matt-pocock-skills`](skills/setup-matt-pocock-skills/SKILL.md) | Configures tracker, triage labels, and domain-doc layout for Matt-style engineering skills. |
 | [`simplify`](skills/simplify/SKILL.md) | Finds the smallest useful simplification for a PR or scope. |
 | [`strict-code-review`](skills/strict-code-review/SKILL.md) | Runs a strict maintainability review for structural quality and code-judo simplifications. |
@@ -53,7 +57,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`ui`](skills/ui/SKILL.md) | Routes UI work to the smallest useful design/reference workflow. |
 | [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
 | [`vitehub-projects`](skills/vitehub-projects/SKILL.md) | Resolves ViteHub project aliases to local repository roots. |
-| [`wayfinder`](skills/wayfinder/SKILL.md) | Charts large foggy efforts as a shared map of investigation tickets. |
+| [`wayfinder`](skills/wayfinder/SKILL.md) | Charts large foggy efforts as a shared map of decision tickets. |
 | [`workflow`](skills/workflow/SKILL.md) | Coordinates autonomous work across owned implementation slices. |
 | [`worktree-cleanup`](skills/worktree-cleanup/SKILL.md) | Safely cleans current-repo worktrees, stale branches, remote workspaces, and disk-heavy artifacts. |
 | [`write-a-skill`](skills/write-a-skill/SKILL.md) | Creates agent skills with proper structure and review checks. |
