@@ -29,7 +29,7 @@ Use `worktree-cleanup` for repository cleanup and `write-a-skill` for skill edit
 ## Workflow
 
 1. Select the branch and load the matching sections of [REFERENCE.md](REFERENCE.md). The branch is fixed before the first mutation.
-2. Snapshot users, groups, listeners, firewall, services, timers, crons, packages, disks, active repos, dirty work, Tailscale, and auth presence. Every discovered item is classified as `keep`, `remove`, `archive`, or `needs-user-review` before cleanup begins.
+2. On bootstrap, compare the provider's purchase record (plan, region, and billing estimate) and the guest's live CPU, memory, disk, and architecture with the user's requested target before naming or changing the node. Stop on any mismatch. Then snapshot users, groups, listeners, firewall, services, timers, crons, packages, disks, active repos, dirty work, Tailscale, and auth presence. Every discovered item is classified as `keep`, `remove`, `archive`, or `needs-user-review` before cleanup begins.
 3. Establish trusted access. On bootstrap, install an operator public key, patch the host, create the admin and agent profiles, connect Tailscale, and keep the original session open until a second tailnet SSH session succeeds. Public SSH is restricted only after that proof.
 4. Converge machine services. Docker is healthy, Portainer binds only to loopback, and Tailscale Serve is its only remote route. `ss`, `docker ps`, and `tailscale serve status` must all prove the boundary.
 5. Converge profiles. Start Codex and GitHub device login for each requested agent user, wait for the user to finish each flow, then verify `codex login status` and `gh auth status` without exposing stored credentials.

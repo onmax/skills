@@ -4,6 +4,19 @@ Read only the sections needed by the selected `fleet` branch. Vendor installatio
 
 ## New-node Bootstrap
 
+Before naming or changing a new node, verify the provider's purchased plan, location, billing estimate, CPU, memory, root disk, and architecture against the user's requested target. Then prove the guest resources independently:
+
+```sh
+hostname
+cat /etc/os-release
+uname -m
+nproc
+free -h
+lsblk -o NAME,SIZE,TYPE,MOUNTPOINTS
+```
+
+Stop and ask the user when the plan label or any resource differs. Successful SSH access proves only that the node is reachable, not that the intended machine was purchased.
+
 Run the deterministic bootstrap from a temporary public checkout after the provider image accepts the operator's SSH key:
 
 ```sh
