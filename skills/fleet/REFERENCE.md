@@ -72,6 +72,53 @@ docker system df
 npm list -g --depth=0
 ```
 
+For Balance, sample capacity without installing an agent or exporter:
+
+```sh
+nproc
+uptime
+grep -E 'MemAvailable|SwapFree' /proc/meminfo
+cat /proc/pressure/cpu
+cat /proc/pressure/memory
+cat /proc/pressure/io
+pgrep -af 'codex exec|claude' || true
+```
+
+Keep the capacity envelope in private operator state:
+
+```text
+role: coordinator | worker
+max_agents: <positive integer>
+min_available_memory_gib: <positive number>
+```
+
+Start conservatively with one agent slot per node. Increase a node's limit only after representative runs stay above its memory reserve without sustained CPU, memory, or I/O pressure.
+
+## Bounded Delegation
+
+The coordinator remains the only process that discovers and assigns shared work. It fills its local agent slots first, then sends each remaining job to an eligible worker as one job envelope:
+
+```text
+repository: <clone URL or existing shared-workspace repository>
+ref: <exact base or head SHA>
+task: <bounded outcome>
+mutations: <allowed branches, files, and external actions>
+verification: <commands or observable proof>
+```
+
+Use an existing tailnet SSH or verified T3 path. The transport may be simple and interactive; do not add a queue merely to avoid one SSH command.
+
+The worker creates a distinct checkout or worktree, owns the delegated branch until completion, and returns:
+
+```text
+outcome: <completed | blocked | failed>
+commit: <SHA when code changed>
+verification: <results>
+blocker: <external condition when blocked>
+```
+
+Do not run identical polling schedules on two nodes when they coordinate only through process-local state. Keep one scheduler and distribute execution. A shared queue becomes warranted when the system needs atomic claims, crash recovery, automatic retries, or coordinator failover across hosts.
+
 Check each agent profile without printing secrets:
 
 ```sh

@@ -26,20 +26,28 @@ These skills are meant to compose into a lightweight delivery loop:
 
 | Skill | What it does |
 | --- | --- |
+| [`animation-vocabulary`](skills/animation-vocabulary/SKILL.md) | Names web animation and motion effects from plain-language descriptions. |
+| [`apple-design`](skills/apple-design/SKILL.md) | Applies Apple's interface and fluid-motion principles to web design. |
 | [`code-review`](skills/code-review/SKILL.md) | Reviews a diff independently against repository standards and its originating spec. |
 | [`codebase-design`](skills/codebase-design/SKILL.md) | Provides the shared vocabulary and methods for designing deep modules. |
 | [`codex-session-finder`](skills/codex-session-finder/SKILL.md) | Finds local Codex sessions for review. |
+| [`copywriting`](skills/copywriting/SKILL.md) | Writes clear, conversion-focused marketing copy for web pages. |
+| [`delegate`](skills/delegate/SKILL.md) | Delegates one conversation-grounded PR to a separate Codex task. |
 | [`diagnosing-bugs`](skills/diagnosing-bugs/SKILL.md) | Runs the Matt Pocock diagnosis loop for hard bugs and performance regressions. |
 | [`domain-modeling`](skills/domain-modeling/SKILL.md) | Builds `.agents` domain language and ADRs. |
+| [`emil-kowalski`](skills/emil-kowalski/SKILL.md) | Routes design engineering and animation work through Emil Kowalski's skills. |
 | [`evidence-research`](skills/evidence-research/SKILL.md) | Researches internal or external evidence for a decision. |
 | [`fast-forward`](skills/fast-forward/SKILL.md) | Skips obvious branches during grilling sessions. |
+| [`find-animation-opportunities`](skills/find-animation-opportunities/SKILL.md) | Finds UI seams where motion would add genuine value. |
 | [`fleet`](skills/fleet/SKILL.md) | Converges shared Linux coding nodes and agent profiles. |
 | [`grill-me`](skills/grill-me/SKILL.md) | Interrogates a plan one decision at a time. |
 | [`grill-with-docs`](skills/grill-with-docs/SKILL.md) | Stress-tests a plan and writes only the artifact the user requested. |
 | [`grilling`](skills/grilling/SKILL.md) | Runs the shared grilling interview loop. |
 | [`handoff`](skills/handoff/SKILL.md) | Captures continuation notes for another agent or session. |
 | [`implement`](skills/implement/SKILL.md) | Implements work from a spec or tickets, then reviews the result. |
+| [`improve-animations`](skills/improve-animations/SKILL.md) | Audits a codebase's motion and writes prioritized implementation plans. |
 | [`improve-codebase-architecture`](skills/improve-codebase-architecture/SKILL.md) | Finds and explores deepening opportunities in active code. |
+| [`interface-craft`](skills/interface-craft/SKILL.md) | Guides high-craft interface design and animation implementation. |
 | [`library-craft`](skills/library-craft/SKILL.md) | Reviews reusable package shape and public API craft. |
 | [`people-skills`](skills/people-skills/SKILL.md) | Drafts relationship-preserving messages and interpersonal next actions. |
 | [`pr-body`](skills/pr-body/SKILL.md) | Writes or reviews PR bodies in the repository's preferred style. |
@@ -48,6 +56,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`prototype`](skills/prototype/SKILL.md) | Builds throwaway prototypes to answer design questions. |
 | [`research`](skills/research/SKILL.md) | Delegates source-backed research and saves the findings in the repo. |
 | [`resolving-merge-conflicts`](skills/resolving-merge-conflicts/SKILL.md) | Resolves merge and rebase conflicts from the intent of both sides. |
+| [`review-animations`](skills/review-animations/SKILL.md) | Reviews animation and motion code against Emil Kowalski's craft standards. |
 | [`setup-matt-pocock-skills`](skills/setup-matt-pocock-skills/SKILL.md) | Configures tracker, triage labels, and domain-doc layout for Matt-style engineering skills. |
 | [`simplify`](skills/simplify/SKILL.md) | Finds the smallest useful simplification for a PR or scope. |
 | [`strict-code-review`](skills/strict-code-review/SKILL.md) | Runs a strict maintainability review for structural quality and code-judo simplifications. |
@@ -79,4 +88,5 @@ The skill defaults to the current session repository for manual cleanup. Daily a
 These skills build on patterns and ideas from:
 
 - [fpgarciamtnz/World-of-Sofia](https://github.com/fpgarciamtnz/World-of-Sofia)
+- [emilkowalski/skills](https://github.com/emilkowalski/skills)
 - [mattpocock/skills](https://github.com/mattpocock/skills)

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Delegate"
+  short_description: "Send one PR to a separate task"
+policy:
+  allow_implicit_invocation: false
