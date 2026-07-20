@@ -56,6 +56,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`to-tickets`](skills/to-tickets/SKILL.md) | Breaks a plan or spec into tracer-bullet tickets with blocking edges. |
 | [`ui`](skills/ui/SKILL.md) | Routes UI work to the smallest useful design/reference workflow. |
 | [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
+| [`vitehub-drop`](skills/vitehub-drop/SKILL.md) | Uploads local images to permanent public Drop URLs for GitHub content. |
 | [`vitehub-projects`](skills/vitehub-projects/SKILL.md) | Resolves ViteHub project aliases to local repository roots. |
 | [`wayfinder`](skills/wayfinder/SKILL.md) | Charts large foggy efforts as a shared map of decision tickets. |
 | [`workflow`](skills/workflow/SKILL.md) | Coordinates autonomous work across owned implementation slices. |
