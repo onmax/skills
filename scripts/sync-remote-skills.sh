@@ -3,8 +3,7 @@ set -euo pipefail
 
 workspace_root="/home/workspace"
 skills_repo="$workspace_root/onmax/skills"
-repo_url="${SKILLS_REPO_URL:-gh:onmax/skills}"
-fallback_repo_url="${SKILLS_FALLBACK_REPO_URL:-https://github.com/onmax/skills.git}"
+repo_url="${SKILLS_REPO_URL:-https://github.com/onmax/skills.git}"
 skill_users="${SKILL_USERS:-maxi-main maxi-pipoyu maxi-onmax}"
 workspace_group="${WORKSPACE_GROUP:-codex-workspace}"
 skill_target_dir=".agents/skills"
@@ -67,10 +66,8 @@ done
 
 sudo install -d -o workspace -g "$workspace_group" -m 2775 "$workspace_root"
 sudo install -d -o workspace -g "$workspace_group" -m 2775 "$(dirname "$skills_repo")"
-sudo -u workspace git config --global url.https://github.com/.insteadOf gh:
-
 if [ ! -d "$skills_repo/.git" ]; then
-  sudo -u workspace git clone "$repo_url" "$skills_repo" || sudo -u workspace git clone "$fallback_repo_url" "$skills_repo"
+  sudo -u workspace git clone "$repo_url" "$skills_repo"
 else
   if [ -n "$(sudo -u workspace git -C "$skills_repo" status --porcelain=v1)" ]; then
     echo "skills repo is dirty; preserve or archive its work before syncing" >&2
