@@ -4,10 +4,10 @@ Write for the engineer deciding how to deliver a known outcome. If the direction
 
 ## Content order
 
-1. Open with the requested observable result and why it matters.
+1. Open with the problem or use case, the requested observable result, and why it matters.
 2. Describe the current behavior only as far as needed to locate the gap.
 3. Define the smallest coherent scope, including a meaningful out-of-scope boundary when adjacent work is easy to confuse with it.
-4. State constraints and settled decisions that change the implementation.
+4. State constraints and settled decisions that change the implementation. Include a suggested solution or alternatives only when they are settled or change the decision.
 5. Give acceptance criteria as observable behavior, supported by a fixture, screenshot, log shape, or other reproducible reference.
 6. Link source evidence and useful code paths near the claims they support.
 

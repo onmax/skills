@@ -16,7 +16,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | --- | --- | --- |
 | Clarify direction | Shared understanding or a requested project artifact | `grill-me`, `grill-with-docs`, `evidence-research`, `codex-session-finder`, `handoff` |
 | Capture requested project memory | A user-requested glossary, context map, or ADR | `domain-modeling`, `validate-direction` |
-| Write and refine engineering work | Actionable issues, requests, and focused PR review | `engineering-brief`, `pr-refiner`, `strict-code-review`, `simplify` |
+| Write and refine engineering work | Actionable issues, requests, and focused PR review | `engineering-writing`, `pr-refiner`, `strict-code-review`, `simplify` |
 | Review reusable code | Package, SDK, or public API review | `library-craft`, `validate-direction` |
 | Clean workspaces | Worktree and build artifact cleanup | `worktree-cleanup` |
 
@@ -38,7 +38,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`diagnosing-bugs`](skills/diagnosing-bugs/SKILL.md) | Runs the Matt Pocock diagnosis loop for hard bugs and performance regressions. |
 | [`domain-modeling`](skills/domain-modeling/SKILL.md) | Builds `.agents` domain language and ADRs. |
 | [`emil-kowalski`](skills/emil-kowalski/SKILL.md) | Routes design engineering and animation work through Emil Kowalski's skills. |
-| [`engineering-brief`](skills/engineering-brief/SKILL.md) | Turns verified evidence into actionable issue reports, implementation requests, and PR bodies. |
+| [`engineering-writing`](skills/engineering-writing/SKILL.md) | Turns verified evidence into actionable issue reports, implementation requests, and PR bodies. |
 | [`evidence-research`](skills/evidence-research/SKILL.md) | Researches internal or external evidence for a decision. |
 | [`fast-forward`](skills/fast-forward/SKILL.md) | Skips obvious branches during grilling sessions. |
 | [`find-animation-opportunities`](skills/find-animation-opportunities/SKILL.md) | Finds UI seams where motion would add genuine value. |

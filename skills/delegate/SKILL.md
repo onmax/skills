@@ -59,7 +59,7 @@ Execution contract:
 2. Before mutation, use validate-direction and one independent sub-agent to challenge repository ownership, overlap with existing PRs or worktrees, and the smallest coherent first-PR boundary. Resolve every material objection.
 3. Preserve the ambient checkout. Refresh the intended base, reconcile existing PR ownership, and create a dedicated temporary worktree from the current upstream base.
 4. Implement only the validated boundary and run the repository's relevant tests, checks, and live proof. Use an independent code-review or simplify pass before publication when it can change the diff.
-5. Use engineering-brief's pull-request branch for the pull request body. Commit, push, and create one pull request using the repository's conventions.
+5. Use engineering-writing's pull-request branch for the pull request body. Commit, push, and create one pull request using the repository's conventions.
 6. After the pushed commit and PR URL are confirmed, return to the ambient checkout and use worktree-cleanup to remove the temporary worktree, disposable artifacts, and local branch when safe. Preserve the remote PR branch and report the PR URL, validation, and cleanup result.
 ```
 

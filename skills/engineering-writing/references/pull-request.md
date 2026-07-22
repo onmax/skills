@@ -12,16 +12,17 @@ Inspect, in order:
 - `CONTRIBUTING.md`
 - recent merged pull requests when templates are absent or unclear
 
-Follow the repository template when one exists. Without one, prefer one to three natural paragraphs covering what changed, why it exists, and the context that changes the review decision.
+Follow the repository template when one exists, and use recent accepted pull requests to calibrate local tone without discarding required fields. Without a template, prefer one to three natural paragraphs covering what changed, why it exists, and the context that changes the review decision.
 
 ## Rules
 
-- Lead with the changed behavior or capability, then explain the reason and reviewer-relevant boundary.
-- Use `Closes #123` when merging should close the issue and `Refs #123` when it should not.
+- Lead with the changed behavior or capability, then explain the reason and reviewer-relevant boundary. Name a shortcoming or area needing focused review when it materially changes confidence.
+- Use `Closes #123` when merging into the default branch should close the issue and `Refs #123` when it should not.
 - Link issues, tasks, docs, ADRs, or related pull requests only when they reduce reviewer effort.
-- Do not invent `Summary`, `Validation`, `Tests`, or command-log sections unless the template or user requires them. Keep commands run in the final handoff instead.
+- Restate the decision-relevant conclusion from private chats, tasks, previews, or other access-limited links.
+- Do not invent `Summary`, `Validation`, `Tests`, or command-log sections unless the template or user requires them. Include behavioral proof or the reason it is absent when the destination or risk expects it, but keep raw commands in the final handoff.
 - Use structured sections only when they carry operational meaning or make substantial evidence easier to compare.
-- For visible changes, prefer focused before-and-after evidence with descriptive alt text. For non-visual changes, provide equivalent behavioral evidence when the repository expects proof.
+- For visible changes, prefer focused before-and-after evidence with descriptive alt text and complete text setup. For non-visual changes, provide equivalent behavioral evidence when the repository expects proof.
 - Preserve clear existing wording when editing a body. Do not replace a useful body with a generic template.
 
 ## Dependencies and coordination
