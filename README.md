@@ -26,6 +26,8 @@ These skills are meant to compose into a lightweight delivery loop:
 
 | Skill | What it does |
 | --- | --- |
+| [`airtable-cli`](skills/airtable-cli/SKILL.md) | Uses Airtable's official CLI to discover and run live record, comment, table, and field operations. |
+| [`airtable-flow`](skills/airtable-flow/SKILL.md) | Advances Quiver Airtable tasks through a decision-gated lifecycle with automatic CLI state transitions. |
 | [`animation-vocabulary`](skills/animation-vocabulary/SKILL.md) | Names web animation and motion effects from plain-language descriptions. |
 | [`apple-design`](skills/apple-design/SKILL.md) | Applies Apple's interface and fluid-motion principles to web design. |
 | [`code-review`](skills/code-review/SKILL.md) | Reviews a diff independently against repository standards and its originating spec. |
