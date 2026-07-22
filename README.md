@@ -16,7 +16,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | --- | --- | --- |
 | Clarify direction | Shared understanding or a requested project artifact | `grill-me`, `grill-with-docs`, `evidence-research`, `codex-session-finder`, `handoff` |
 | Capture requested project memory | A user-requested glossary, context map, or ADR | `domain-modeling`, `validate-direction` |
-| Refine PRs | Focused PR cleanup and checks | `pr-refiner`, `pr-body`, `strict-code-review`, `simplify` |
+| Write and refine engineering work | Actionable issues, requests, and focused PR review | `engineering-brief`, `pr-refiner`, `strict-code-review`, `simplify` |
 | Review reusable code | Package, SDK, or public API review | `library-craft`, `validate-direction` |
 | Clean workspaces | Worktree and build artifact cleanup | `worktree-cleanup` |
 
@@ -38,6 +38,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`diagnosing-bugs`](skills/diagnosing-bugs/SKILL.md) | Runs the Matt Pocock diagnosis loop for hard bugs and performance regressions. |
 | [`domain-modeling`](skills/domain-modeling/SKILL.md) | Builds `.agents` domain language and ADRs. |
 | [`emil-kowalski`](skills/emil-kowalski/SKILL.md) | Routes design engineering and animation work through Emil Kowalski's skills. |
+| [`engineering-brief`](skills/engineering-brief/SKILL.md) | Turns verified evidence into actionable issue reports, implementation requests, and PR bodies. |
 | [`evidence-research`](skills/evidence-research/SKILL.md) | Researches internal or external evidence for a decision. |
 | [`fast-forward`](skills/fast-forward/SKILL.md) | Skips obvious branches during grilling sessions. |
 | [`find-animation-opportunities`](skills/find-animation-opportunities/SKILL.md) | Finds UI seams where motion would add genuine value. |
@@ -52,7 +53,6 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`interface-craft`](skills/interface-craft/SKILL.md) | Guides high-craft interface design and animation implementation. |
 | [`library-craft`](skills/library-craft/SKILL.md) | Reviews reusable package shape and public API craft. |
 | [`people-skills`](skills/people-skills/SKILL.md) | Drafts relationship-preserving messages and interpersonal next actions. |
-| [`pr-body`](skills/pr-body/SKILL.md) | Writes or reviews PR bodies in the repository's preferred style. |
 | [`pr-comment-sentinel`](skills/pr-comment-sentinel/SKILL.md) | Runs an exact-head PR review and repair heartbeat. |
 | [`pr-refiner`](skills/pr-refiner/SKILL.md) | Reviews PR blockers and routes the next refinement step. |
 | [`prototype`](skills/prototype/SKILL.md) | Builds throwaway prototypes to answer design questions. |

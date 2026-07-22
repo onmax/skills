@@ -38,10 +38,10 @@ Default active heartbeats to 5-10 minutes; use 30+ minutes only for slow externa
 
 ## Skills, Research, PRs, And Handoff
 
-- Name the local, plugin, or remote skills for each owner before work starts. For example: `evidence-research` for uncertain patterns, `design` for new UI, `library-craft` for packages, security skills for trust boundaries, `pr-body`/`pr-refiner` for PRs, and `handoff` for continuation.
+- Name the local, plugin, or remote skills for each owner before work starts. For example: `evidence-research` for uncertain patterns, `design` for new UI, `library-craft` for packages, security skills for trust boundaries, `engineering-brief`/`pr-refiner` for PRs, and `handoff` for continuation.
 - If no local skill fits, run discovery first: `npx skills --help`, then a focused `npx skills find <topic>` or skills.sh lookup when available. Record the skill/reference chosen or the reason none applied.
 - Use `evidence-research` when the implementation pattern is unclear or public precedent would change the decision. Do not also spawn separate research subagents unless that is the assigned research slice.
-- Use `pr-body` for PR text and `pr-refiner` for one-PR readiness.
+- Use `engineering-brief` for PR text and `pr-refiner` for one-PR readiness.
 - Track the PR head SHA for every check, preview, `pkg.pr.new` artifact, and bot review.
 - Automatic merge is opt-in only. Re-read current head, checks, comments, review threads, and validation; squash with an empty body and conventional subject ending in the PR ref.
 - Use `handoff` before pausing, moving context to another thread, or handing a child enough state to continue alone.

@@ -85,7 +85,7 @@ When a PR changes ADR-like files, check for numeric index collisions against the
 
 ## PR Body Edits
 
-After consent under the mutation contract, use `pr-body` for repository style, issue linking, and body content rules.
+After consent under the mutation contract, use `engineering-brief` for repository style, issue linking, evidence, and body content rules.
 
 ## Output
 
