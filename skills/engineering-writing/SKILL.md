@@ -20,8 +20,8 @@ If the direction is still disputed, validate it before writing a request. If the
 ## Workflow
 
 1. **Name the reader and decision.** Identify who will read the artifact and what they need to decide or do next.
-2. **Calibrate the context.** Follow required destination fields and repository templates, then inspect recent accepted examples for local tone. Add environment, routing, ownership, alternatives, or headings only when the reader cannot infer them. Route security vulnerabilities through the destination's private disclosure process.
-3. **Inventory facts before prose.** Collect the observed or changed result, expected or requested result, why it matters, confirmed mechanism, reproduction or acceptance evidence, source links, useful code paths, visuals, and remaining uncertainty. Label inference as inference.
+2. **Assume shared context.** Write for a trusted team that already knows the product and repository. Follow required destination fields, but do not import open-source intake questions. Add environment, reproduction, routing, alternatives, or headings only when their absence would block action. Route security vulnerabilities through the destination's private disclosure process.
+3. **Inventory facts before prose.** Collect the observed or changed result, expected or requested result, why it matters, confirmed mechanism, evidence needed to trust the claim, source links, useful code paths, visuals, and remaining uncertainty. Label inference as inference.
 4. **Discard the transcript.** Preserve conclusions and proof, not the chronology of commands, hypotheses, dead ends, infrastructure counts, or agent activity that produced them.
 5. **Draft outcome first.** The opening should make the unexpected result, requested outcome, or completed change understandable without a heading. Add structure only when it helps the reader navigate distinct decisions.
 6. **Attach decision-relevant evidence.** Put links and visuals next to the claim they support. A code path belongs only when it shortens the route to the relevant seam. Restate the relevant conclusion from any private or access-limited source.

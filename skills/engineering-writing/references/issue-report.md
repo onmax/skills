@@ -7,18 +7,18 @@ Write for the engineer deciding whether and where to fix an observed problem.
 1. Open with the unexpected user-visible or system-visible result and the smallest context needed to recognize it.
 2. State the expected result plainly.
 3. Give the confirmed root cause or ownership boundary when known. If it is only suspected, label it and state the missing proof.
-4. Include the shortest reproducible setup or source link that lets another engineer verify the result. Omit a separate reproduction only when the linked evidence is self-evident.
-5. End with the observable acceptance result. Add code paths only when they save meaningful discovery time.
+4. Link the original report and add only the screenshot, log fact, or code path that helps the engineer act.
+5. End with the observable result that means the issue is fixed.
 
 Use the destination's fields instead of recreating them as headings. A short issue may be one compact paragraph plus evidence links.
 
-Add environment, version, runtime stage, or ownership metadata only when it distinguishes the failure or the destination requires it. Under log-only customer constraints, the reproduction may be a deterministic local fixture or command derived from the logged case.
+Do not ask for or add a minimal reproduction by default. Add reproduction steps, environment, version, runtime stage, or ownership metadata only when the existing report, logs, or screenshot do not make the problem actionable.
 
 ## Evidence
 
 - Prefer the actual wrong result over a long explanation of how it was discovered.
 - Use one screenshot when it establishes a visual failure quickly, but keep the current and expected results complete in text. Add an expected reference only when the intended state is visually ambiguous.
-- Keep exact errors, values, dates, IDs, and reproduction steps as searchable text.
+- Keep exact errors, values, dates, IDs, and any necessary verification steps as searchable text.
 - Link the original report or review near the claim it supports.
 
 ## Avoid
