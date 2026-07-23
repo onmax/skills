@@ -5,10 +5,13 @@ description: Uploads a local file and returns its permanent public URL. Use when
 
 # ViteHub Drop
 
-The input must be a file the user placed in scope. Resolve the bundled script relative to this `SKILL.md`, then run:
+The input must be a file the user placed in scope. Run:
 
 ```sh
-node "<skill-directory>/scripts/upload-image.mjs" "/absolute/path/to/file.pdf"
+curl --fail-with-body --silent --show-error \
+  -F "file=@/absolute/path/to/file.pdf" \
+  https://drop.vitehub.dev/api/files |
+  jq -er '.url'
 ```
 
-The script prints the permanent public URL returned by ViteHub Blob as soon as the file is stored. Copy stdout verbatim; never derive or rewrite it from an upload endpoint, Blob key, or framework route. Drop optimizes supported images in the background and stores other files unchanged. Use the URL in GitHub content the user explicitly authorized.
+The command prints the permanent public URL returned by ViteHub Blob as soon as the file is stored. Copy stdout verbatim; never derive or rewrite it from an upload endpoint, Blob key, or framework route. Drop optimizes supported images in the background and stores other files unchanged. Use the URL in GitHub content the user explicitly authorized.
