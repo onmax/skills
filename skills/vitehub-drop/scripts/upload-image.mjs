@@ -21,8 +21,4 @@ if (!uploadResponse.ok) throw new Error(await uploadResponse.text())
 
 const { url } = await uploadResponse.json()
 if (typeof url !== "string") throw new Error("Drop did not return a file URL.")
-const publicUrl = new URL(url, origin)
-if (publicUrl.origin !== new URL(origin).origin || !publicUrl.pathname.startsWith("/i/")) {
-  throw new Error("Drop did not return a public /i/ URL.")
-}
-console.log(publicUrl.href)
+console.log(new URL(url, origin).href)
