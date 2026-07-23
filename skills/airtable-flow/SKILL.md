@@ -1,82 +1,85 @@
 ---
 name: airtable-flow
-description: Reports or advances Quiver Airtable tasks through a gated intake-to-review lifecycle. Use when Maxi asks to report, pick, claim, investigate, implement, or finish Airtable work.
+description: Advances Quiver Airtable tasks from intake or selection to a review-ready pull request. Use when Maxi asks to report new Airtable work or select, claim, investigate, implement, or finish a task.
 ---
 
 # Airtable Flow
 
-Advance one task or explicit batch through four linear phases. The **gate** is the invariant: run only the current phase, apply its predefined Airtable effects, report completion evidence, and wait for Maxi's next lifecycle decision.
+Run one task through a gated funnel. Gates preserve decisions; the evidence ladder keeps proof proportional to the change.
 
 ## Contract
 
-- Start Phase 1 only after Maxi explicitly asks to select Airtable work. That request authorizes selecting and claiming the recommended task without a second confirmation.
-- Begin each turn by naming the active phase and the evidence that the previous gate passed. End each phase with `Gate`, `Evidence`, `Decision`, and `Next phase`.
-- Default to one ticket and one PR. Batch only tasks proven to share one root cause or code seam, after Maxi approves the exact group.
-- Use `~/quiver/airtable` as the primary read, search, asset, and history surface. Use live Airtable reads through `airtable-cli` only to establish a mutation precondition and verify its result. Airtable remains the mutation surface; keep the Task Mirror read-only.
-- Follow the target repository's `AGENTS.md`. Starting Phase 4 authorizes normal branch, commit, push, draft-PR work, and the corresponding Airtable PR-link effect under those rules.
-- Leave GitHub assignees empty and mention nobody. Obtain the consent required by the target repository before any GitHub comment or reply, and request review only from a person Maxi has named or approved.
-- Treat customer environments as log-only evidence sources. Inspect existing logs plus read-only deployment and configuration metadata through the CLI when relevant, but never open a customer URL, authenticate as a customer, use a customer browser session, call customer APIs, shell into customer pods, or mutate customer data or runtime state. This flow never edits `~/quiver/k8s` or `~/quiver/forecasting-engine`.
-- Invoke `airtable-cli` for every live Airtable read and mutation. Run `airtable-mcp tools --json` and the selected tool's `--help` before relying on its current name or arguments; the vendor command surface is dynamic.
-- Use the explicit `quiver-mutations` CLI profile. If it is unavailable, follow [TOKEN-SETUP.md](TOKEN-SETUP.md) before selecting work; this one-time setup is a capability gate, not an Airtable mutation approval.
-- Never open an Airtable task page in the Browser. Browser use is limited to the one-time token bootstrap and Phase 4 proof on an isolated non-customer PR preview, and never to reproduce a task in a customer environment.
-- A customer URL in the task description, comments, or logs is evidence context, not permission to open it. It is distinct from the Task File's Airtable `sourceUrl`; never ask Maxi to sign in to the customer URL.
+- Maxi may authorize the next phase or all remaining phases. `All phases` crosses each passed gate automatically while the solution, acceptance criterion, repository, and authority remain unchanged; pause when new evidence changes one of them.
+- Start selection only after Maxi explicitly asks for Airtable work; that request authorizes claiming the selected task.
+- Begin with the active phase and the evidence that opened it. Close every phase with `Gate`, `Evidence`, `Decision`, and `Next phase`.
+- Default to one task and one PR. Batch only an exact group Maxi approved after one root cause or code seam was proven.
+- Treat `~/quiver/airtable` and the target repository as a pair with distinct authority. The mirror's normalized `Task` index is the common read shape for every Airtable source; the target repository owns implementation. Airtable remains the only task mutation surface.
+- Follow the target repository's `AGENTS.md`. Phase 4 authorizes its normal branch, commit, push, draft-PR, required PR label, ready-state, mapped Airtable work, and the smallest coherent `~/quiver/k8s` change needed to prove the result in the isolated PR preview.
+- Assign every created PR to `onmax` and mention nobody. Obtain the consent required by the target repository before posting a GitHub comment or reply.
+- Use customer environments only as evidence sources: existing logs and read-only deployment or configuration metadata. Customer URLs, sessions, APIs, pods, data, and runtime state are outside this flow; use the smallest deterministic local proof instead. This flow never edits `~/quiver/forecasting-engine`.
+- `All phases` counts as confirmation for non-destructive fixture mutations in the PR's isolated namespace and `~/quiver/k8s` edits that define or apply that fixture. State the exact namespace, command, and consequence before acting. Leave the fixture available for Maxi's manual test; pause for destructive or shared-environment mutations, Forecasting Engine changes, or durable publication from the K8s repository.
+- Use the Browser only for one-time token bootstrap or proof on an isolated non-customer PR preview. Treat URLs in task content as evidence context.
+
+## Airtable access
+
+At the first live Airtable access in a flow, run `airtable-mcp tools --json` and the selected read and mutation tools' `--help`. Reuse that resolved command surface for the rest of the flow; resolve it again only after a command-shape error or an observed tool change.
+
+Use `airtable-cli` with the `quiver-mutations` profile for every live read and mutation. If the profile is unavailable, follow [TOKEN-SETUP.md](TOKEN-SETUP.md) before selecting work.
+
+Maxi's lifecycle decision authorizes its mapped effect:
+
+- Select: Responsible `Maxi`; Status `Assigned`.
+- Unclear: one concrete decision question as a comment; Status `Awaiting input`.
+- Already fixed in `main`: one evidence comment; Status `Implemented - In test`.
+- Draft PR opened: the PR URL as a comment; Status `Implemented - Awaiting deploy`.
+
+Every effect is a compare-and-set: read the current Task File and live fields/comments, re-read the affected live state immediately before writing, stop on conflict, apply only the mapped change without duplicate comments, then re-read until the intended state is explicit.
 
 ## Intake — Report new work
 
-When Maxi asks to create a new Airtable bug or improvement, treat intake as a separate path rather than starting Phase 1. Use `engineering-writing` to draft the description: choose the issue-report branch for an observed failure and the implementation-request branch for a known change. Lead with the unexpected or requested result, keep only the confirmed root or ownership boundary that changes the next action, link the original report, and attach a safe screenshot only when it establishes the result faster than text.
+Use this branch when Maxi asks to create a bug or improvement. Draft the smallest complete description with `engineering-writing`, check the normalized Task index and live Airtable for duplicates, resolve current field IDs/options, create the record without an implementer, and verify the live description and fields. Intake is complete when the record states the result, expected behavior, useful evidence, and acceptance condition without credentials, customer data, or private URLs.
 
-Check the Task Mirror and live Airtable for duplicates before creating anything. Resolve current field IDs and select options through `airtable-cli`, create the smallest complete record without assigning an implementer, then re-read its live fields and description. Intake is complete when the verified record gives an engineer the result, expected behavior, useful evidence, and acceptance condition without exposing credentials, customer data, private URLs, or investigation-log detail.
+## Phase 1 — Funnel and claim
 
-## Airtable decision effects
+1. Refresh remote refs in `~/quiver/airtable` and record the latest `origin/mirror` commit and Sync time. Read `server/workspaces/mirror/data/tasks.jsonl` from that ref; it gives Product Planning and User Feedback one `Task` shape.
+2. Filter to Status `Ready to implement` with no Responsible. Rank the index by completeness, bounded ownership, and likely change size; deeply inspect only the strongest three Task Files, comments, assets, source URLs, and nearby tasks. Widen by three only when none is claimable.
+3. For the strongest candidate, inspect the likely repository's instructions, current `main`, ownership, and open-PR file overlap. Select the smallest task whose intent and boundary are explicit.
+4. Apply and verify the Select effect.
 
-Maxi's lifecycle decision authorizes its mapped Airtable effect. Do not ask for separate mutation approval or ask him to run the mutation. Apply the effect automatically, then report the exact live result:
+Phase 1 is complete when one live read shows the task `Assigned` to `Maxi` and the implementation repository is recorded.
 
-- Start Phase 1 or select a task: Responsible `Maxi`; Status `Assigned`.
-- Decide that the task is unclear: one concrete decision question as a comment; Status `Awaiting input`.
-- Decide that the task is already fixed in `main`: one evidence comment; Status `Implemented - In test`.
-- Successfully open the task's draft PR: the PR URL as a comment; Status `Implemented - Awaiting deploy`.
+## Phase 2 — Evidence ladder
 
-Before applying an effect, prove the candidate state from a current Task File and fetch the live fields and relevant comments with `airtable-mcp` under the `quiver-mutations` profile. Re-fetch the affected state immediately before writing; stop on a conflicting change rather than overwriting it. Apply only the mapped fields or comment, avoid duplicate comments, then re-fetch and verify the live values. Stop and report only when credentials, permissions, live state, or the decision itself are insufficient or ambiguous.
+1. Read the complete Task File plus the target repository's instructions, owning code, relevant history, and related PRs.
+2. Climb only as far as the decision requires:
+   - **Direct proof:** task evidence plus code, route, schema, or contract establishes the behavior. Use it as the reproduction and skip higher levels.
+   - **Local proof:** reproduce the smallest request, state, timing, or data shape when direct proof cannot distinguish the causes.
+   - **Runtime proof:** inspect existing customer logs, deployed versions, and read-only configuration only when runtime state could reverse the conclusion.
+   - **Research:** invoke `evidence-research` only when broader sourced evidence could reverse the product or technical decision.
+3. For a runtime-dependent bug whose logs lack the distinguishing event or field, report that exact evidence gap. Otherwise present the behavior, cause, ownership, smallest solution, observable acceptance criterion, and remaining uncertainty.
 
-## Phase 1 — Select and claim
+Phase 2 is complete when the solution, acceptance criterion, and repository are explicit and covered by Maxi's current authorization. Apply the Unclear or Already-fixed effect instead when that is the decision; either effect ends the flow.
 
-1. Refresh remote refs in `~/quiver/airtable` and name the latest `origin/mirror` commit and sync time. Read Task Files from that ref unless the checkout is proven identical; use `airtable-cli` for live record or comment reads when mirrored content is incomplete, and keep Task Assets local.
-2. Consider only tasks with Status `Ready to implement` and no Responsible. Read each candidate's description, comments, assets, source URL, and nearby tasks.
-3. Inspect likely code ownership, `main`, and open PRs before proposing work. Prefer the smallest task whose intent can be established confidently. Title similarity alone is not batch evidence.
-4. Select the recommended task or explicit batch, immediately apply and verify the Claim effect through `airtable-cli`, then present the selection, repository, overlap findings, uncertainty, and live Airtable result.
+## Phase 3 — Implement and prove
 
-Phase 1 is complete when a live CLI read shows every selected task `Assigned` to `Maxi` and the task-to-repository scope is recorded. Report that evidence and wait for Maxi to start Phase 2.
+1. Implement the smallest coherent change in the authorized repository. Pause before expanding into another repository, product direction, or shared environment.
+2. Re-run the Phase 2 proof and the narrowest relevant checks. Run independent checks concurrently; treat compilation and service health as supporting evidence.
+3. Remove temporary instrumentation and unrelated changes, then present the diff boundary, behavioral proof, checks, and remaining uncertainty.
 
-## Phase 2 — Investigate and align
+Phase 3 is complete when the changed behavior and relevant checks pass under the current authorization.
 
-1. Read the selected repository's agent context, relevant code and history, related PRs, and the complete Task File. Separate evidence from inference and treat each proposed cause or mechanism as falsifiable.
-2. For a bug, establish the reported symptom from existing customer logs, then build the smallest deterministic local reproduction from the logged request, error, timing, or data shape and the relevant code. Do not open or log in to the customer UI to confirm it. Reach for `diagnosing-bugs` when its tight-loop discipline would improve the investigation. For an improvement, derive the current behavior from logs and code, then define an observable acceptance behavior.
-3. Inspect Forecasting Engine contracts, K8s configuration, deployed versions, and existing customer logs when they can change the conclusion. Logs are the only allowed source of customer-runtime behavior; deployment and configuration metadata may support the explanation, but do not interact with customer pods, APIs, data, or UI.
-4. If existing logs do not contain enough evidence to reproduce or distinguish the likely causes, report the exact missing event or field and stop at that evidence gap. Do not ask Maxi to log in, request customer credentials, or switch to an interactive customer reproduction.
-5. Invoke `evidence-research` only when broader sourced evidence could reverse the product or technical decision.
-6. Present the reproduced behavior, evidence, ranked causes, ownership, recommended solution, acceptance criterion, and remaining uncertainty.
+## Phase 4 — Publish and hand off
 
-If the task may be unclear or already fixed, discuss that conclusion with Maxi. When he decides, apply and verify the mapped Airtable effect automatically; that ends the flow.
-
-Phase 2 is complete only when Maxi confirms the solution, acceptance criterion, and implementation repository. Wait for him to start Phase 3.
-
-## Phase 3 — Implement and verify
-
-1. Implement the smallest coherent change in the authorized repository under its local instructions. Ask before expanding into another repository, product direction, or shared environment.
-2. Drive the work with the Phase 2 log-derived reproduction or acceptance behavior. Remove temporary instrumentation and unrelated changes before presenting the result.
-3. Re-run the local reproduction and the narrowest relevant checks. Verification must exercise the changed behavior without a customer login or customer-state mutation; compilation or service health is supporting evidence.
-4. Present the diff boundary, checks, behavioral proof, and remaining uncertainty.
-
-Phase 3 is complete only when the requested behavior is proven locally or in the authorized environment and Maxi accepts the implementation evidence. Wait for him to start Phase 4.
-
-## Phase 4 — Publish, prove, and hand off
+Treat the PR body as a reviewer artifact, not the flow handoff. For Airtable work without a required repository template, use one outcome sentence, a compact `[Airtable task <ID>](<sourceUrl>)` link without a section heading or task title, then the smallest `pr-evidence` body shape. Keep commands, CI and deployment chronology, fixture setup, environment details, and operational limitations in the handoff unless they materially change merge confidence.
 
 Use `easy-to-review` only when the current diff changes at most three files and 100 lines total, owns one local behavior, and changes no generated file, lockfile, auth or security boundary, schema or migration, CI or deployment/runtime configuration, shared framework primitive, cross-repository contract, or dependency. The PR must also have no conflict, requested change, unresolved review finding, or open product decision. Apply the label at PR creation when the diff qualifies; re-evaluate it after code changes and before marking the PR ready, removing it when the PR no longer qualifies.
 
-1. Before opening the PR, assemble its complete body with `engineering-writing`'s pull-request branch and the repository template. The first published body must link the task title or ID to the Task File's direct `airtable.com` `sourceUrl` and include correctly spelled `### Before` and `### After` sections with proofread image alt text; never open with a bare task number, Task Mirror link, placeholder evidence, or missing section. Use the Phase 2 broken reference for `Before` and the Phase 3 verified result for `After`. For visible changes, capture `After` at a wide desktop viewport that preserves the full desktop layout rather than a compact laptop breakpoint, upload every screenshot with `vitehub-drop`, and embed each returned public URL as `![descriptive alt text](https://drop.vitehub.dev/i/<id>)`. Never embed a localhost, tailnet, temporary artifact, private blob, filesystem, or ordinary `[text](url)` link as screenshot evidence. For non-visual changes, put the equivalent behavioral evidence under the same headings. Then reconcile Git state, create the normal branch, commit conventionally, push, and open the draft PR without mentioning or assigning people. Re-fetch the published body and verify that GitHub renders every expected image before applying and verifying the Implemented Airtable effect.
-2. Wait for the PR preview. Verify the fix on the isolated preview when that can be done without customer credentials, sessions, or data, and replace or strengthen the existing `After` evidence when the preview provides better proof. Route every replacement image through `vitehub-drop` and repeat the GitHub render check after updating the body. Preserve the direct Airtable link and complete `Before`/`After` structure during every body update. Keep the preview URL and admin credentials out of the PR body because the deployment comment is their canonical surface, and record only the setup and limitations needed to understand the proof. If the preview requires customer access, do not log in; retain the Phase 3 behavioral proof and state the preview limitation.
-3. Self-review the task, diff, repository rules, and preview behavior. Repair every in-scope finding and repeat affected checks.
-4. Keep the PR draft until one non-author human has reviewed the current code head. The author's self-review and automated reviews do not count as the second set of eyes. If no reviewer is already approved, ask Maxi to name or approve one, then request only that reviewer without posting a comment. Repair every actionable peer finding and repeat affected checks; if remediation changes code, obtain follow-up review of the new head.
-5. Mark the PR ready only after the peer-review gate, final checks, and preview proof pass. Restore any isolated preview data changed during proof or explicitly hand off its remaining state, then tell Maxi the PR needs his manual second pass.
+1. Invoke [`engineering-writing`](../engineering-writing/SKILL.md), choose its completed-change branch, and read the pull-request reference before building the body with the repository template. Use the task's direct `airtable.com` `sourceUrl`; do not add `Background`, `Description`, or `Related Airtable Task(s)` headings unless the repository requires them. Invoke `pr-evidence` to choose and verify the smallest useful comparison, exact preview link, or downloadable artifact.
+2. Reconcile Git state, create the normal branch, commit conventionally, push, and open a draft PR without mentions. Immediately assign `onmax` and add the `engine:latest` label, re-fetch the PR to verify the assignee, label, body links, and rendered images, then apply and verify the Draft-PR effect.
+3. While the preview builds, self-review the task, current diff, repository rules, and proof. Repair every in-scope finding and repeat affected checks.
+4. On the isolated preview, exercise the changed behavior with existing data and make one targeted fixture check. When the fixture is absent, invoke the target repository's `k8s-environments` skill and read its Data Scenarios reference. Reuse the nearest supported scenario; otherwise add the smallest target-scoped scenario in `~/quiver/k8s`, using synthetic data, a stable marker, and an explicit cleanup path.
+5. Apply the scenario only to the PR namespace and verify the real API and screen. Run `pr-evidence` against the live preview and replace weaker proof rather than appending another proof paragraph. Put a preview limitation in the body only when it materially lowers merge confidence; otherwise keep it in the handoff. Leave the marked scenario active for Maxi's manual test, and hand off its namespace, route, marker, setup, cleanup path, and any `~/quiver/k8s` diff; if a safe reproducible scenario cannot be built, retain the Phase 3 proof and hand off the exact limitation.
+6. Inspect failing checks at the current head. Repair related failures. For a proven unrelated failure, rerun the failed job once; if it persists, leave the PR draft and hand off the exact external blocker instead of keeping the flow active.
+7. When self-review, relevant checks, and preview proof or its explicit limitation pass, mark the PR ready and hand it to Maxi for review. Route later feedback through `pr-refiner`.
 
-The flow is complete only when a non-author human has reviewed the current code head with no actionable findings left, the PR is ready for Maxi's review, its body carries the decision-relevant proof, a live CLI read shows the automatic PR comment and status, and temporary reproduction state is accounted for. Route later review feedback through `pr-refiner`.
+The flow is complete when the PR is ready for Maxi, is assigned to `onmax`, has the `engine:latest` label, its body carries decision-relevant proof, a live read verifies the Airtable PR comment and status, and the handoff identifies the active preview fixture plus any K8s repository change. An external blocker ends active work with the PR draft and one exact next action.
