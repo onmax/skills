@@ -8,6 +8,8 @@ Never comment on issues or pull requests without explicit user consent.
 
 Activate the GitHub, Vercel, or Cloudflare plugin when relevant.
 
+Process ownership: stop only this task's processes; present other targets to the user for confirmation.
+
 ## Repository workflow
 
 Work directly on `main` for this repo unless the user explicitly asks otherwise.
