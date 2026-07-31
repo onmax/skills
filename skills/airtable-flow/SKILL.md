@@ -37,7 +37,11 @@ Every effect is a compare-and-set: read the current Task File and live fields/co
 
 ## Intake — Report new work
 
-Use this branch when Maxi asks to create a bug or improvement. Draft the smallest complete description with `engineering-writing`, check the normalized Task index and live Airtable for duplicates, resolve current field IDs/options, create the record without an implementer, and verify the live description and fields. Intake is complete when the record states the result, expected behavior, useful evidence, and acceptance condition without credentials, customer data, or private URLs.
+Use this branch when Maxi asks to create a bug or improvement. Draft the smallest complete description with `engineering-writing` and check the normalized Task index plus live Airtable for duplicates.
+
+Before creating the record, resolve the current field IDs and allowed options from the live schema, then populate `Type`, `Evaluation of importance`, `Platform area`, `Identified on platform`, and `Identified by`. Derive values only from Maxi's request or inspected evidence; when a required value is unsupported, ask one compact question naming every missing field before writing. Create the record without an implementer, then re-read it and verify that the description and all five intake fields contain the intended values.
+
+Intake is complete when the live record states the result, expected behavior, useful evidence, and acceptance condition; all five intake fields are populated; and nothing exposes credentials, customer data, or private URLs.
 
 ## Phase 1 — Funnel and claim
 

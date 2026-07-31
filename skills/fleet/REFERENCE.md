@@ -22,16 +22,16 @@ Run the deterministic bootstrap from a temporary public checkout after the provi
 ```sh
 git clone --depth=1 https://github.com/onmax/skills.git /tmp/onmax-skills
 cd /tmp/onmax-skills
-sudo ADMIN_USER="$USER" AGENT_USERS="maxi-main" skills/fleet/scripts/bootstrap-node.sh prepare
+sudo ADMIN_USER="$USER" AGENT_USERS="maxi" skills/fleet/scripts/bootstrap-node.sh prepare
 ```
 
-`prepare` patches Ubuntu, installs the base CLIs, Docker, Tailscale, and UFW, creates the workspace and agent profiles, stages Portainer, and syncs the public skills repo. It leaves public SSH available for the bootstrap session.
+`prepare` patches Ubuntu, installs the base CLIs, Docker, Tailscale, and UFW, creates the workspace, prepares the requested agent profile, stages Portainer, and syncs the public skills repo. It leaves public SSH available for the bootstrap session. Omit `AGENT_USERS` to reuse `ADMIN_USER` as the single agent profile.
 
 Complete the interactive Tailscale login, prove a second SSH session through the tailnet, then finish private services:
 
 ```sh
 sudo tailscale up --ssh --operator="$USER"
-sudo ADMIN_USER="$USER" AGENT_USERS="maxi-main" LOCK_PUBLIC_SSH=1 \
+sudo ADMIN_USER="$USER" AGENT_USERS="maxi" LOCK_PUBLIC_SSH=1 \
   /tmp/onmax-skills/skills/fleet/scripts/bootstrap-node.sh finish
 ```
 
@@ -122,7 +122,7 @@ Do not run identical polling schedules on two nodes when they coordinate only th
 Check each agent profile without printing secrets:
 
 ```sh
-for user in maxi-main maxi-pipoyu maxi-onmax; do
+for user in maxi; do
   sudo -u "$user" bash -lc '
     whoami
     test -f ~/.codex/auth.json && echo codex-auth-present || echo codex-auth-missing
@@ -138,9 +138,7 @@ Use one shared workspace for source:
 ```sh
 sudo groupadd -f codex-workspace
 sudo install -d -o workspace -g codex-workspace -m 2775 /home/workspace
-sudo usermod -aG codex-workspace maxi-main
-sudo usermod -aG codex-workspace maxi-pipoyu
-sudo usermod -aG codex-workspace maxi-onmax
+sudo usermod -aG codex-workspace maxi
 sudo find /home/workspace -type d -exec chmod g+rwxs {} +
 sudo find /home/workspace -type f -exec chmod g+rw {} +
 ```

@@ -64,6 +64,20 @@ Keep runtime-specific code at the edge. Node, browser, workers, filesystem, proc
 
 Do not let runtime detection leak through the public surface unless runtime choice is the product.
 
+## Third-Party Dependencies
+
+Let a dependency earn its place by absorbing real protocol behavior, ecosystem rules, or edge cases that the package should not own. Existing repository convention matters, but familiarity or popularity alone does not establish fit.
+
+Review the whole dependency contract:
+
+- whether its concepts match the package instead of leaking tool-specific types through the public API
+- runtime and module compatibility, types, maintenance, license, and security posture
+- install footprint, startup cost, transitive dependencies, and bundle-versus-external strategy
+- replacement and migration cost if the dependency changes direction
+- contract, fixture, type, and packaged-artifact tests at the dependency seam
+
+Use the dependency directly while its use is localized. Introduce an adapter when it protects one stable public or core interface from a volatile dependency API, normalizes several providers or formats, or contains a real runtime boundary. Do not wrap every import preemptively.
+
 ## Compatibility Debt
 
 Compatibility is useful when it buys trust or migration time. It becomes debt when it preserves a misleading model, blocks simpler names, forces weak types, or keeps dead runtime behavior alive.

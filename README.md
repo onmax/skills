@@ -14,7 +14,7 @@ These skills are meant to compose into a lightweight delivery loop:
 
 | Phase | Artifact | Main skills |
 | --- | --- | --- |
-| Clarify direction | Shared understanding or a requested project artifact | `grill-me`, `grill-with-docs`, `evidence-research`, `codex-session-finder`, `handoff` |
+| Clarify direction | Shared understanding or a requested project artifact | `grill-me`, `grill-with-docs`, `evidence-research`, `handoff` |
 | Capture requested project memory | A user-requested glossary, context map, or ADR | `domain-modeling`, `validate-direction` |
 | Write and refine engineering work | Actionable issues, requests, and focused PR review | `engineering-writing`, `pr-refiner`, `strict-code-review`, `simplify` |
 | Review reusable code | Package, SDK, or public API review | `library-craft`, `validate-direction` |
@@ -30,9 +30,9 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`airtable-flow`](skills/airtable-flow/SKILL.md) | Advances Quiver Airtable tasks through a decision-gated lifecycle with automatic CLI state transitions. |
 | [`animation-vocabulary`](skills/animation-vocabulary/SKILL.md) | Names web animation and motion effects from plain-language descriptions. |
 | [`apple-design`](skills/apple-design/SKILL.md) | Applies Apple's interface and fluid-motion principles to web design. |
+| [`cli-craft`](skills/cli-craft/SKILL.md) | Builds command-line interfaces around explicit contracts and executable proof. |
 | [`code-review`](skills/code-review/SKILL.md) | Reviews a diff independently against repository standards and its originating spec. |
 | [`codebase-design`](skills/codebase-design/SKILL.md) | Provides the shared vocabulary and methods for designing deep modules. |
-| [`codex-session-finder`](skills/codex-session-finder/SKILL.md) | Finds local Codex sessions for review. |
 | [`copywriting`](skills/copywriting/SKILL.md) | Writes clear, conversion-focused marketing copy for web pages. |
 | [`delegate`](skills/delegate/SKILL.md) | Delegates one conversation-grounded PR to a separate Codex task. |
 | [`diagnosing-bugs`](skills/diagnosing-bugs/SKILL.md) | Runs the Matt Pocock diagnosis loop for hard bugs and performance regressions. |
@@ -43,6 +43,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`fast-forward`](skills/fast-forward/SKILL.md) | Skips obvious branches during grilling sessions. |
 | [`find-animation-opportunities`](skills/find-animation-opportunities/SKILL.md) | Finds UI seams where motion would add genuine value. |
 | [`fleet`](skills/fleet/SKILL.md) | Converges shared Linux coding nodes and agent profiles. |
+| [`free-disk-space`](skills/free-disk-space/SKILL.md) | Reclaims macOS disk space through safe cleanup and deliberate offloading. |
 | [`grill-me`](skills/grill-me/SKILL.md) | Interrogates a plan one decision at a time. |
 | [`grill-with-docs`](skills/grill-with-docs/SKILL.md) | Stress-tests a plan and writes only the artifact the user requested. |
 | [`grilling`](skills/grilling/SKILL.md) | Runs the shared grilling interview loop. |
@@ -53,7 +54,9 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`interface-craft`](skills/interface-craft/SKILL.md) | Guides high-craft interface design and animation implementation. |
 | [`library-craft`](skills/library-craft/SKILL.md) | Reviews reusable package shape and public API craft. |
 | [`people-skills`](skills/people-skills/SKILL.md) | Drafts relationship-preserving messages and interpersonal next actions. |
+| [`portal-preview-login`](skills/portal-preview-login/SKILL.md) | Authenticates Browser to Quiver Portal pull-request previews. |
 | [`pr-comment-sentinel`](skills/pr-comment-sentinel/SKILL.md) | Runs an exact-head PR review and repair heartbeat. |
+| [`pr-evidence`](skills/pr-evidence/SKILL.md) | Makes authored pull requests fast to review with visual comparisons, exact preview links, and downloadable artifacts. |
 | [`pr-refiner`](skills/pr-refiner/SKILL.md) | Reviews PR blockers and routes the next refinement step. |
 | [`prototype`](skills/prototype/SKILL.md) | Builds throwaway prototypes to answer design questions. |
 | [`research`](skills/research/SKILL.md) | Delegates source-backed research and saves the findings in the repo. |
@@ -72,6 +75,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`wayfinder`](skills/wayfinder/SKILL.md) | Charts large foggy efforts as a shared map of decision tickets. |
 | [`workflow`](skills/workflow/SKILL.md) | Coordinates autonomous work across owned implementation slices. |
 | [`worktree-cleanup`](skills/worktree-cleanup/SKILL.md) | Safely cleans current-repo worktrees, stale branches, remote workspaces, and disk-heavy artifacts. |
+| [`write-a-prompt`](skills/write-a-prompt/SKILL.md) | Writes compact, execution-ready task prompts and persistent agent instructions. |
 | [`write-a-skill`](skills/write-a-skill/SKILL.md) | Creates agent skills with proper structure and review checks. |
 | [`writing-great-skills`](skills/writing-great-skills/SKILL.md) | Provides Matt Pocock's reference for writing and editing predictable skills. |
 

@@ -10,6 +10,7 @@ Recommend focused comparison when:
 
 - the public surface is unclear or likely to break consumers
 - the package has runtime or framework adapters
+- a third-party dependency would shape public types, runtime support, bundling, replacement cost, or release posture
 - naming would define a long-lived mental model
 - compatibility shims are blocking a cleaner shape
 - tests need realistic fixtures or type/API snapshots
@@ -32,6 +33,7 @@ Pick comparable libraries that solve the same kind of contract problem:
 Ask subagents to compare one focused slice each. Useful slices:
 
 - public exports and package metadata
+- third-party dependency fit, public leakage, and bundle-versus-external strategy
 - source layout and internal boundaries
 - naming and option vocabulary
 - tests, fixtures, examples, and generated-output checks
@@ -61,6 +63,8 @@ Extract:
 - vocabulary users already expect
 - import paths that feel stable
 - what is public versus internal
+- which third-party concepts remain internal and which become caller-visible
+- how runtime dependencies are maintained, bundled or externalized, tested, and replaced
 - where runtime edges live
 - how adapters are named and grouped
 - how examples teach first use

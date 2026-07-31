@@ -16,7 +16,7 @@ Turn the current conversation's next coherent pull request into a separate task.
 /delegate <PR title> <host>
 ```
 
-Without a host, use the matching local project. With a host such as `h1` or `h2`, use the matching connected project on that host. Treat the title as a proposed PR title that the direction check may tighten.
+Without a host, use the matching local project. With a private SSH alias, use the matching connected project on that host. Treat the title as a proposed PR title that the direction check may tighten.
 
 ## Process
 

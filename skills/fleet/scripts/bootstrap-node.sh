@@ -3,7 +3,7 @@ set -euo pipefail
 
 phase="${1:-}"
 admin_user="${ADMIN_USER:-${SUDO_USER:-}}"
-agent_users="${AGENT_USERS:-maxi-main}"
+agent_users="${AGENT_USERS:-$admin_user}"
 workspace_group="${WORKSPACE_GROUP:-codex-workspace}"
 skills_repo_url="${SKILLS_REPO_URL:-https://github.com/onmax/skills.git}"
 expected_skills_sha="${EXPECTED_SKILLS_SHA:-}"
@@ -71,7 +71,7 @@ prepare() {
     fi
     usermod -aG "$workspace_group",docker "$user"
     install -d -o "$user" -g "$user" -m 0700 "/home/$user/.ssh"
-    if [ -s "/home/$admin_user/.ssh/authorized_keys" ]; then
+    if [ "$user" != "$admin_user" ] && [ -s "/home/$admin_user/.ssh/authorized_keys" ]; then
       install -o "$user" -g "$user" -m 0600 "/home/$admin_user/.ssh/authorized_keys" "/home/$user/.ssh/authorized_keys"
     fi
     grep -qxF 'umask 002' "/home/$user/.profile" || printf '\numask 002\n' >> "/home/$user/.profile"
