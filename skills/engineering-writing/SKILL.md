@@ -1,49 +1,26 @@
 ---
 name: engineering-writing
-description: Writes or reviews concise, evidence-backed issue reports, implementation requests, and pull request bodies. Use when investigation, product, or implementation context must become an actionable artifact for engineers, including visual proof when it helps.
+description: Turns verified engineering context into concise issue reports, implementation requests, and pull request bodies. Use when engineers need an actionable artifact that preserves the reasoning and evidence behind a problem, request, or completed change.
 ---
 
 # Engineering Writing
 
-Turn verified engineering evidence into the smallest durable artifact that lets the next reader act. Shape the artifact; do not redo the investigation, publish it, or mutate an external system unless the caller separately authorizes that work.
+Write the smallest artifact that preserves the engineering reasoning and lets the next reader act. Follow the destination's required fields and repository conventions; publishing or changing an external system requires separate authorization.
 
-## Choose the branch
+## Shape the artifact
 
-Choose by the reader's next job, then read only that reference:
+1. Identify the reader's next decision: diagnose a problem, implement an outcome, or review a completed change.
+2. Preserve the causal spine of the strongest verified explanation: what the system or user knew or needed, what happened or changed, and why those facts matter together. Keep distinctive wording that already makes the mechanism clear.
+3. Open with that outcome or contradiction. Add current behavior, scope, constraints, implementation detail, and headings only when they change the reader's decision.
+4. Separate confirmed facts from inference and remaining uncertainty. When the evidence proves a contradiction but not the correct behavior, ask the narrow investigation question or allow either a correction or an explanation of the constraint.
+5. Put decision-relevant values, links, code paths, and visual proof beside the claims they support. Restate the core evidence in text when a source is private, access-limited, or visual.
+6. Remove investigation chronology, dead ends, agent activity, raw command logs, generic boilerplate, and details that do not change diagnosis, implementation, review, risk, or acceptance.
+7. Verify every claim, identifier, link, and image against the source evidence.
 
-- Report an observed failure: [issue-report.md](references/issue-report.md)
-- Request a known change: [implementation-request.md](references/implementation-request.md)
-- Explain a completed change for review: [pull-request.md](references/pull-request.md)
+Write in flowing technical prose: direct, conversational, and confident. Keep connected reasoning in complete paragraphs so cause and consequence stay together. Use GitHub Markdown freely—headings, lists, tables, callouts, and code blocks—when it makes distinct evidence easier to understand, without forcing the artifact into a template.
 
-If the direction is still disputed, validate it before writing a request. If the cause is still unknown, report the evidence and uncertainty rather than inventing an explanation.
+For a pull request, make the changed behavior, its reason, the reviewer-relevant boundary, and the available proof clear. For a problem or request, state an observable completion result only when the evidence supports one; otherwise end at the unresolved decision instead of inventing acceptance criteria.
 
-## Workflow
+Use a screenshot only when the visual state carries evidence more quickly than prose. Keep the setup and observation complete in text, use descriptive alt text, and exclude credentials, customer data, private URLs, and unrelated personal information.
 
-1. **Name the reader and decision.** Identify who will read the artifact and what they need to decide or do next.
-2. **Assume shared context.** Write for a trusted team that already knows the product and repository. Follow required destination fields, but do not import open-source intake questions. Add environment, reproduction, routing, alternatives, or headings only when their absence would block action. Route security vulnerabilities through the destination's private disclosure process.
-3. **Inventory facts before prose.** Collect the observed or changed result, expected or requested result, why it matters, confirmed mechanism, evidence needed to trust the claim, source links, useful code paths, visuals, and remaining uncertainty. Label inference as inference.
-4. **Discard the transcript.** Preserve conclusions and proof, not the chronology of commands, hypotheses, dead ends, infrastructure counts, or agent activity that produced them.
-5. **Draft outcome first.** The opening should make the unexpected result, requested outcome, or completed change understandable without a heading. Add structure only when it helps the reader navigate distinct decisions.
-6. **Attach decision-relevant evidence.** Put links and visuals next to the claim they support. A code path belongs only when it shortens the route to the relevant seam. Restate the relevant conclusion from any private or access-limited source.
-7. **Cut until every sentence earns its place.** Keep a detail only when it changes diagnosis, implementation, review, risk, or acceptance. Preserve clear existing wording when reviewing an artifact.
-8. **Verify the artifact.** Check every identifier, claim, link, and image against the source evidence. Publish only wording the responsible engineer can understand and defend.
-
-## Visual evidence
-
-- Use screenshots only for load-bearing visual states that prose cannot establish as quickly. Never screenshot logs, code, commands, errors, or other output that should be searchable text.
-- Show before and after, or current and expected, when the comparison changes the decision.
-- Write alt text that states the relevant observation rather than saying only “screenshot.”
-- Keep the setup, observation, commands, errors, identifiers, and values complete in text even when they also appear in an image.
-- Use durable public image URLs for published artifacts. Let the caller's publishing workflow choose the approved upload mechanism.
-- Before attaching or uploading, remove credentials, tokens, customer data, private URLs, session details, and unrelated personal information. If safe redaction would weaken the proof, omit the image and describe the evidence in text.
-
-## Completion criterion
-
-The artifact is complete when its intended reader can answer:
-
-- What happened, is requested, or changed?
-- Why does it matter?
-- What evidence supports it, and what remains uncertain?
-- What action or observable result completes the work?
-
-It must contain no unsupported claim, broken evidence, sensitive information, investigation-log sediment, or boilerplate section that the destination did not require. A reader must not need access to a private link or an image to recover the core result.
+The artifact is complete when its reader can recover what happened, is requested, or changed; why it matters; what evidence supports it; what remains uncertain; and what decision or observable result comes next.
