@@ -1,6 +1,6 @@
 ---
 name: ui
-description: Root router for UI work that selects the smallest useful design, reference, implementation, or QA context. Use when the user mentions UI, ui-skills, docs.ui.sh, ui.sh, Mobbin, visual quality, spacing, color, compactness, layout, tables, selectors, buttons, responsiveness, or hierarchy.
+description: Routes UI design, implementation, and visual QA to the smallest useful local or external context. Use for layout, hierarchy, controls, responsiveness, visual polish, interaction craft, or Apple-platform UI.
 ---
 
 # UI
@@ -57,6 +57,8 @@ Use installed local skills only when they are the closest match:
 - `make-responsive`: breakpoint-specific repair
 - `better-icons`: icon search or replacement
 - `imagegen`: bitmap visuals or image edits
+- [interface-craft.md](references/interface-craft.md): interaction details, hierarchy, density, forms, and implementation craft
+- [apple-design.md](references/apple-design.md): Apple-platform behavior, navigation, materials, typography, accessibility, and native conventions
 
 ## Routing Hints
 
@@ -67,11 +69,11 @@ Use installed local skills only when they are the closest match:
 - dark mode: project local first, then choose the current dark-mode context from `uidotsh://ui` when needed.
 - Tailwind cleanup: project local first, then choose the current Tailwind-cleanup context from `uidotsh://ui` when needed.
 - inspiration or examples: Mobbin or ui-skills, then summarize transferable patterns.
-- motion: use existing motion system first; add ui-skills motion context for non-trivial animation.
+- motion: preserve the existing motion system for incidental changes; when animation is the task, ask the user to invoke `animation` and use that router.
 
 ## Research And Clarifying
 
-Use `grill-me` only when product intent, audience, workflow priority, or interaction model would change the UI route.
+Use `grill-with-docs` only when product intent, audience, workflow priority, or interaction model would change the UI route and the user wants to resolve it through an interview.
 
 Use `evidence-research` when design-system precedent, current ui-skills examples, Mobbin patterns, or ecosystem norms would change the decision.
 

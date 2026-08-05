@@ -1,5 +1,6 @@
 ---
 name: portal-preview-login
+disable-model-invocation: true
 description: Authenticates Browser to a Quiver Portal pull-request preview and opens the requested route. Use when a `pr<number>.demo.quiver.dk` preview displays the Portal login page.
 ---
 

@@ -14,11 +14,11 @@ These skills are meant to compose into a lightweight delivery loop:
 
 | Phase | Artifact | Main skills |
 | --- | --- | --- |
-| Clarify direction | Shared understanding or a requested project artifact | `grill-me`, `grill-with-docs`, `evidence-research`, `handoff` |
-| Capture requested project memory | A user-requested glossary, context map, or ADR | `domain-modeling`, `validate-direction` |
-| Write and refine engineering work | Actionable issues, requests, and focused PR review | `engineering-writing`, `pr-refiner`, `strict-code-review`, `simplify` |
+| Clarify direction | Shared understanding or a requested project artifact | `grill-with-docs`, `evidence-research`, `validate-direction`, `handoff` |
+| Design the codebase | A coherent domain, module interface, or architecture | `codebase-design`, `library-craft` |
+| Write and refine engineering work | Actionable requests and focused review | `engineering-writing`, `code-review`, `pull-request` |
 | Review reusable code | Package, SDK, or public API review | `library-craft`, `validate-direction` |
-| Clean workspaces | Worktree and build artifact cleanup | `worktree-cleanup` |
+| Clean workspaces | Worktree, branch, cache, and disk cleanup | `cleanup` |
 
 `validate-direction` is not a phase. Use it whenever a direction is about to harden into docs, issues, code, PR strategy, or merge action.
 
@@ -28,63 +28,39 @@ These skills are meant to compose into a lightweight delivery loop:
 | --- | --- |
 | [`airtable-cli`](skills/airtable-cli/SKILL.md) | Uses Airtable's official CLI to discover and run live record, comment, table, and field operations. |
 | [`airtable-flow`](skills/airtable-flow/SKILL.md) | Advances Quiver Airtable tasks through a decision-gated lifecycle with automatic CLI state transitions. |
-| [`animation-vocabulary`](skills/animation-vocabulary/SKILL.md) | Names web animation and motion effects from plain-language descriptions. |
-| [`apple-design`](skills/apple-design/SKILL.md) | Applies Apple's interface and fluid-motion principles to web design. |
+| [`agent-writing`](skills/agent-writing/SKILL.md) | Writes compact prompts and progressively disclosed skills. |
+| [`animation`](skills/animation/SKILL.md) | Designs, finds, audits, implements, and reviews interface animation. |
 | [`cli-craft`](skills/cli-craft/SKILL.md) | Builds command-line interfaces around explicit contracts and executable proof. |
-| [`code-review`](skills/code-review/SKILL.md) | Reviews a diff independently against repository standards and its originating spec. |
-| [`codebase-design`](skills/codebase-design/SKILL.md) | Provides the shared vocabulary and methods for designing deep modules. |
+| [`cleanup`](skills/cleanup/SKILL.md) | Safely cleans worktrees, branches, build artifacts, caches, and disk usage. |
+| [`code-review`](skills/code-review/SKILL.md) | Reviews a diff for behavior, scope, structure, standards, and proof. |
+| [`codebase-design`](skills/codebase-design/SKILL.md) | Designs deep modules, domain models, ownership, and test seams. |
 | [`copywriting`](skills/copywriting/SKILL.md) | Writes clear, conversion-focused marketing copy for web pages. |
 | [`delegate`](skills/delegate/SKILL.md) | Delegates one conversation-grounded PR to a separate Codex task. |
 | [`diagnosing-bugs`](skills/diagnosing-bugs/SKILL.md) | Runs the Matt Pocock diagnosis loop for hard bugs and performance regressions. |
-| [`domain-modeling`](skills/domain-modeling/SKILL.md) | Builds `.agents` domain language and ADRs. |
-| [`emil-kowalski`](skills/emil-kowalski/SKILL.md) | Routes design engineering and animation work through Emil Kowalski's skills. |
 | [`engineering-writing`](skills/engineering-writing/SKILL.md) | Turns verified evidence into actionable issue reports, implementation requests, and PR bodies. |
 | [`evidence-research`](skills/evidence-research/SKILL.md) | Researches internal or external evidence for a decision. |
-| [`fast-forward`](skills/fast-forward/SKILL.md) | Skips obvious branches during grilling sessions. |
-| [`find-animation-opportunities`](skills/find-animation-opportunities/SKILL.md) | Finds UI seams where motion would add genuine value. |
 | [`fleet`](skills/fleet/SKILL.md) | Converges shared Linux coding nodes and agent profiles. |
-| [`free-disk-space`](skills/free-disk-space/SKILL.md) | Reclaims macOS disk space through safe cleanup and deliberate offloading. |
-| [`grill-me`](skills/grill-me/SKILL.md) | Interrogates a plan one decision at a time. |
 | [`grill-with-docs`](skills/grill-with-docs/SKILL.md) | Stress-tests a plan and writes only the artifact the user requested. |
-| [`grilling`](skills/grilling/SKILL.md) | Runs the shared grilling interview loop. |
 | [`handoff`](skills/handoff/SKILL.md) | Captures continuation notes for another agent or session. |
-| [`implement`](skills/implement/SKILL.md) | Implements work from a spec or tickets, then reviews the result. |
-| [`improve-animations`](skills/improve-animations/SKILL.md) | Audits a codebase's motion and writes prioritized implementation plans. |
-| [`improve-codebase-architecture`](skills/improve-codebase-architecture/SKILL.md) | Finds and explores deepening opportunities in active code. |
-| [`interface-craft`](skills/interface-craft/SKILL.md) | Guides high-craft interface design and animation implementation. |
 | [`library-craft`](skills/library-craft/SKILL.md) | Reviews reusable package shape and public API craft. |
 | [`people-skills`](skills/people-skills/SKILL.md) | Drafts relationship-preserving messages and interpersonal next actions. |
 | [`portal-preview-login`](skills/portal-preview-login/SKILL.md) | Authenticates Browser to Quiver Portal pull-request previews. |
-| [`pr-comment-sentinel`](skills/pr-comment-sentinel/SKILL.md) | Runs an exact-head PR review and repair heartbeat. |
-| [`pr-evidence`](skills/pr-evidence/SKILL.md) | Makes authored pull requests fast to review with visual comparisons, exact preview links, and downloadable artifacts. |
-| [`pr-refiner`](skills/pr-refiner/SKILL.md) | Reviews PR blockers and routes the next refinement step. |
+| [`pull-request`](skills/pull-request/SKILL.md) | Reviews contribution fit and converges one existing PR toward readiness. |
 | [`prototype`](skills/prototype/SKILL.md) | Builds throwaway prototypes to answer design questions. |
-| [`research`](skills/research/SKILL.md) | Delegates source-backed research and saves the findings in the repo. |
-| [`resolving-merge-conflicts`](skills/resolving-merge-conflicts/SKILL.md) | Resolves merge and rebase conflicts from the intent of both sides. |
-| [`review-animations`](skills/review-animations/SKILL.md) | Reviews animation and motion code against Emil Kowalski's craft standards. |
-| [`setup-matt-pocock-skills`](skills/setup-matt-pocock-skills/SKILL.md) | Configures tracker, triage labels, and domain-doc layout for Matt-style engineering skills. |
-| [`simplify`](skills/simplify/SKILL.md) | Finds the smallest useful simplification for a PR or scope. |
-| [`strict-code-review`](skills/strict-code-review/SKILL.md) | Runs a strict maintainability review for structural quality and code-judo simplifications. |
 | [`teach`](skills/teach/SKILL.md) | Teaches a skill or concept through a stateful teaching workspace. |
-| [`to-spec`](skills/to-spec/SKILL.md) | Turns the current conversation into a tracker-backed spec. |
-| [`to-tickets`](skills/to-tickets/SKILL.md) | Breaks a plan or spec into tracer-bullet tickets with blocking edges. |
 | [`ui`](skills/ui/SKILL.md) | Routes UI work to the smallest useful design/reference workflow. |
 | [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
 | [`vitehub-drop`](skills/vitehub-drop/SKILL.md) | Uploads local images to permanent public Drop URLs for GitHub content. |
 | [`vitehub-projects`](skills/vitehub-projects/SKILL.md) | Resolves ViteHub project aliases to local repository roots. |
-| [`wayfinder`](skills/wayfinder/SKILL.md) | Charts large foggy efforts as a shared map of decision tickets. |
-| [`workflow`](skills/workflow/SKILL.md) | Coordinates autonomous work across owned implementation slices. |
-| [`worktree-cleanup`](skills/worktree-cleanup/SKILL.md) | Safely cleans current-repo worktrees, stale branches, remote workspaces, and disk-heavy artifacts. |
-| [`write-a-prompt`](skills/write-a-prompt/SKILL.md) | Writes compact, execution-ready task prompts and persistent agent instructions. |
-| [`write-a-skill`](skills/write-a-skill/SKILL.md) | Creates agent skills with proper structure and review checks. |
+| [`writing-documentation`](skills/writing-documentation/SKILL.md) | Writes developer documentation around the reader's goal with concrete technical English and verified examples. |
 | [`writing-great-skills`](skills/writing-great-skills/SKILL.md) | Provides Matt Pocock's reference for writing and editing predictable skills. |
 
 ## Manual cleanup
 
-Use `worktree-cleanup` from the repo you want to clean:
+Use `cleanup` from the repo you want to clean:
 
 ```text
-Use worktree-cleanup here. Clean this repo locally, then clean the shared VPS workspace if relevant. Preserve dirty, untracked, or unique local work and report it first.
+Use cleanup here. Clean this repo locally, then clean the shared VPS workspace if relevant. Preserve dirty, untracked, or unique local work and report it first.
 ```
 
 The skill defaults to the current session repository for manual cleanup. Daily automation can broaden the scope to common local roots and `/home/workspace` on the VPS.

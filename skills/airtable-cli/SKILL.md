@@ -1,5 +1,6 @@
 ---
 name: airtable-cli
+disable-model-invocation: true
 description: Lists bases, reads and writes records, manages tables and fields, filters and searches data in Airtable via the `airtable-mcp` CLI. Use when the task involves Airtable data or the user mentions airtable-mcp, bases, tables, records, or fields.
 license: MIT
 metadata:

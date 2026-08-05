@@ -1,5 +1,6 @@
 ---
 name: fleet
+disable-model-invocation: true
 description: Converges Linux agent machines into private shared coding nodes and balances bounded agent work across them. Use when bootstrapping or reconciling a VPS, Tailscale access, Docker or Portainer, Codex and GitHub auth profiles, shared workspaces, scheduled jobs, machine cleanup, or distributing coding agents between nodes.
 ---
 
@@ -7,7 +8,7 @@ description: Converges Linux agent machines into private shared coding nodes and
 
 Fleet keeps Linux agent nodes boring: separate auth profiles, shared files, `.agents/skills` only, tailnet access, minimal scheduled jobs, and minimal global CLIs.
 
-Use `worktree-cleanup` for repository cleanup and `write-a-skill` for skill edits. Keep host inventory in private operator state; public skills contain roles and checks, not addresses, auth URLs, or credentials.
+Use `cleanup` for repository cleanup and `agent-writing` for skill edits. Keep host inventory in private operator state; public skills contain roles and checks, not addresses, auth URLs, or credentials.
 
 ## Branches
 

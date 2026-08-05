@@ -56,6 +56,6 @@ For every `break`, include what breaks, why it is worth it, the migration path, 
 - Use a dependency directly while localized. Add an adapter only when it protects a stable public or core contract from a volatile API, normalizes multiple implementations, or contains a real runtime boundary.
 - Comments explain why; they do not narrate what the code already says.
 - Do not invent a new taxonomy when the package already has a clear local pattern.
-- If the issue is really module depth, seam design, or locality, hand off to `improve-codebase-architecture`.
+- If the issue is really module depth, seam design, or locality, hand off to `codebase-design`.
 - If naming changes affect project language, say so and suggest `grill-with-docs`; do not update project context by default.
 - Do not publish comments, issues, releases, or PR notes without explicit user consent.

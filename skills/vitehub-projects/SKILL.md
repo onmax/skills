@@ -1,5 +1,6 @@
 ---
 name: vitehub-projects
+disable-model-invocation: true
 description: Routes ViteHub projects to their local project roots and GitHub coordinates when available. Use when the user mentions a ViteHub project, Quiver Agents, Quiver Babysitter, ViteHub Babysitter, ViteHub Calories, ViteHub Chat, ViteHub itself, Nuxt Agent, Bitacora Agent, ViteHub Brief, or ViteHub Drop.
 ---
 
