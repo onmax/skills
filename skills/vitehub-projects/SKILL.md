@@ -20,12 +20,14 @@ Resolve the project before inspecting or changing its files. This skill owns pro
 | `~/quiver/chat` | `gh:quiverdk/agents` |
 | `~/quiver/portal` | `gh:quiverdk/portal` |
 | `~/quiver/review` | `gh:quiverdk/janos` |
+| `~/quiver/wiki` | `gh:cloudflare/cloudflare-os-starter` |
 | `~/quiver/wiki-2` | Local only |
 | `~/vitehub/babysitter` | `gh:vite-hub/babysitter` |
 | `~/vitehub/brief` | `gh:vite-hub/brief` |
 | `~/vitehub/calories` | `gh:onmax/calories` |
 | `~/vitehub/chat` | `gh:vite-hub/chat-template` |
 | `~/vitehub/drop` | `gh:vite-hub/drop` |
+| `~/vitehub/harness-demo` | `gh:vite-hub/harness-demo` |
 | `~/vitehub/nuxt-agent` | `gh:vite-hub/nuxt-agent` |
 | `~/vitehub/vitehub` | `gh:vite-hub/vitehub` |
 
