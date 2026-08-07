@@ -1,7 +1,7 @@
 ---
 name: vitehub-projects
 disable-model-invocation: true
-description: Routes ViteHub projects to their local project roots and GitHub coordinates when available. Use when the user mentions a ViteHub project, Quiver Agents, Quiver Babysitter, ViteHub Babysitter, ViteHub Calories, ViteHub Chat, ViteHub itself, Nuxt Agent, Bitacora Agent, ViteHub Brief, or ViteHub Drop.
+description: Routes ViteHub projects and consumers to their local project roots and GitHub coordinates when available. Use when the user mentions ViteHub itself, a ViteHub template or app, Formula 100, or a Quiver Agent, Airtable, Babysitter, Chat, Portal, Review, or Wiki project.
 ---
 
 # ViteHub Projects
@@ -12,16 +12,22 @@ Resolve the project before inspecting or changing its files. This skill owns pro
 
 | Project root | GitHub repository |
 | --- | --- |
-| `~/quiver/agents` | `gh:quiverdk/agents` |
-| `~/quiver/babysitter` | `gh:onmax/quiver-babysitter` |
-| `~/vitehub/babysitter` | `gh:vite-hub/babysitter` |
-| `~/vitehub/calories` | Local only |
-| `~/vitehub/chat` | `gh:vite-hub/chat-template` |
-| `~/vitehub/vitehub` | `gh:vite-hub/vitehub` |
-| `~/vitehub/nuxt-agent` | `gh:vite-hub/nuxt-agent` |
 | `~/onmax/bitacora-agent` | `gh:onmax/bitacora-agent` |
+| `~/onmax/formula-100` | `gh:onmax/formula-100-next` |
+| `~/quiver/agents` | `gh:quiverdk/agents` |
+| `~/quiver/airtable` | `gh:onmax/quiver-airtable` |
+| `~/quiver/babysitter` | `gh:onmax/quiver-babysitter` |
+| `~/quiver/chat` | `gh:quiverdk/agents` |
+| `~/quiver/portal` | `gh:quiverdk/portal` |
+| `~/quiver/review` | `gh:quiverdk/janos` |
+| `~/quiver/wiki-2` | Local only |
+| `~/vitehub/babysitter` | `gh:vite-hub/babysitter` |
 | `~/vitehub/brief` | `gh:vite-hub/brief` |
+| `~/vitehub/calories` | `gh:onmax/calories` |
+| `~/vitehub/chat` | `gh:vite-hub/chat-template` |
 | `~/vitehub/drop` | `gh:vite-hub/drop` |
+| `~/vitehub/nuxt-agent` | `gh:vite-hub/nuxt-agent` |
+| `~/vitehub/vitehub` | `gh:vite-hub/vitehub` |
 
 ## Resolution
 
