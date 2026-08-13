@@ -39,6 +39,7 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`diagnosing-bugs`](skills/diagnosing-bugs/SKILL.md) | Runs the Matt Pocock diagnosis loop for hard bugs and performance regressions. |
 | [`engineering-writing`](skills/engineering-writing/SKILL.md) | Turns verified evidence into actionable issue reports, implementation requests, and PR bodies. |
 | [`evidence-research`](skills/evidence-research/SKILL.md) | Researches internal or external evidence for a decision. |
+| [`file-a-pr`](skills/file-a-pr/SKILL.md) | Files one verified, concise pull request from a completed change. |
 | [`fleet`](skills/fleet/SKILL.md) | Converges shared Linux coding nodes and agent profiles. |
 | [`grill-with-docs`](skills/grill-with-docs/SKILL.md) | Stress-tests a plan and writes only the artifact the user requested. |
 | [`handoff`](skills/handoff/SKILL.md) | Captures continuation notes for another agent or session. |

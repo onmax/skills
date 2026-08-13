@@ -1,0 +1,4 @@
+interface:
+  display_name: "File a PR"
+  short_description: "Turn finished changes into a review-ready PR"
+  default_prompt: "Use $file-a-pr to turn the current completed change into a verified pull request."
