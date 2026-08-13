@@ -21,6 +21,8 @@ Find the originating request from the user, PR, issue, spec, or commit history. 
 4. **Standards:** repository conventions that tooling does not already enforce.
 5. **Proof:** whether tests and runtime evidence cover the changed behavior, including failure paths.
 
+When a diff crosses configuration forms, generated/runtime/consumer representations, providers, frameworks, output modes, or resource lifecycles, load [contract-coverage.md](references/contract-coverage.md) and report every uncovered affected cell.
+
 For `strict` review, load [strict.md](references/strict.md) and apply its deeper invariants and maintainability pass. Treat heuristics as judgment calls; repository rules and demonstrated behavior win.
 
 ## Method
