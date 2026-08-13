@@ -47,8 +47,6 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`people-skills`](skills/people-skills/SKILL.md) | Drafts relationship-preserving messages and interpersonal next actions. |
 | [`portal-preview-login`](skills/portal-preview-login/SKILL.md) | Authenticates Browser to Quiver Portal pull-request previews. |
 | [`pull-request`](skills/pull-request/SKILL.md) | Reviews contribution fit and converges one existing PR toward readiness. |
-| [`prototype`](skills/prototype/SKILL.md) | Builds throwaway prototypes to answer design questions. |
-| [`teach`](skills/teach/SKILL.md) | Teaches a skill or concept through a stateful teaching workspace. |
 | [`ui`](skills/ui/SKILL.md) | Routes UI work to the smallest useful design/reference workflow. |
 | [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
 | [`vitehub-drop`](skills/vitehub-drop/SKILL.md) | Uploads local images to permanent public Drop URLs for GitHub content. |
