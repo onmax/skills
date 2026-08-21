@@ -9,6 +9,7 @@ skills_repo_url="${SKILLS_REPO_URL:-https://github.com/onmax/skills.git}"
 expected_skills_sha="${EXPECTED_SKILLS_SHA:-}"
 lock_public_ssh="${LOCK_PUBLIC_SSH:-0}"
 portainer_image="${PORTAINER_IMAGE:-portainer/portainer-ce:sts}"
+workspace_root="/home/workspace"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/../../.." && pwd)"
 
@@ -24,6 +25,29 @@ require_root() {
   id "$admin_user" >/dev/null 2>&1 || fail "missing admin user: $admin_user"
 }
 
+home_overlaps_workspace() {
+  local home_path
+  home_path="$(readlink -m "$1")"
+  [ "$home_path" = "$workspace_root" ] || [[ "$home_path" = "$workspace_root"/* ]]
+}
+
+validate_admin_home() {
+  local admin_home
+  admin_home="$(getent passwd "$admin_user" | cut -d: -f6)"
+  [ -n "$admin_home" ] || fail "missing home for admin user: $admin_user"
+  home_overlaps_workspace "$admin_home" && \
+    fail "admin home overlaps shared workspace: $admin_user $admin_home"
+}
+
+self_test() {
+  if home_overlaps_workspace /home/workspace-operator; then
+    fail "separate operator home classified as shared workspace"
+  fi
+  home_overlaps_workspace /home/workspace || fail "shared workspace overlap missed"
+  home_overlaps_workspace /home/workspace/onmax || fail "shared workspace descendant overlap missed"
+  echo "bootstrap path checks passed"
+}
+
 install_keyring_repo() {
   local key_url="$1"
   local keyring="$2"
@@ -37,6 +61,9 @@ install_keyring_repo() {
 }
 
 prepare() {
+  local admin_home
+  admin_home="$(getent passwd "$admin_user" | cut -d: -f6)"
+
   . /etc/os-release
   [ "${ID:-}" = ubuntu ] || fail "bootstrap currently supports Ubuntu only"
 
@@ -71,8 +98,8 @@ prepare() {
     fi
     usermod -aG "$workspace_group",docker "$user"
     install -d -o "$user" -g "$user" -m 0700 "/home/$user/.ssh"
-    if [ "$user" != "$admin_user" ] && [ -s "/home/$admin_user/.ssh/authorized_keys" ]; then
-      install -o "$user" -g "$user" -m 0600 "/home/$admin_user/.ssh/authorized_keys" "/home/$user/.ssh/authorized_keys"
+    if [ "$user" != "$admin_user" ] && [ -s "$admin_home/.ssh/authorized_keys" ]; then
+      install -o "$user" -g "$user" -m 0600 "$admin_home/.ssh/authorized_keys" "/home/$user/.ssh/authorized_keys"
     fi
     grep -qxF 'umask 002' "/home/$user/.profile" || printf '\numask 002\n' >> "/home/$user/.profile"
   done
@@ -134,7 +161,13 @@ finish() {
   echo "finish complete"
 }
 
+if [ "$phase" = self-test ]; then
+  self_test
+  exit
+fi
+
 require_root
+validate_admin_home
 case "$phase" in
   prepare) prepare ;;
   finish) finish ;;

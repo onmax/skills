@@ -17,11 +17,14 @@ lsblk -o NAME,SIZE,TYPE,MOUNTPOINTS
 
 Stop and ask the user when the plan label or any resource differs. Successful SSH access proves only that the node is reachable, not that the intended machine was purchased.
 
+Keep the operator home separate from the shared workspace. `/home/workspace` is group-writable source storage, not a user home. A `workspace` operator uses `/home/workspace-operator`; install the operator key there before running bootstrap.
+
 Run the deterministic bootstrap from a temporary public checkout after the provider image accepts the operator's SSH key:
 
 ```sh
 git clone --depth=1 https://github.com/onmax/skills.git /tmp/onmax-skills
 cd /tmp/onmax-skills
+bash skills/fleet/scripts/bootstrap-node.sh self-test
 sudo ADMIN_USER="$USER" AGENT_USERS="maxi" skills/fleet/scripts/bootstrap-node.sh prepare
 ```
 

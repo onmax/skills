@@ -21,6 +21,7 @@ Use `cleanup` for repository cleanup and `agent-writing` for skill edits. Keep h
 - One admin user owns machine maintenance; agent users own provider auth.
 - Agent users write repos and worktrees under one shared workspace.
 - Agent user homes keep only auth, shell config, caches, and profile state.
+- Operator homes stay outside the group-writable shared workspace; SSH key paths come from the account database.
 - Skills install into `~/.agents/skills`; do not maintain duplicate `.codex/skills` skill trees.
 - Tailscale carries SSH and web access. Portainer listens on loopback and reaches the user through Tailscale Serve.
 - Persistent auth is created interactively inside each profile and verified by status or file presence without reading its contents.

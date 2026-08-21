@@ -19,8 +19,16 @@ if ! getent group "$workspace_group" >/dev/null; then
 fi
 
 if ! id workspace >/dev/null 2>&1; then
-  sudo useradd -m -s /bin/bash -g "$workspace_group" workspace
+  sudo useradd -m -d /home/workspace-operator -s /bin/bash -g "$workspace_group" workspace
 fi
+
+workspace_home="$(getent passwd workspace | cut -d: -f6)"
+case "$(readlink -m "$workspace_home")" in
+  "$workspace_root"|"$workspace_root"/*)
+    echo "workspace owner home overlaps shared workspace: $workspace_home" >&2
+    exit 1
+    ;;
+esac
 
 for user in workspace $skill_users; do
   if ! id "$user" >/dev/null 2>&1; then
