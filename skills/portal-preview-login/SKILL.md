@@ -1,7 +1,7 @@
 ---
 name: portal-preview-login
 disable-model-invocation: true
-description: Authenticates Browser to a Quiver Portal pull-request preview and opens the requested route. Use when a `pr<number>.demo.quiver.dk` preview displays the Portal login page.
+description: Authenticates Browser to a Quiver Portal pull-request preview and opens the requested route. Use when a `pr<number>-demo.preview.quiver.dk` preview displays the Portal login page.
 ---
 
 # Portal Preview Login
@@ -10,7 +10,7 @@ Sign into one Portal PR preview through its normal login form. Browser owns navi
 
 ## Steps
 
-1. Use Browser to open `https://pr<number>.demo.quiver.dk<path>`, preserving the requested same-origin path or using `/` when none was requested. If the authenticated app is already visible, stop without resolving credentials. If Browser is unavailable, report the blocker instead of substituting standalone browser automation.
+1. Use Browser to open `https://pr<number>-demo.preview.quiver.dk<path>`, preserving the requested same-origin path or using `/` when none was requested. If the authenticated app is already visible, stop without resolving credentials. If Browser is unavailable, report the blocker instead of substituting standalone browser automation.
 
 2. If the login form appears, run `scripts/preview-login.mjs <pr-number> <path>` from this skill's installed directory with a short yield. Keep the process alive and retain its metadata-only JSON containing `url` and `fifoPath`. If sandbox networking blocks `kubectl`, request the normal command escalation.
 

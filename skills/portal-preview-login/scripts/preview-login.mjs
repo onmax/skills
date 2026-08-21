@@ -18,7 +18,7 @@ function previewUrl(value, path = '/') {
   if (typeof path !== 'string' || !path.startsWith('/'))
     throw new TypeError('Preview path must start with /')
 
-  const origin = new URL(`https://pr${prNumber}.demo.quiver.dk`)
+  const origin = new URL(`https://pr${prNumber}-demo.preview.quiver.dk`)
   const target = new URL(path, origin)
   if (target.origin !== origin.origin)
     throw new TypeError('Preview path must stay on the PR preview origin')
@@ -105,7 +105,7 @@ async function handOffLogin(prNumber, path) {
 }
 
 function selfCheck() {
-  if (previewUrl(42, '/planning-events') !== 'https://pr42.demo.quiver.dk/planning-events')
+  if (previewUrl(42, '/planning-events') !== 'https://pr42-demo.preview.quiver.dk/planning-events')
     throw new Error('Preview URL check failed')
 
   let rejectedUnsafePath = false

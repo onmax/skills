@@ -42,11 +42,14 @@ These skills are meant to compose into a lightweight delivery loop:
 | [`fleet`](skills/fleet/SKILL.md) | Converges shared Linux coding nodes and agent profiles. |
 | [`grill-with-docs`](skills/grill-with-docs/SKILL.md) | Stress-tests a plan and writes only the artifact the user requested. |
 | [`handoff`](skills/handoff/SKILL.md) | Captures continuation notes for another agent or session. |
+| [`html-communication`](skills/html-communication/SKILL.md) | Creates readable HTML documents and publishes them with Postplan when requested. |
 | [`library-craft`](skills/library-craft/SKILL.md) | Reviews reusable package shape and public API craft. |
 | [`people-skills`](skills/people-skills/SKILL.md) | Drafts relationship-preserving messages and interpersonal next actions. |
 | [`portal-preview-login`](skills/portal-preview-login/SKILL.md) | Authenticates Browser to Quiver Portal pull-request previews. |
+| [`postplan-read`](skills/postplan-read/SKILL.md) | Reads a supplied Postplan document through its raw HTML endpoint. |
 | [`pull-request`](skills/pull-request/SKILL.md) | Reviews contribution fit and converges one existing PR toward readiness. |
 | [`ui`](skills/ui/SKILL.md) | Routes UI work to the smallest useful design/reference workflow. |
+| [`unslop`](skills/unslop/SKILL.md) | Removes AI writing patterns while preserving meaning and adding a human voice. |
 | [`validate-direction`](skills/validate-direction/SKILL.md) | Challenges a direction before it becomes a plan or doc. |
 | [`vitehub-drop`](skills/vitehub-drop/SKILL.md) | Uploads local images to permanent public Drop URLs for GitHub content. |
 | [`vitehub-projects`](skills/vitehub-projects/SKILL.md) | Resolves ViteHub project aliases to local repository roots. |
