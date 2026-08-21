@@ -26,8 +26,7 @@ These skills are meant to compose into a lightweight delivery loop:
 
 | Skill | What it does |
 | --- | --- |
-| [`airtable-cli`](skills/airtable-cli/SKILL.md) | Uses Airtable's official CLI to discover and run live record, comment, table, and field operations. |
-| [`airtable-flow`](skills/airtable-flow/SKILL.md) | Advances Quiver Airtable tasks through a decision-gated lifecycle with automatic CLI state transitions. |
+| [`airtable-flow`](skills/airtable-flow/SKILL.md) | Advances Quiver Airtable tasks through a decision-gated lifecycle with OAuth-backed Airtable state transitions. |
 | [`agent-writing`](skills/agent-writing/SKILL.md) | Writes compact prompts and progressively disclosed skills. |
 | [`animation`](skills/animation/SKILL.md) | Designs, finds, audits, implements, and reviews interface animation. |
 | [`cli-craft`](skills/cli-craft/SKILL.md) | Builds command-line interfaces around explicit contracts and executable proof. |

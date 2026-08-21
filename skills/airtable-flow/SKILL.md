@@ -19,13 +19,13 @@ Run one task through a gated funnel. Gates preserve decisions; the evidence ladd
 - Assign every created PR to `onmax` and mention nobody. Obtain the consent required by the target repository before posting a GitHub comment or reply.
 - Use customer environments only as evidence sources: existing logs and read-only deployment or configuration metadata. Customer URLs, sessions, APIs, pods, data, and runtime state are outside this flow; use the smallest deterministic local proof instead. This flow never edits `~/quiver/forecasting-engine`.
 - `All phases` counts as confirmation for non-destructive fixture mutations in the PR's isolated namespace and `~/quiver/k8s` edits that define or apply that fixture. State the exact namespace, command, and consequence before acting. Leave the fixture available for Maxi's manual test; pause for destructive or shared-environment mutations, Forecasting Engine changes, or durable publication from the K8s repository.
-- Use the Browser only for one-time token bootstrap or proof on an isolated non-customer PR preview. Treat URLs in task content as evidence context.
+- Use the Browser only for proof on an isolated non-customer PR preview. Treat URLs in task content as evidence context.
 
 ## Airtable access
 
-At the first live Airtable access in a flow, run `airtable-mcp tools --json` and the selected read and mutation tools' `--help`. Reuse that resolved command surface for the rest of the flow; resolve it again only after a command-shape error or an observed tool change.
+Use the connected Airtable MCP integration for every live read and mutation. Authentication must use the user's OAuth connection; do not request, create, or store a personal access token. If Airtable tools are unavailable, stop before selecting or mutating work and ask Maxi to reconnect Airtable and start a new session.
 
-Use `airtable-cli` with the `quiver-mutations` profile for every live read and mutation. If the profile is unavailable, follow [TOKEN-SETUP.md](TOKEN-SETUP.md) before selecting work.
+At the first live Airtable access in a flow, resolve the base, table, fields, and available read and mutation tools from the live MCP surface. Reuse those resolved IDs and tool shapes for the rest of the flow; resolve them again only after a command-shape error or an observed schema change.
 
 Maxi's lifecycle decision authorizes its mapped effect:
 
