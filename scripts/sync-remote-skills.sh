@@ -4,7 +4,7 @@ set -euo pipefail
 workspace_root="/home/workspace"
 skills_repo="$workspace_root/onmax/skills"
 repo_url="${SKILLS_REPO_URL:-https://github.com/onmax/skills.git}"
-skill_users="${SKILL_USERS:-maxi-main maxi-pipoyu maxi-onmax}"
+skill_users="${SKILL_USERS:-${SUDO_USER:-$(id -un)}}"
 workspace_group="${WORKSPACE_GROUP:-codex-workspace}"
 skill_target_dir=".agents/skills"
 expected_sha="${EXPECTED_SKILLS_SHA:-}"
