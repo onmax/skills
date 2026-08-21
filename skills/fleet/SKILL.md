@@ -30,7 +30,7 @@ Use `cleanup` for repository cleanup and `agent-writing` for skill edits. Keep h
 - Scheduled jobs are exceptional. Keep OS maintenance timers; remove stale app, sync, export, and cleanup crons.
 - Global CLIs are limited to machine primitives and tools that cannot reasonably be project-local.
 - Claude Code profiles carry the baseline `~/.claude/settings.json` from [REFERENCE.md](REFERENCE.md): interactive/remote tools denied, bundled skills/workflows/remote control/connectors/artifact disabled.
-- Private inventory assigns each node a role, a maximum agent count, and a memory reserve. Public instructions use `coordinator` and `worker`, not host names.
+- Private inventory at `~/.config/fleet/inventory` maps SSH aliases to roles, owned service or project scopes, capacity, and memory reserve. Public instructions use `coordinator` and `worker`, not host names.
 - One coordinator owns discovery and assignment and fills its local agent slots first. Workers execute only overflow jobs in separate checkouts and return a commit plus verification; they do not share a live worktree.
 
 ## Node Workflow
@@ -50,7 +50,7 @@ Use this workflow for Bootstrap and Reconcile. Balance uses Load Sharing after t
 
 Use Balance only after every participating node passes Reconcile.
 
-1. Read the private role and capacity inventory, then sample active agent count, available memory, CPU pressure, and disk pressure on the coordinator and eligible workers. A node has capacity only when it is below its agent limit and above its memory reserve.
+1. Read `~/.config/fleet/inventory`, resolve the requested service or project to its owning node, then sample active agent count, available memory, CPU pressure, and disk pressure on the coordinator and eligible workers. A node has capacity only when it is below its agent limit and above its memory reserve.
 2. Fill the coordinator's configured local agent slots first. When independent jobs remain, delegate them through the existing direct SSH or T3 path to workers with free slots and enough memory reserve. If no worker is eligible, wait; do not oversubscribe either host.
 3. Send only the repository, exact base or head ref, task boundary, allowed mutations, and required verification. The worker creates its own checkout or worktree and returns the resulting commit, terminal outcome, and verification evidence.
 4. Never let two nodes mutate the same branch or worktree. Do not copy provider auth between hosts, migrate a running agent, or run the same watcher on multiple nodes unless its queue has a distributed claim or lease.
