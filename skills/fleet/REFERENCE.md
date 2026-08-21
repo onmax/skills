@@ -28,27 +28,28 @@ bash skills/fleet/scripts/bootstrap-node.sh self-test
 sudo ADMIN_USER="$USER" AGENT_USERS="maxi" skills/fleet/scripts/bootstrap-node.sh prepare
 ```
 
-`prepare` patches Ubuntu, installs the base CLIs, Docker, Tailscale, and UFW, creates the workspace, prepares the requested agent profile, stages Portainer, and syncs the public skills repo. It leaves public SSH available for the bootstrap session. Omit `AGENT_USERS` to reuse `ADMIN_USER` as the single agent profile.
+`prepare` patches Ubuntu, installs Node 24, GitHub CLI, Codex, and UFW, creates the workspace, prepares the requested agent profile, and syncs the public skills repo. It leaves SSH available for the bootstrap session. Omit `AGENT_USERS` to reuse `ADMIN_USER` as the single agent profile.
 
-Complete the interactive Tailscale login, prove a second SSH session through the tailnet, then finish private services:
+Prove a second direct key-only SSH session from the operator machine. Then link T3 Connect as the agent user and finish the service and SSH hardening:
 
 ```sh
-sudo tailscale up --ssh --operator="$USER"
-sudo ADMIN_USER="$USER" AGENT_USERS="maxi" LOCK_PUBLIC_SSH=1 \
+npx t3@latest connect link --headless
+sudo ADMIN_USER="$USER" AGENT_USERS="maxi" \
   /tmp/onmax-skills/skills/fleet/scripts/bootstrap-node.sh finish
 ```
 
-Use `LOCK_PUBLIC_SSH=1` only while a working tailnet SSH session is open. `finish` starts Portainer on `127.0.0.1:9443`, configures Tailscale Serve, and removes the public UFW SSH allowance when requested.
+`finish` installs the T3 user service, enables lingering, and disables SSH password and root login. T3 Connect uses its managed outbound relay client; do not open a T3 application port in UFW.
 
 ## Private Inventory
 
-Keep provider IDs, public addresses, tailnet names, and SSH aliases in operator-controlled state such as `~/.ssh/config` or a password manager. A public fleet skill records only generic roles and verification commands.
+Keep provider IDs, public addresses, and SSH aliases in operator-controlled state such as `~/.ssh/config` or a password manager. A public fleet skill records only generic roles and verification commands.
 
-Prefer an SSH alias that resolves through MagicDNS after bootstrap:
+Use a stable provider-based SSH alias so project names can move between nodes:
 
 ```sshconfig
-Host <private-alias>
-  HostName <magicdns-name>
+Host <provider-sequence-alias>
+  HostName <provider-address>
+  HostKeyAlias <provider-sequence-alias>
   User <agent-user>
   IdentityFile <operator-private-key-path>
   IdentitiesOnly yes
@@ -69,10 +70,10 @@ du -h -d1 /home 2>/dev/null | sort -h
 systemctl list-timers --all --no-pager
 systemctl list-unit-files --no-pager
 crontab -l
-tailscale status
-tailscale ip
-docker system df
 npm list -g --depth=0
+sudo sshd -T | grep -E '^(passwordauthentication|kbdinteractiveauthentication|pubkeyauthentication|permitrootlogin) '
+npx t3@latest connect status
+npx t3@latest service status
 ```
 
 For Balance, sample capacity without installing an agent or exporter:
@@ -109,7 +110,7 @@ mutations: <allowed branches, files, and external actions>
 verification: <commands or observable proof>
 ```
 
-Use an existing tailnet SSH or verified T3 path. The transport may be simple and interactive; do not add a queue merely to avoid one SSH command.
+Use existing direct SSH or a verified T3 path. The transport may be simple and interactive; do not add a queue merely to avoid one SSH command.
 
 The worker creates a distinct checkout or worktree, owns the delegated branch until completion, and returns:
 
@@ -182,7 +183,7 @@ Canonical `~/.claude/settings.json` baseline for agent profiles (merge into exis
 }
 ```
 
-## Tailscale And T3 Code
+## SSH And T3 Code
 
 Use official docs or CLI help at execution time because T3 remote commands are moving quickly.
 
@@ -193,33 +194,25 @@ npm view t3 version
 npx t3@latest --help
 ```
 
-Remote pattern to verify when available:
+Link the browser environment interactively, then install its user service:
 
 ```sh
-npx t3@nightly serve --help
+npx t3@latest connect link --headless
+npx t3@latest connect status
+sudo loginctl enable-linger <agent-user>
+npx t3@latest service install
+npx t3@latest service status
 ```
 
-Tailscale health:
+Keep OpenSSH independent from T3 and key-only:
 
 ```sh
-tailscale version
-tailscale status
-tailscale ip -4
-systemctl is-active tailscaled
+sudo sshd -T | grep -E '^(passwordauthentication|kbdinteractiveauthentication|pubkeyauthentication|permitrootlogin) '
+systemctl is-active ssh
+ufw status verbose
 ```
 
-Tailnet-only Portainer:
-
-```sh
-docker ps --filter name=^/portainer$
-ss -lntp | grep ':9443 '
-tailscale serve --https=443 https+insecure://127.0.0.1:9443
-tailscale serve status
-```
-
-The listener check must show `127.0.0.1:9443`, never `0.0.0.0`, `[::]`, or the public address. Port `8000` is omitted unless Edge Agents are explicitly required.
-
-Keep T3 reachable through Tailscale only unless the user explicitly asks for public exposure.
+The effective SSH values must be `passwordauthentication no`, `kbdinteractiveauthentication no`, `pubkeyauthentication yes`, and `permitrootlogin no`. T3 Connect should show enabled exposure, a provisioned environment link, and an available managed relay client. Any unrelated listener remains workload-specific and must be classified before changing it.
 
 ## Authentication Handoff
 
@@ -243,18 +236,17 @@ Each profile performs its own login. Auth directories and tokens are never copie
 ## Bootstrap Verification
 
 ```sh
-systemctl is-active docker tailscaled ssh
-tailscale status
-tailscale ip -4
-tailscale serve status
-docker ps --filter name=^/portainer$
+systemctl is-active ssh
+sudo sshd -T | grep -E '^(passwordauthentication|kbdinteractiveauthentication|pubkeyauthentication|permitrootlogin) '
+npx t3@latest connect status
+npx t3@latest service status
 ss -lntup
 ufw status verbose
 git -C /home/workspace/onmax/skills status --short --branch
 git -C /home/workspace/onmax/skills rev-parse HEAD
 ```
 
-Verify every requested agent profile with the auth-presence and skills checks from the snapshot section. Completion requires no public Portainer listener, a working tailnet SSH session, and an exact skills commit.
+Verify every requested agent profile with the auth-presence and skills checks from the snapshot section. Completion requires a second direct SSH session, an installed T3 service with a provisioned relay, and an exact skills commit.
 
 ## Remove Classes
 
@@ -282,7 +274,6 @@ Never delete automatically:
 
 ```text
 ~/.ssh
-tailscale state
 Codex auth
 provider auth
 dirty Git repos

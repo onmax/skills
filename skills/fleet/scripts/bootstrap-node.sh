@@ -7,8 +7,6 @@ agent_users="${AGENT_USERS:-$admin_user}"
 workspace_group="${WORKSPACE_GROUP:-codex-workspace}"
 skills_repo_url="${SKILLS_REPO_URL:-https://github.com/onmax/skills.git}"
 expected_skills_sha="${EXPECTED_SKILLS_SHA:-}"
-lock_public_ssh="${LOCK_PUBLIC_SSH:-0}"
-portainer_image="${PORTAINER_IMAGE:-portainer/portainer-ce:sts}"
 workspace_root="/home/workspace"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/../../.." && pwd)"
@@ -27,7 +25,11 @@ require_root() {
 
 home_overlaps_workspace() {
   local home_path
-  home_path="$(readlink -m "$1")"
+  if [ -d "$1" ]; then
+    home_path="$(cd "$1" && pwd -P)"
+  else
+    home_path="${1%/}"
+  fi
   [ "$home_path" = "$workspace_root" ] || [[ "$home_path" = "$workspace_root"/* ]]
 }
 
@@ -48,35 +50,22 @@ self_test() {
   echo "bootstrap path checks passed"
 }
 
-install_keyring_repo() {
-  local key_url="$1"
-  local keyring="$2"
-  local repo_line="$3"
-  local repo_file="$4"
-
-  curl -fsSL "$key_url" | gpg --dearmor -o "$keyring.tmp"
-  install -m 0644 "$keyring.tmp" "$keyring"
-  rm -f "$keyring.tmp"
-  printf '%s\n' "$repo_line" > "$repo_file"
-}
-
 prepare() {
   local admin_home
   admin_home="$(getent passwd "$admin_user" | cut -d: -f6)"
 
+  # shellcheck source=/dev/null
   . /etc/os-release
   [ "${ID:-}" = ubuntu ] || fail "bootstrap currently supports Ubuntu only"
 
   export DEBIAN_FRONTEND=noninteractive
   apt-get update
-  apt-get install -y ca-certificates curl git gnupg jq ripgrep ufw build-essential nodejs npm
+  apt-get install -y ca-certificates curl git jq ripgrep ufw
 
   install -d -m 0755 /etc/apt/keyrings
-  install_keyring_repo \
-    https://download.docker.com/linux/ubuntu/gpg \
-    /etc/apt/keyrings/docker.gpg \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu ${VERSION_CODENAME} stable" \
-    /etc/apt/sources.list.d/docker.list
+  curl -fsSL https://deb.nodesource.com/setup_24.x -o /tmp/nodesource_setup.sh
+  bash /tmp/nodesource_setup.sh
+  rm /tmp/nodesource_setup.sh
   curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     -o /etc/apt/keyrings/githubcli.gpg
   chmod 0644 /etc/apt/keyrings/githubcli.gpg
@@ -85,18 +74,17 @@ prepare() {
     > /etc/apt/sources.list.d/github-cli.list
 
   apt-get update
-  apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin gh
-  curl -fsSL https://tailscale.com/install.sh | sh
+  apt-get install -y nodejs gh
   npm install --global @openai/codex
 
   groupadd -f "$workspace_group"
-  usermod -aG "$workspace_group",docker "$admin_user"
+  usermod -aG "$workspace_group" "$admin_user"
 
   for user in $agent_users; do
     if ! id "$user" >/dev/null 2>&1; then
       useradd -m -s /bin/bash "$user"
     fi
-    usermod -aG "$workspace_group",docker "$user"
+    usermod -aG "$workspace_group" "$user"
     install -d -o "$user" -g "$user" -m 0700 "/home/$user/.ssh"
     if [ "$user" != "$admin_user" ] && [ -s "$admin_home/.ssh/authorized_keys" ]; then
       install -o "$user" -g "$user" -m 0600 "$admin_home/.ssh/authorized_keys" "/home/$user/.ssh/authorized_keys"
@@ -104,14 +92,9 @@ prepare() {
     grep -qxF 'umask 002' "/home/$user/.profile" || printf '\numask 002\n' >> "/home/$user/.profile"
   done
 
-  systemctl enable --now docker tailscaled
-  docker pull "$portainer_image"
-  docker volume inspect portainer_data >/dev/null 2>&1 || docker volume create portainer_data >/dev/null
-
   ufw default deny incoming
   ufw default allow outgoing
   ufw allow OpenSSH
-  ufw allow in on tailscale0
   ufw --force enable
 
   SKILL_USERS="$agent_users" \
@@ -122,40 +105,47 @@ prepare() {
     "$repo_root/scripts/sync-remote-skills.sh"
 
   echo "prepare complete"
-  echo "next: sudo tailscale up --ssh --operator=$admin_user"
-  echo "prove a second tailnet SSH session before running finish with LOCK_PUBLIC_SSH=1"
+  echo "next: prove a second key-only SSH session, then run 'npx t3@latest connect link --headless' as $admin_user"
+  echo "run finish only after T3 Connect is linked"
 }
 
 finish() {
-  tailscale status >/dev/null 2>&1 || fail "Tailscale is not connected"
-  tailscale ip -4 | grep -q . || fail "Tailscale has no IPv4 address"
+  local admin_home admin_uid connect_status effective_ssh runtime_dir sshd_config
+  admin_home="$(getent passwd "$admin_user" | cut -d: -f6)"
+  admin_uid="$(id -u "$admin_user")"
+  runtime_dir="/run/user/$admin_uid"
+  connect_status="$(sudo -iu "$admin_user" npx --yes t3@latest connect status)"
+  grep -q 'Exposure: enabled' <<<"$connect_status" || fail "T3 Connect is not enabled"
+  grep -q 'Environment link: provisioned' <<<"$connect_status" || fail "T3 Connect is not provisioned"
+  grep -q 'Relay client: available' <<<"$connect_status" || fail "T3 relay client is not installed"
 
-  if docker container inspect portainer >/dev/null 2>&1; then
-    docker port portainer 9443/tcp | grep -q '^127\.0\.0\.1:9443$' || \
-      fail "existing Portainer does not bind only to 127.0.0.1:9443"
-    docker start portainer >/dev/null
-  else
-    docker run -d \
-      --name portainer \
-      --restart=always \
-      -p 127.0.0.1:9443:9443 \
-      -v /var/run/docker.sock:/var/run/docker.sock \
-      -v portainer_data:/data \
-      "$portainer_image" >/dev/null
-  fi
+  loginctl enable-linger "$admin_user"
+  systemctl start "user@$admin_uid.service"
+  sudo -u "$admin_user" env HOME="$admin_home" XDG_RUNTIME_DIR="$runtime_dir" \
+    DBUS_SESSION_BUS_ADDRESS="unix:path=$runtime_dir/bus" npx --yes t3@latest service install
+  sudo -u "$admin_user" env HOME="$admin_home" XDG_RUNTIME_DIR="$runtime_dir" \
+    DBUS_SESSION_BUS_ADDRESS="unix:path=$runtime_dir/bus" npx --yes t3@latest service status | \
+    grep -q 'Status: installed' || \
+    fail "T3 background service is not installed"
+  sudo -u "$admin_user" env XDG_RUNTIME_DIR="$runtime_dir" \
+    DBUS_SESSION_BUS_ADDRESS="unix:path=$runtime_dir/bus" systemctl --user is-active t3code.service | \
+    grep -qx active || fail "T3 background service is not active"
 
-  tailscale serve --https=443 https+insecure://127.0.0.1:9443
-
-  docker ps --filter name=^/portainer$ --format '{{.Names}} {{.Status}}' | grep -q '^portainer Up '
-  ss -lnt | grep -q '127\.0\.0\.1:9443'
-  if ss -lnt | grep ':9443' | grep -Eq '(^|[[:space:]])(0\.0\.0\.0|\[::\]|\*):9443'; then
-    fail "Portainer has a public listener"
-  fi
-  tailscale serve status
-
-  if [ "$lock_public_ssh" = 1 ]; then
-    ufw --force delete allow OpenSSH || true
-  fi
+  sshd_config="$(mktemp)"
+  printf '%s\n' \
+    'PasswordAuthentication no' \
+    'KbdInteractiveAuthentication no' \
+    'PubkeyAuthentication yes' \
+    'PermitRootLogin no' > "$sshd_config"
+  install -o root -g root -m 0644 "$sshd_config" /etc/ssh/sshd_config.d/00-fleet-hardening.conf
+  rm "$sshd_config"
+  sshd -t
+  effective_ssh="$(sshd -T)"
+  grep -q '^passwordauthentication no$' <<<"$effective_ssh" || fail "SSH password auth is still enabled"
+  grep -q '^kbdinteractiveauthentication no$' <<<"$effective_ssh" || fail "SSH interactive auth is still enabled"
+  grep -q '^pubkeyauthentication yes$' <<<"$effective_ssh" || fail "SSH public-key auth is disabled"
+  grep -q '^permitrootlogin no$' <<<"$effective_ssh" || fail "SSH root login is still enabled"
+  systemctl reload ssh
 
   ufw status verbose
   echo "finish complete"
