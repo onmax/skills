@@ -1,6 +1,6 @@
 ---
 name: paper-cuts
-description: Use before ending a turn in which you hit a paper cut: a bug or gap in a library or tool we use, a surprise on the machine, or something you were blocked from doing.
+description: "Use before ending a turn in which you hit a paper cut: a bug or gap in a library or tool we use, a surprise on the machine, or something you were blocked from doing."
 ---
 
 # Paper cuts
