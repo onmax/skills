@@ -27,7 +27,7 @@ Stop once you can say whether it's known and what you'd propose. Deeper research
 
 ## Report
 
-End the turn's final reply with a `Paper cuts` section after the task's own report. Report each cut once per session; leave the section out when there are none.
+End the turn's final reply with a `Paper cuts` section after the task's own report. Report each cut once per session, even if you hit it again; leave the section out when there are none.
 
 ```md
 ## Paper cuts
