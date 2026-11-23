@@ -38,28 +38,23 @@
       "include": [
         "grilling"
       ]
+    },
+    {
+      "id": "ag-grid",
+      "git": "ag-grid/skills",
+      "skills": "skills/*"
     }
   ],
   "forks": {
     "council": {
       "from": "t3dotgg/tstack",
       "path": "skills/council",
-      "base": "unknown"
+      "base": "11e37a74d0a6868c121cd0910ab2b3bd9873b92a"
     },
     "sol-loop": {
       "from": "t3dotgg/tstack",
       "path": "skills/sol-loop",
-      "base": "unknown"
-    },
-    "ag-dev": {
-      "from": "ag-grid/skills",
-      "path": "skills/ag-dev",
-      "base": "unknown"
-    },
-    "ag-update": {
-      "from": "ag-grid/skills",
-      "path": "skills/ag-update",
-      "base": "unknown"
+      "base": "6efae364201abc9d9f07443e9caa461f42e51090"
     }
   },
   "fleet": [

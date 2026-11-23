@@ -19,7 +19,7 @@ Or copy a folder into `~/.claude/skills/` (Claude Code) or `~/.agents/skills/` (
 
 ## My setup
 
-[`.fleetrc/manifest.json`](.fleetrc/manifest.json) is the [fleetrc](https://github.com/onmax/fleetrc) manifest my machines sync their skills from: my private skills, [onmax/nuxt-skills](https://github.com/onmax/nuxt-skills), the document skills from [vite-hub/drop](https://github.com/vite-hub/drop) and [onmax/comark-ui](https://github.com/onmax/comark-ui), and [`grilling`](https://github.com/mattpocock/skills) from Matt Pocock. The first source is private, so to start from it, copy the file and point that source at your own repository.
+[`.fleetrc/manifest.json`](.fleetrc/manifest.json) is the [fleetrc](https://github.com/onmax/fleetrc) manifest my machines sync their skills from: my private skills, [onmax/nuxt-skills](https://github.com/onmax/nuxt-skills), the document skills from [vite-hub/drop](https://github.com/vite-hub/drop) and [onmax/comark-ui](https://github.com/onmax/comark-ui), [`grilling`](https://github.com/mattpocock/skills) from Matt Pocock, and AG Grid's skills from [ag-grid/skills](https://github.com/ag-grid/skills). The first source is private, so to start from it, copy the file and point that source at your own repository.
 
 ## How this repo works
 
