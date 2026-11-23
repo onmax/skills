@@ -1,0 +1,70 @@
+{
+  "$schema": "https://unpkg.com/fleetrc/schema.json",
+  "agents": "all",
+  "sources": [
+    {
+      "id": "mine",
+      "git": "onmax/skills-private",
+      "path": "~/onmax/skills",
+      "skills": "skills/*",
+      "adopt": true,
+      "followLinks": true
+    },
+    {
+      "id": "nuxt",
+      "git": "onmax/nuxt-skills",
+      "skills": "skills/*"
+    },
+    {
+      "id": "drop",
+      "git": "vite-hub/drop",
+      "skills": "skills/*",
+      "exclude": [
+        "handoff"
+      ]
+    },
+    {
+      "id": "comark-ui",
+      "git": "onmax/comark-ui",
+      "skills": "skills/*",
+      "exclude": [
+        "report"
+      ]
+    },
+    {
+      "id": "mattpocock",
+      "git": "mattpocock/skills",
+      "skills": "skills/*/*",
+      "include": [
+        "grilling"
+      ]
+    }
+  ],
+  "forks": {
+    "council": {
+      "from": "t3dotgg/tstack",
+      "path": "skills/council",
+      "base": "unknown"
+    },
+    "sol-loop": {
+      "from": "t3dotgg/tstack",
+      "path": "skills/sol-loop",
+      "base": "unknown"
+    },
+    "ag-dev": {
+      "from": "ag-grid/skills",
+      "path": "skills/ag-dev",
+      "base": "unknown"
+    },
+    "ag-update": {
+      "from": "ag-grid/skills",
+      "path": "skills/ag-update",
+      "base": "unknown"
+    }
+  },
+  "fleet": [
+    "maxi@maxis-macbook-pro.tail22c0a6.ts.net",
+    "chattraporn",
+    "maxi@servarica.tail22c0a6.ts.net"
+  ]
+}

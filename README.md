@@ -17,6 +17,10 @@ npx skills add onmax/skills
 
 Or copy a folder into `~/.claude/skills/` (Claude Code) or `~/.agents/skills/` (Codex).
 
+## My setup
+
+[`.fleetrc/manifest.json`](.fleetrc/manifest.json) is the [fleetrc](https://github.com/onmax/fleetrc) manifest my machines sync their skills from: my private skills, [onmax/nuxt-skills](https://github.com/onmax/nuxt-skills), the document skills from [vite-hub/drop](https://github.com/vite-hub/drop) and [onmax/comark-ui](https://github.com/onmax/comark-ui), and [`grilling`](https://github.com/mattpocock/skills) from Matt Pocock. The first source is private, so to start from it, copy the file and point that source at your own repository.
+
 ## How this repo works
 
 I edit my skills in a private repository, where most of them are tied to my machines and accounts. The ones listed here are published from it automatically, with the private parts taken out. Pull requests here would be overwritten by the next sync, so open an issue instead.
@@ -27,6 +31,7 @@ Skills by other people that I use alongside these:
 
 - [`council`](https://github.com/t3dotgg/tstack/tree/main/skills/council) and [`sol-loop`](https://github.com/t3dotgg/tstack/tree/main/skills/sol-loop) from [t3dotgg/tstack](https://github.com/t3dotgg/tstack)
 - [`ag-dev`](https://github.com/ag-grid/skills/tree/main/skills/ag-dev) and [`ag-update`](https://github.com/ag-grid/skills/tree/main/skills/ag-update) from [ag-grid/skills](https://github.com/ag-grid/skills)
+- [`grilling`](https://github.com/mattpocock/skills) from [mattpocock/skills](https://github.com/mattpocock/skills)
 - [`ui-skills`](https://github.com/ibelick/ui-skills) by ibelick
 
 ## License
